@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="invocation.CommandLineArgParserTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2015-08-17T01:30:04" hostname="Pseudopolis" time="0.47">
+<testsuite name="invocation.CommandLineArgParserTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2015-08-27T03:03:09" hostname="Pseudopolis" time="0.817">
   <properties/>
-  <testcase name="parse_doesnt_call_added_action_if_option_not_matched" classname="invocation.CommandLineArgParserTest" time="0.452"/>
-  <testcase name="parse_calls_added_action_on_option_matched_by_one_char_flag" classname="invocation.CommandLineArgParserTest" time="0.01"/>
-  <testcase name="parse_calls_added_action_on_option_matched_by_verbose_flag" classname="invocation.CommandLineArgParserTest" time="0.001"/>
-  <testcase name="addOption_adds_newly_created_option_to_options_list" classname="invocation.CommandLineArgParserTest" time="0.0"/>
+  <testcase name="parse_doesnt_call_added_action_if_option_not_matched" classname="invocation.CommandLineArgParserTest" time="0.468"/>
+  <testcase name="parse_calls_added_action_on_option_matched_by_one_char_flag" classname="invocation.CommandLineArgParserTest" time="0.153"/>
+  <testcase name="parse_calls_added_action_on_option_matched_by_verbose_flag" classname="invocation.CommandLineArgParserTest" time="0.029"/>
+  <testcase name="addOption_adds_newly_created_option_to_options_list" classname="invocation.CommandLineArgParserTest" time="0.033"/>
   <testcase name="parse_calls_action_only_once_if_option_matched_multiple_times" classname="invocation.CommandLineArgParserTest" time="0.002"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
