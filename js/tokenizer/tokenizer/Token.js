@@ -3,23 +3,12 @@
  */
 
 function Token () {
-    this._type = "";
-    this._value = "";
+    this.type = "";
+    this.value = "";
 }
 
 Token.prototype = {
-    set type(val) {
-        this._type = val;
-    },
-    get type() {
-        return this._type;
-    },
-    set value(val) {
-        this._value = val;
-    },
-    get value() {
-        return this._value;
-    }
+
 };
 
 exports.Token = Token;
