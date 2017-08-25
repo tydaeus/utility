@@ -10,17 +10,24 @@ namespace cSharpUtilities
     {
         static void Main(string[] args)
         {
-            FileTree fileTree = new FileTree("..\\..");
+            FileTree sourceFileTree = new FileTree("..\\..");
 
-            fileTree.CopyTo(@"C:\workspace\sandbox\copyTest", true);
+            FileTree destFileTree = sourceFileTree.CopyTo(@"C:\workspace\sandbox\copyTest", true);
 
-            pause();
+            Console.WriteLine("Files copied");
+            Pause();
+
+            destFileTree.MoveTo(@"C:\workspace\sandbox\movedCopyTest");
+
+            Console.WriteLine("Copy moved");
+            Pause();
         }
 
-        static void pause()
+        static void Pause()
         {
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
+            Console.WriteLine();
         }
 
     }

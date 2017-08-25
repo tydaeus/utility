@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace cSharpUtilities
@@ -23,6 +19,18 @@ namespace cSharpUtilities
             this.root = root;
         }
 
+        public string Root
+        {
+            get
+            {
+                return root;
+            }
+            set
+            {
+                root = value;
+            }
+        }
+
         public void Traverse(Action<string, int> visit)
         {
             Traverse(this.root, visit);
@@ -30,21 +38,21 @@ namespace cSharpUtilities
 
         public static void Traverse(string root, Action<string, int> visit)
         {
-            traverse(Path.GetFullPath(root), visit);
+            Traverse(Path.GetFullPath(root), visit);
         }
 
-        static void traverse(string path, Action<string, int> visit, int nestedLevel = 0)
+        private static void Traverse(string path, Action<string, int> visit, int nestedLevel = 0)
         {
             if (Directory.Exists(path))
             {
                 visit(path, nestedLevel);
                 foreach (string dir in Directory.GetDirectories(path))
                 {
-                    traverse(dir, visit, nestedLevel + 1);
+                    Traverse(dir, visit, nestedLevel + 1);
                 }
                 foreach (string file in Directory.GetFiles(path))
                 {
-                    traverse(file, visit, nestedLevel + 1);
+                    Traverse(file, visit, nestedLevel + 1);
                 }
             }
             else if (File.Exists(path))
@@ -57,10 +65,20 @@ namespace cSharpUtilities
             }
         }
 
-        public void CopyTo(string destination, Boolean verbose = false)
+        public FileTree CopyTo(string destination, Boolean verbose = false)
         {
             Copy(root, destination, verbose);
-            
+
+            if (IsDirectory())
+            {
+                return new FileTree(destination);
+            } else if (IsFile())
+            {
+                return new FileTree(destination + Path.GetFileName(root));
+            } else
+            {
+                throw new InvalidOperationException("Somehow performed CopyTo on root that was neither dir nor file");
+            }
         }
 
         public static void Copy(string source, string destination, Boolean verbose = false)
@@ -88,21 +106,126 @@ namespace cSharpUtilities
 
         public static void CopyDir(DirectoryInfo sourceDir, DirectoryInfo destDir, Boolean verbose = false)
         {
-            Directory.CreateDirectory(destDir.FullName);
-
-            foreach(FileInfo file in sourceDir.GetFiles())
+            if (!Directory.Exists(destDir.FullName))
             {
                 if (verbose)
                 {
-                    Console.WriteLine(@"Copying {0}\{1}", destDir.FullName, file.Name);
+                    Console.WriteLine(@"Creating dir {0}", destDir.FullName);
                 }
-                file.CopyTo(Path.Combine(destDir.FullName, file.Name), true);
+                Directory.CreateDirectory(destDir.FullName);
+            }
+
+            foreach (FileInfo file in sourceDir.GetFiles())
+            {
+                CopyFile(file, destDir, verbose);
             }
 
             foreach(DirectoryInfo subDir in sourceDir.GetDirectories())
             {
-                CopyDir(subDir, destDir.CreateSubdirectory(subDir.Name));
+                CopyDir(subDir, new DirectoryInfo(Path.Combine(destDir.FullName, subDir.Name)), verbose);
             }
+        }
+
+        public static void CopyFile(string sourceFile, string destDir, Boolean verbose = false)
+        {
+            CopyFile(new FileInfo(sourceFile), new DirectoryInfo(destDir), verbose);
+        }
+
+        public static void CopyFile(FileInfo sourceFile, DirectoryInfo destDir, Boolean verbose = false)
+        {
+            if (verbose)
+            {
+                Console.WriteLine(@"Copying file {0}\{1}", destDir.FullName, sourceFile.Name);
+            }
+            sourceFile.CopyTo(Path.Combine(destDir.FullName, sourceFile.Name), true);
+        }
+
+        public void Delete()
+        {
+            Delete(this.root);
+        }
+
+        public static void Delete(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                DeleteDir(path);
+            }
+            else if (File.Exists(path))
+            {
+                DeleteFile(path);
+            } else
+            {
+                throw new ArgumentException("Unable to delete path '" + path + "': " +
+                    "is neither file nor dir");
+            }
+        }
+
+        public static void DeleteDir(string dirPath)
+        {
+            Directory.Delete(dirPath, true);
+        }
+
+        public static void DeleteFile(string filePath)
+        {
+            File.Delete(filePath);
+        }
+
+        /**
+         * Attempts to move the root file of this fileTree to the specified 
+         * location, updating root value appropriately on success.
+         */
+        public void MoveTo(string destDir)
+        {
+            string originalRoot = Path.GetFullPath(root);
+            Boolean isFile = IsFile();
+
+            Move(root, destDir);
+
+            if (isFile)
+            {
+                root = Path.GetFullPath(destDir + Path.GetFileName(originalRoot));
+            } else
+            {
+                root = destDir;
+            }
+
+          
+        }
+
+        public static void Move(string source, string destDir)
+        {
+            if (File.Exists(source))
+            {
+                MoveFile(source, destDir);
+            } else if (Directory.Exists(source))
+            {
+                MoveDir(source, destDir);
+            }
+            else
+            {
+                throw new ArgumentException("Illegal move source '" + source + "' ");
+            }
+        }
+
+        public static void MoveDir(string sourceDir, string destDir)
+        {
+            MoveDir(new DirectoryInfo(sourceDir), new DirectoryInfo(destDir));
+        }
+
+        public static void MoveDir(DirectoryInfo sourceDir, DirectoryInfo destDir)
+        {
+            sourceDir.MoveTo(destDir.FullName);
+        }
+
+        public static void MoveFile(string sourceFile, string destDir)
+        {
+            MoveFile(new FileInfo(sourceFile), new DirectoryInfo(destDir));
+        }
+
+        public static void MoveFile(FileInfo sourceFile, DirectoryInfo destDir)
+        {
+            sourceFile.MoveTo(destDir.FullName);
         }
 
         public Boolean IsFile()
