@@ -1,0 +1,6 @@
+C:\Dave Files\utility\c_sharp\cSharpUtilities\bin\Debug\cSharpUtilities.exe.config
+C:\Dave Files\utility\c_sharp\cSharpUtilities\bin\Debug\cSharpUtilities.exe
+C:\Dave Files\utility\c_sharp\cSharpUtilities\bin\Debug\cSharpUtilities.pdb
+C:\Dave Files\utility\c_sharp\cSharpUtilities\obj\Debug\cSharpUtilities.csprojResolveAssemblyReference.cache
+C:\Dave Files\utility\c_sharp\cSharpUtilities\obj\Debug\cSharpUtilities.exe
+C:\Dave Files\utility\c_sharp\cSharpUtilities\obj\Debug\cSharpUtilities.pdb
