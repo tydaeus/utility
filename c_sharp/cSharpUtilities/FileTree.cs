@@ -1,5 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Text.RegularExpressions;
+// Must add reference to System.IO.Compression.FileSystem assembly
+using System.IO.Compression;
 
 namespace cSharpUtilities
 {
@@ -7,8 +10,14 @@ namespace cSharpUtilities
     /**
      * Provides util functions for working with sets of files.
      * 
+     * Unless stated otherwise, functions will generally detect whether the
+     * "file" in question is a directory or a regular file.
+     * 
      * Instance functions operate on the the "root" file (directory or file) 
-     * specified at creation. Static functions operate on specified file.
+     * specified at creation and either modify instance's root or return a new 
+     * FileTree, depending on operation performed.
+     * 
+     * Static functions operate on specified file.
      */
     class FileTree
     {
@@ -227,11 +236,78 @@ namespace cSharpUtilities
         {
             sourceFile.MoveTo(destDir.FullName);
         }
+        public FileTree Zip(string destination = null)
+        {
+            return new FileTree(ZipDir(root, destination));
+        }
+
+        public static string ZipDir(string sourceDir, string destFilePath = null)
+        {
+            // default to adding .zip to source dir name
+            if (destFilePath == null)
+            {
+                destFilePath = sourceDir + ".zip";
+            }
+
+            // ensure zipped file name ends in .zip
+            if (!Path.GetExtension(destFilePath).ToLower().Equals(".zip"))
+            {
+                destFilePath += ".zip";
+            }
+
+            // use root dir if destination does not specify dir
+            if (PATH_SEPERATORS.Matches(destFilePath).Count == 0)
+            {
+                destFilePath = Path.Combine(Path.GetDirectoryName(sourceDir), destFilePath);
+            }
+
+            ZipFile.CreateFromDirectory(sourceDir, destFilePath);
+
+            return Path.GetFullPath(destFilePath);
+        }
+
+        public FileTree Unzip(string destination = null)
+        {
+            return new FileTree(Unzip(root, destination));
+        }
+
+        public static string Unzip(string sourceFile, string destDir)
+        {
+            // default to removing .zip from file name
+            if (destDir == null)
+            {
+                destDir = Path.GetFileNameWithoutExtension(sourceFile);
+            }
+
+            // ensure unzipped file name loses .zip
+            if (Path.GetExtension(destDir).ToLower().Equals(".zip"))
+            {
+                destDir = Path.GetFileNameWithoutExtension(destDir);
+            }
+
+            // use sourceFile dir if destination does not specify dir
+            if (PATH_SEPERATORS.Matches(destDir).Count == 0)
+            {
+                destDir = Path.Combine(Path.GetDirectoryName(sourceFile), destDir);
+            }
+
+            ZipFile.ExtractToDirectory(sourceFile, destDir);
+
+            return Path.GetFullPath(destDir);
+        }
 
         public Boolean IsFile()
         {
             return File.Exists(root);
         }
+
+        public Boolean IsZip()
+        {
+            // assume that file extension is correct
+            return File.Exists(root) && Path.GetExtension(root).ToLower().Equals("zip");
+        }
+
+        private static readonly Regex PATH_SEPERATORS = new Regex(@"[\\/]");
 
         public Boolean IsDirectory()
         {
