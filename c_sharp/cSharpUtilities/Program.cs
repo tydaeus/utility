@@ -37,6 +37,9 @@ namespace cSharpUtilities
             Console.WriteLine("Copy zipped");
             Pause();
 
+            Console.WriteLine("Zipped Copy MD5: " + zippedFileTree.CalcMd5());
+            Pause();
+
             FileTree unzippedFileTree = zippedFileTree.Unzip("unzippedCopy");
             Console.WriteLine("Copy unzipped");
             Pause();

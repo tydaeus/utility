@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Security.Cryptography;
 // Must add reference to System.IO.Compression.FileSystem assembly
 using System.IO.Compression;
 
@@ -294,6 +295,56 @@ namespace cSharpUtilities
             ZipFile.ExtractToDirectory(sourceFile, destDir);
 
             return Path.GetFullPath(destDir);
+        }
+
+        private static string ByteArrToString(byte[] hash)
+        {
+            return BitConverter.ToString(hash).Replace("-", "").ToLower();
+        }
+
+        /**
+         * Calculates md5 hash of this file (file-only). For efficiency, use
+         * CalcMd5(MD5) if performing multiple MD5 hash calculations.
+         */
+        public string CalcMd5()
+        {
+            using (var md5 = MD5.Create())
+            {
+                return CalcMd5(md5);
+            }
+        }
+
+        /**
+         * Calculates md5 hash of this file using the provided md5 instance.
+         * (file-only).
+         */
+        public string CalcMd5(MD5 md5)
+        {
+            return CalcMd5(root, md5);
+        }
+
+        /**
+         * Calculates md5 hash of specified file using a throwaway instance of md5
+         */
+        public static string CalcMd5(string filePath)
+        {
+            using (var md5 = MD5.Create())
+            {
+                return CalcMd5(filePath, md5);
+            }
+        }
+
+        /**
+         *  Calculates md5 hash of specified file using provided md5 instance.
+         */
+        public static string CalcMd5(string filePath, MD5 md5)
+        {
+            byte[] md5Bytes;
+            using (var stream = File.OpenRead(filePath))
+            {
+                md5Bytes = md5.ComputeHash(stream);
+            }
+            return ByteArrToString(md5Bytes);
         }
 
         public Boolean IsFile()
