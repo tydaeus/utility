@@ -10,7 +10,7 @@ namespace cSharpUtilities
     {
         static void Main(string[] args)
         {
-            FileTreeDemo();
+            TextFileDemo();
             Pause();
         }
 
@@ -19,6 +19,17 @@ namespace cSharpUtilities
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
             Console.WriteLine();
+        }
+
+        static void TextFileDemo()
+        {
+            TextFile tf = new TextFile(@"C:\workspace\sandbox\testTextFile.txt");
+            tf.WriteContent("Some Text file content.\r\nIncludes a new line.\r\n");
+            Console.WriteLine("TextFile written.");
+            Pause();
+
+            tf.AppendContent("Appended content.");
+            Console.WriteLine("Additional Content appended.");
         }
 
         static void FileTreeDemo()
