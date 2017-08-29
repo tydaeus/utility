@@ -44,6 +44,9 @@ namespace cSharpUtilities
             Console.WriteLine("Copy unzipped");
             Pause();
 
+            Console.WriteLine("unzippedCopy manifest:");
+            Console.WriteLine(unzippedFileTree.BuildManifest());
+
             destFileTree.Delete();
             zippedFileTree.Delete();
             unzippedFileTree.Delete();

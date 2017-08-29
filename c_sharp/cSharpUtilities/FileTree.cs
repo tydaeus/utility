@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Text;
 using System.Security.Cryptography;
 // Must add reference to System.IO.Compression.FileSystem assembly
 using System.IO.Compression;
@@ -48,7 +49,7 @@ namespace cSharpUtilities
 
         public static void Traverse(string root, Action<string, int> visit)
         {
-            Traverse(Path.GetFullPath(root), visit);
+            Traverse(Path.GetFullPath(root), visit, 0);
         }
 
         private static void Traverse(string path, Action<string, int> visit, int nestedLevel = 0)
@@ -347,6 +348,36 @@ namespace cSharpUtilities
             return ByteArrToString(md5Bytes);
         }
 
+        public string BuildManifest()
+        {
+            return BuildManifest(root);
+        }
+
+        public static string BuildManifest(string dirPath)
+        {
+            StringBuilder resultBuilder = new StringBuilder();
+
+            string dirFullPath = Path.GetFullPath(dirPath);
+            string dirName = Path.GetFileName(dirPath);
+
+            using (MD5 md5 = MD5.Create())
+            {
+                Traverse(dirPath, (string path, int level) =>
+                {
+                    if (File.Exists(path))
+                    {
+                        string fullPath = Path.GetFullPath(path);
+                        string fileName = fullPath.Substring(dirFullPath.Length + 1, fullPath.Length - dirFullPath.Length - 1);
+
+                        resultBuilder.AppendLine("\"" + fileName + "\" " + CalcMd5(path, md5));
+                    }
+                });
+
+            }
+
+            return resultBuilder.ToString();
+        }
+
         public Boolean IsFile()
         {
             return File.Exists(root);
@@ -372,7 +403,7 @@ namespace cSharpUtilities
 
         public static void DisplayFile(string path, int nestedLevel = 0)
         {
-            string message = buildIndent(nestedLevel);
+            string message = BuildIndent(nestedLevel);
             if (Directory.Exists(path))
             {
                 message += "D";
@@ -391,7 +422,7 @@ namespace cSharpUtilities
             Console.WriteLine(message);
         }
 
-        static string buildIndent(int level)
+        static string BuildIndent(int level)
         {
             string result = "";
 
