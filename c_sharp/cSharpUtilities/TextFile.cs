@@ -68,6 +68,8 @@ namespace cSharpUtilities
             return ReadLines(this.filepath);
         }
 
+        // returns the contents of the text file as an array of strings, one 
+        // for each line in the file
         public List<string> ReadLines(string filepath)
         {
             string curLine = "";
@@ -89,6 +91,7 @@ namespace cSharpUtilities
             return ReadFile(filepath);
         }
 
+        // returns the contents of the text file as a single string
         public static string ReadFile(string filepath)
         {
             using (StreamReader reader = new StreamReader(filepath))

@@ -34,7 +34,7 @@ namespace cSharpUtilities
                 result = NONEXISTENT_KEY;
             }
 
-            return result;           
+            return result;
         }
     }
 
