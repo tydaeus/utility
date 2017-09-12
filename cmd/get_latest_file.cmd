@@ -16,7 +16,7 @@ setLocal enableDelayedExpansion
 set DIR_PATH=%~f1
 set FILE_NAME=%~2
 
-for /f "tokens=*" %%A in ('dir /b /od "%DIR_PATH%" ^| findstr "%FILE_NAME%"') do set NEWEST=%%A
+for /f "tokens=*" %%A in ('dir /b /od "%DIR_PATH%" ^| findstr "%FILE_NAME%"') do set NEWEST=%%~fA
 
 set RET=%NEWEST%
 endLocal & set RET=%RET%
