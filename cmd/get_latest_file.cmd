@@ -13,16 +13,11 @@ setLocal enableDelayedExpansion
 :: FILE_NAME as RET. Note that FILE_NAME is processed using findstr, so
 :: some basic regex can be used.
 
-set DIR_PATH=%~f1
+set DIR_PATH=%~1
 set FILE_NAME=%~2
 
-:: temporarily switch to target dir, otherwise calculating full path doesn't work
-pushd %DIR_PATH%
-
-for /f "tokens=*" %%A in ('dir /b /od "%DIR_PATH%" ^| findstr "%FILE_NAME%"') do set NEWEST=%%~fA
+for /f "tokens=*" %%A in ('dir /b /od "%DIR_PATH%" ^| findstr "%FILE_NAME%"') do set NEWEST=%DIR_PATH%\%%~A
 
 set RET=%NEWEST%
-
-popd
 
 endLocal & set RET=%RET%
