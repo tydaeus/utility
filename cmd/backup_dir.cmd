@@ -11,7 +11,8 @@ setLocal enableDelayedExpansion
 :: TARGET_DIR.bak. TARGET_DIR must be named with full filepath, wrapped in
 :: quotes if any spaces exist in path or dirname.
 ::
-:: TODO: proper error handling
+:: This can be easily modified to use %DATE% and %TIME% to create timestamped
+:: backups instead of keeping just one .bak backup.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 set ERRLEVEL=0
