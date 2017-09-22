@@ -41,7 +41,11 @@ endLocal & set ERRLEV=%ERRLEV% & set ERRMSG=%ERRMSG%
 exit /b %ERRLEV%
 
 ::-----------------------------------------------------------------------------
-:: Define Invokable Commands:
+:: Define Invokable Commands
+:: 
+:: DevNote: by redirecting commands through "cmd_" files, derivative
+:: implementations can provide their own versions of these files for alternate
+:: functionality.
 ::-----------------------------------------------------------------------------
 
 :COPY
