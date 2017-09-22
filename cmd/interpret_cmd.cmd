@@ -45,12 +45,12 @@ exit /b %ERRLEV%
 ::-----------------------------------------------------------------------------
 
 :COPY
-call smart_copy "%~2" "%~3"
+call cmd_copy "%~2" "%~3"
 set ERRLEV=%ERRORLEVEL%
 set FOUND=1
 exit /b %ERRLEV%
 
 :ECHO
-echo %~2
+call cmd_echo %~2
 set FOUND=1
 exit /b
