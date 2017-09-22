@@ -1,7 +1,10 @@
 @Echo off
+set RET=
 
 if exist "%~1"\* (
-    echo yes
+    set RET=1
 ) else (
-    echo no
+    set RET=0
 )
+
+exit /b
