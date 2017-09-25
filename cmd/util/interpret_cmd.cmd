@@ -55,6 +55,6 @@ set FOUND=1
 exit /b %ERRLEV%
 
 :ECHO
-call cmd_echo %~2
+call cmd_echo "%~2"
 set FOUND=1
 exit /b
