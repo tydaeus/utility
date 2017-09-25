@@ -19,12 +19,11 @@ set SCRIPT_DIR=%~dp0
 ::  3. in script's parent dir's \util subdir
 ::  4. at CMD_UTIL_HOME
 ::-----------------------------------------------------------------------------
-
 if not "%CMD_UTIL_HOME%"=="" set PATH=%CMD_UTIL_HOME%;%PATH%
-if exist "%SCRIPT_DIR%"..\util\* set PATH=%SCRIPT_DIR%..\util\;%PATH%
-if exist "%SCRIPT_DIR%"\util\* set PATH=%SCRIPT_DIR%util\;%PATH%
-set PATH=%SCRIPT_DIR%
+set PATH=%SCRIPT_DIR%;%SCRIPT_DIR%util\;%SCRIPT_DIR%..\util\;%PATH% 
 
+
+goto :END
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :ERR
