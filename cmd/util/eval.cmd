@@ -12,12 +12,17 @@ setLocal enableDelayedExpansion
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 set COMMAND=%~1
-set "TARGET=%~2"
+set "TARGET_VAR=%~2"
 set RESULT=
+
+if "%TARGET_VAR%"=="" (
+    echo Invalid usage. Please specify a target. 1>&2
+    exit /b 1
+)
 
 for /f "tokens=* useBackQ" %%A in (`%COMMAND%`) do (
     set "RESULT=%%A"
 )
 
-endLocal & set "%TARGET%=%RESULT%"
+endLocal & set "%TARGET_VAR%=%RESULT%"
 exit /b
