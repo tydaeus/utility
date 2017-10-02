@@ -8,7 +8,8 @@ setLocal enableDelayedExpansion
 ::      backup TARGET
 ::
 :: Makes a copy of TARGET as [timestamp]TARGET.bak. This backup will be located
-:: at BACKUP_HOME if defined, target's parent directory otherwise.
+:: at BACKUP_HOME if defined, target's parent directory otherwise. Note that
+:: BACKUP_HOME will be created, if necessary.
 ::
 :: Does nothing if TARGET does not exist.
 ::
