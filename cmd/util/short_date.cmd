@@ -1,5 +1,10 @@
 @Echo Off
 setLocal enableDelayedExpansion
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: short_date
+::
+:: Returns the system date with punctuation stripped (via stdout)
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 set SPLIT_DATE=%DATE:/= %
 
