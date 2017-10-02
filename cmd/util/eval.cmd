@@ -16,7 +16,7 @@ set "TARGET_VAR=%~2"
 set RESULT=
 
 if "%TARGET_VAR%"=="" (
-    echo Invalid usage. Please specify a target. 1>&2
+    echo ERR: Invalid usage of `eval`. Please specify a target. 1>&2
     exit /b 1
 )
 
