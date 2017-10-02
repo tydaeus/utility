@@ -7,25 +7,23 @@ setLocal enableDelayedExpansion
 :: Usage:
 ::      backup TARGET
 ::
-:: Makes a copy of TARGET as TARGET.bak, removing any pre-existing TARGET.bak.
+:: Makes a copy of TARGET as [timestamp]TARGET.bak.
 :: Does nothing if TARGET does not exist.
 ::
-:: Depends on the smart_delete and smart_copy utility commands.
-::
-:: Future: This can be easily modified to create timestamped backups instead of
-:: keeping just one .bak backup.
+:: Depends on several of the utility commands.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 set ERRLEVEL=0
 set TARGET=%~1
+set TARGET_PATH=%~dp1
 set TARGET_NAME=%~nx1
 
-if exist "%TARGET%.bak" (
-    call smart_delete "%TARGET%.bak" || goto :ERR
-)
+call eval "short_date" SDATE
+call eval "short_time" STIME
+set "TIMESTAMP=[%SDATE%-%STIME%]"
 
 if exist "%TARGET%" (
-    call smart_copy "%TARGET%" "%TARGET%.bak" > nul || goto :ERR
+    call smart_copy "%TARGET%" "%TARGET_PATH%%TIMESTAMP%%TARGET_NAME%.bak" > nul || goto :ERR
 )
 
 goto :END
