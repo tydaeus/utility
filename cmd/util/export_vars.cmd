@@ -8,6 +8,9 @@ setLocal enableDelayedExpansion
 ::
 :: Process a list of variable names to store their names and values in a string
 :: formatted for use in variable tunneling.
+::
+:: DevNote: I've used ::" to balance quotes that my syntax highlighter doesn't
+:: recognize as balanced.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :: no var names - invalid invocation
@@ -17,7 +20,25 @@ set EXPORT=
 
 ::-----------------------------------------------------------------------------
 :LOOP
-call :PROCESS_VAR "%~1" "!%~1!"
+echo Visiting %~1=!%~1!
+
+set VAR_VALUE=!%~1!
+echo initial var_value: %VAR_VALUE%
+
+::"
+:: escape values
+set "VAR_VALUE=!VAR_VALUE:"=""!" 
+::"
+set "VAR_VALUE=%VAR_VALUE:^=^^%"
+::set "VAR_VALUE=%VAR_VALUE:<=^<%"
+::set "VAR_VALUE=%VAR_VALUE:>=^>%"
+::set "VAR_VALUE=%VAR_VALUE:&=^&%"
+::set "VAR_VALUE=%VAR_VALUE:|=^|%"
+::"
+echo post-escape var_value: %VAR_VALUE%
+
+call :PROCESS_VAR "%~1" "%VAR_VALUE:"=""%"
+::"
 
 if [%~2]==[] goto :END
 shift
