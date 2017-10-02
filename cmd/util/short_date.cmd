@@ -16,5 +16,5 @@ endLocal
 exit /b
 
 :REARRANGE_DATE
-set RETURN=%4%2%3
+set RETURN=%4.%2.%3
 exit /b
