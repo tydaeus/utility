@@ -17,8 +17,14 @@ setLocal enableDelayedExpansion
 :: To simplify subsequent log reading, you may wish to prefix all messages with
 :: an indication of their priority (e.g. "WARN:").
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
 set ERRLEVEL=0
+
+if [%1]==[] (
+    set ERRLEVEL=1
+    echo ERR: invalid invocation of log 1>&2
+    echo Usage: log MESSAGE...
+    goto :END
+)
 
 call list_args %*
 set "MESSAGE=%LIST%"
@@ -29,5 +35,6 @@ echo %MESSAGE%
 echo [%SDATE%-%STIME%]%MESSAGE% >> "%LOGPATH%"
 set ERRLEVEL=%ERRORLEVEL%
 
+:END
 endLocal & set ERRLEVEL=%ERRLEVEL%
 exit /b %ERRLEVEL%
