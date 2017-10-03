@@ -17,7 +17,9 @@ setLocal enableDelayedExpansion
 :: To simplify subsequent log reading, you may wish to prefix all messages with
 :: an indication of their priority (e.g. "WARN:").
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-set ERRLEVEL=0
+
+:: use a separate var for logger errors, so conventional ERRLEV is untouched
+set LOG_ERR=0
 
 call eval short_date SDATE
 call eval short_time STIME
@@ -27,11 +29,11 @@ if [%1]==[] (
 ) else (
     call :ARG_INPUT %*
 )
-set ERRLEVEL=%ERRORLEVEL%
+set LOG_ERR=%ERRORLEVEL%
 
 :END
-endLocal & set ERRLEVEL=%ERRLEVEL%
-exit /b %ERRLEVEL%
+endLocal & set LOG_ERR=%LOG_ERR%
+exit /b %LOG_ERR%
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :PIPED_INPUT
@@ -50,5 +52,5 @@ set "MESSAGE=%*"
 
 echo %MESSAGE%
 echo [%SDATE%-%STIME%]%MESSAGE%>> "%LOGPATH%"
-set ERRLEVEL=%ERRORLEVEL%
-exit /b %ERRLEVEL%
+set LOG_ERR=%ERRORLEVEL%
+exit /b %LOG_ERR%
