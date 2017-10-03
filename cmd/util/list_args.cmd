@@ -12,12 +12,15 @@ setLocal enableDelayedExpansion
 :: Useful for capturing all arguments for a command minus %0, via:
 ::      list_args %*
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+set ERRLEVEL=
+set LIST=
 
 :: verify invocation
 if [%1]==[] (
-    echo ERR: list_args invalid invocation 1>&2
+    echo ERR: invalid invocation of list_args1>&2
     echo Usage: list_args ARG1...
-    exit /b 1
+    set ERRLEVEL=1
+    goto :END
 )
 
 :: set first LIST elem without a space in front of it
@@ -33,5 +36,5 @@ goto :LOOP
 ::/LOOP----------------------------------------------------
 
 :END
-endLocal & set "LIST=%LIST%"
-exit /b
+endLocal & set "LIST=%LIST%" & set ERRLEVEL=%ERRLEVEL%
+exit /b %ERRLEVEL%
