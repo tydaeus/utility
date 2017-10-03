@@ -33,6 +33,7 @@ set LOG_ERR=%ERRORLEVEL%
 
 :END
 endLocal & set LOG_ERR=%LOG_ERR%
+if not "%LOG_ERR%"=="0" echo ERROR: logging error encountered 1>&2
 exit /b %LOG_ERR%
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
