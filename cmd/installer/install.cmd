@@ -20,15 +20,22 @@ set SCRIPT_DIR=%~dp0
 ::  4. at CMD_UTIL_HOME
 ::-----------------------------------------------------------------------------
 if not "%CMD_UTIL_HOME%"=="" set PATH=%CMD_UTIL_HOME%;%PATH%
-set PATH=%SCRIPT_DIR%;%SCRIPT_DIR%util\;%SCRIPT_DIR%..\util\;%PATH% 
+set PATH=%SCRIPT_DIR%;%SCRIPT_DIR%util\;%SCRIPT_DIR%..\util\;%PATH%
 
+call :RUN_FILE || goto :ERR
 
-goto :END
+goto :SUCCESS
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :ERR
 if "%ERRMSG%"=="" set ERRMSG=unknown error occurred
 if "%ERRLEV%"=="0" set ERRLEV=1
+echo %ERRMSG% 1>&2
+goto :END
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:SUCCESS
+echo Install complete.
 goto :END
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -36,4 +43,12 @@ goto :END
 endLocal & set ERRLEV=%ERRLEV% & set ERRMSG=%ERRMSG%
 
 if not "%ERRMSG%"=="" echo %ERRMSG% 1>&2
+exit /b %ERRLEV%
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: RUN_FILE
+:: Read and execute provided install.cfg
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:RUN_FILE
+call interpret_file "%SCRIPT_DIR%install.cfg" | log
 exit /b %ERRLEV%
