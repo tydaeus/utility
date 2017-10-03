@@ -13,11 +13,11 @@ setLocal enableDelayedExpansion
 :: Outputs error messages to stderr
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 set ERRLEV=0
+set ERRMSG=
 set TARGET=%~1
 
+:: consider command successful if target does not exist
 if not exist "%TARGET%" (
-    set ERRLEV=1
-    set ERRMSG=Failed to delete "%TARGET%": does not exist
     goto :END
 )
 
@@ -36,6 +36,6 @@ if "%ERRMSG%"=="" set ERRMSG=ERROR: Failed to delete %TARGET%
 
 :END
 if not "%ERRMSG%"=="" echo %ERRMSG% 1>&2
-endLocal & set ERRLEV=%ERRLEV%
+endLocal & set ERRLEV=%ERRLEV% & set ERRMSG=%ERRMSG%
 
 exit /b %ERRLEV%
