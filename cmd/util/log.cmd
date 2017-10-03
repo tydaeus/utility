@@ -19,22 +19,36 @@ setLocal enableDelayedExpansion
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 set ERRLEVEL=0
 
-if [%1]==[] (
-    set ERRLEVEL=1
-    echo ERR: invalid invocation of log 1>&2
-    echo Usage: log MESSAGE...
-    goto :END
-)
-
-call list_args %*
-set "MESSAGE=%LIST%"
-
 call eval short_date SDATE
 call eval short_time STIME
-echo %MESSAGE%
-echo [%SDATE%-%STIME%]%MESSAGE% >> "%LOGPATH%"
+
+if [%1]==[] (
+    call :PIPED_INPUT
+) else (
+    call :ARG_INPUT %*
+)
 set ERRLEVEL=%ERRORLEVEL%
 
 :END
 endLocal & set ERRLEVEL=%ERRLEVEL%
+exit /b %ERRLEVEL%
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:PIPED_INPUT
+for /F "tokens=*" %%A in ('findstr /n $') do (
+    set "line=%%A"
+    setlocal enableDelayedExpansion
+    set "line=!line:*:=!"
+    call :ARG_INPUT !line!
+    endLocal
+)
+exit /b %ERRORLEVEL%
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:ARG_INPUT
+set "MESSAGE=%*"
+
+echo %MESSAGE%
+echo [%SDATE%-%STIME%]%MESSAGE%>> "%LOGPATH%"
+set ERRLEVEL=%ERRORLEVEL%
 exit /b %ERRLEVEL%
