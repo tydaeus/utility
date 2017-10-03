@@ -14,7 +14,6 @@ setLocal enableDelayedExpansion
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 set ERRLEV=0
 set TARGET=%~1
-set DEST=%~2
 
 if not exist "%TARGET%" (
     set ERRLEV=1
@@ -33,7 +32,7 @@ if exist "%TARGET%"\* (
 if "%ERRLEV%"=="0" goto :END
 
 :ERR
-set ERRMSG=Failed to copy "%SRC%" to "%DEST%"
+if "%ERRMSG%"=="" set ERRMSG=ERROR: Failed to delete %TARGET%
 
 :END
 if not "%ERRMSG%"=="" echo %ERRMSG% 1>&2
