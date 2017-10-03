@@ -35,7 +35,7 @@ exit /b %ERRLEVEL%
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :PIPED_INPUT
-for /F "tokens=*" %%A in ('findstr /n $') do (
+for /F "tokens=*" %%A in ('findstr /n "^"') do (
     set "line=%%A"
     setlocal enableDelayedExpansion
     set "line=!line:*:=!"
