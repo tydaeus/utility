@@ -15,12 +15,14 @@ setLocal enableDelayedExpansion
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 set RET=
 set LIST=
+set ERRLEVEL=0
 
 :: verify invocation
 if [%1]==[] (
     echo ERR: xshift invalid invocation 1>&2
     echo Usage: xshift ARG1...
-    exit /b 1
+    set ERRLEVEL=1
+    goto :END
 )
 
 set "RET=%1"
@@ -40,5 +42,5 @@ goto :LOOP
 ::/LOOP----------------------------------------------------
 
 :END
-endLocal & set "LIST=%LIST%" & set "RET=%RET%"
-exit /b
+endLocal & set "LIST=%LIST%" & set "RET=%RET%" & set ERRLEVEL=%ERRLEVEL%
+exit /b %ERRLEVEL%
