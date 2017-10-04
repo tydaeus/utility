@@ -52,13 +52,22 @@ exit /b %ERRLEV%
 :: File interpretation loop
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :INTERPRET_FILE
+setLocal enableDelayedExpansion
+set LINE=
 
 for /F "tokens=*" %%A in ('type "%FILENAME%"') do (
+    set "LINE=%%A"
     call interpret_cmd %%A || goto :INTERPRET_FILE_ERR
 )
 goto :INTERPRET_FILE_END
 
 :INTERPRET_FILE_ERR
 set ERRLEV=%ERRORLEVEL%
+if "%ERRMSG%"=="" (
+    set ERRMSG=ERR: failed to interpret %LINE%
+    echo %ERRMSG% 1>&2
+)
+
 :INTERPRET_FILE_END
+endLocal & set ERRLEV=%ERRLEV% & set "ERRMSG=%ERRMSG%"
 exit /b %ERRLEV%
