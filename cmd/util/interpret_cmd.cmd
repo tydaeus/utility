@@ -22,9 +22,16 @@ set COMMAND=%*
 call :CMD_%COMMAND_NAME% %COMMAND% 2>nul
 
 :: check if the command was successfully found, error if not
-if "%FOUND%"=="1" goto :END
+if "%FOUND%"=="1" goto :COMMAND_FOUND
 set ERRMSG=command not recognized: "%COMMAND_NAME%"
 goto :ERR
+
+:COMMAND_FOUND
+if not "%ERRLEV%"=="0" (
+    set ERRMSG=ERR: failed to %COMMAND%
+    goto :ERR
+)
+goto :END
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Ensure errors have some default handling, allowing for a simple jump for
@@ -37,7 +44,8 @@ goto :END
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :END
-endLocal & set ERRLEV=%ERRLEV% & set ERRMSG=%ERRMSG%
+if not "%ERRMSG%"=="" echo %ERRMSG% 1>&2
+endLocal & set ERRLEV=%ERRLEV%
 exit /b %ERRLEV%
 
 ::-----------------------------------------------------------------------------
