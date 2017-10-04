@@ -21,8 +21,6 @@ setLocal enableDelayedExpansion
 :: use a separate var for logger errors, so conventional ERRLEV is untouched
 set LOG_ERR=0
 
-call eval short_time STIME
-
 if [%1]==[] (
     call :PIPED_INPUT
 ) else (
@@ -52,6 +50,7 @@ exit /b %ERRORLEVEL%
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :ARG_INPUT
 set "MESSAGE=%*"
+call eval short_time STIME
 
 echo:%MESSAGE%
 echo [%STIME%]%MESSAGE%>> "%LOGPATH%"
