@@ -19,7 +19,7 @@ set COMMAND_NAME=%~1
 set COMMAND=%*
 
 :: attempt to run the named command
-call :%COMMAND_NAME% %COMMAND% 2>nul
+call :CMD_%COMMAND_NAME% %COMMAND% 2>nul
 
 :: check if the command was successfully found, error if not
 if "%FOUND%"=="1" goto :END
@@ -48,13 +48,13 @@ exit /b %ERRLEV%
 :: functionality.
 ::-----------------------------------------------------------------------------
 
-:COPY
+:CMD_COPY
 call cmd_copy "%~2" "%~3"
 set ERRLEV=%ERRORLEVEL%
 set FOUND=1
 exit /b %ERRLEV%
 
-:ECHO
+:CMD_ECHO
 call cmd_echo "%~2"
 set FOUND=1
 exit /b
