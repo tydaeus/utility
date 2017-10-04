@@ -6,7 +6,7 @@ setLocal enableDelayedExpansion
 :: Provides simple installer utility, by using util scripts.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-set ERRLVL=0
+set ERRLEV=0
 set ERRMSG=
 set SCRIPT_DIR=%~dp0
 
@@ -50,5 +50,5 @@ exit /b %ERRLEV%
 :: Read and execute provided install.cfg
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :RUN_FILE
-call interpret_file "%SCRIPT_DIR%install.cfg" | log
+call interpret_file "%SCRIPT_DIR%install.cfg" 2>&1 | call log
 exit /b %ERRLEV%
