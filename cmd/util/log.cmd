@@ -53,7 +53,7 @@ exit /b %ERRORLEVEL%
 :ARG_INPUT
 set "MESSAGE=%*"
 
-echo %MESSAGE%
+echo:%MESSAGE%
 echo [%STIME%]%MESSAGE%>> "%LOGPATH%"
 set LOG_ERR=%ERRORLEVEL%
 
