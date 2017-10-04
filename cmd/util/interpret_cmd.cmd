@@ -45,7 +45,7 @@ goto :END
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :END
 if not "%ERRMSG%"=="" echo %ERRMSG% 1>&2
-endLocal & set ERRLEV=%ERRLEV%
+endLocal & set ERRLEV=%ERRLEV% & set "ERRMSG=%ERRMSG%"
 exit /b %ERRLEV%
 
 ::-----------------------------------------------------------------------------
