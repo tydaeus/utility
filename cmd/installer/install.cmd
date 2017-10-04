@@ -50,5 +50,15 @@ exit /b %ERRLEV%
 :: Read and execute provided install.cfg
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :RUN_FILE
-call interpret_file "%SCRIPT_DIR%install.cfg" 2>&1 | call log
+:: use a sentinel file to detect success/failure, due to pipe limitations
+set "SENTINEL=%SCRIPT_DIR%.failed.%COMPUTERNAME%.tmp"
+echo > "%SENTINEL%"
+
+2>&1 (call interpret_file "%SCRIPT_DIR%install.cfg" && del "%SENTINEL%") | call log
+
+if exist "%SENTINEL%" (
+    set ERRLEV=1
+    del "%SENTINEL%"
+)
+
 exit /b %ERRLEV%
