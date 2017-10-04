@@ -21,7 +21,6 @@ setLocal enableDelayedExpansion
 :: use a separate var for logger errors, so conventional ERRLEV is untouched
 set LOG_ERR=0
 
-call eval short_date SDATE
 call eval short_time STIME
 
 if [%1]==[] (
@@ -38,13 +37,16 @@ exit /b %LOG_ERR%
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :PIPED_INPUT
+
 for /F "tokens=*" %%A in ('findstr /n "^"') do (
+    rem echo in-loop ERRLEV %ERRLEV%
     set "line=%%A"
     setlocal enableDelayedExpansion
     set "line=!line:*:=!"
     call :ARG_INPUT !line!
     endLocal
 )
+
 exit /b %ERRORLEVEL%
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -52,6 +54,7 @@ exit /b %ERRORLEVEL%
 set "MESSAGE=%*"
 
 echo %MESSAGE%
-echo [%SDATE%-%STIME%]%MESSAGE%>> "%LOGPATH%"
+echo [%STIME%]%MESSAGE%>> "%LOGPATH%"
 set LOG_ERR=%ERRORLEVEL%
+
 exit /b %LOG_ERR%
