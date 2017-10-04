@@ -21,6 +21,7 @@ set SCRIPT_DIR=%~dp0
 ::-----------------------------------------------------------------------------
 if not "%CMD_UTIL_HOME%"=="" set PATH=%CMD_UTIL_HOME%;%PATH%
 set PATH=%SCRIPT_DIR%;%SCRIPT_DIR%util\;%SCRIPT_DIR%..\util\;%PATH%
+call init_log "C:\temp\rss_scripts\installer.log" "Installer Log"
 
 call :RUN_FILE || goto :ERR
 
@@ -40,6 +41,7 @@ goto :END
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :END
+call end_log
 endLocal & set ERRLEV=%ERRLEV% & set ERRMSG=%ERRMSG%
 
 if not "%ERRMSG%"=="" echo %ERRMSG% 1>&2
