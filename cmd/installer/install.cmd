@@ -6,6 +6,12 @@ setLocal enableDelayedExpansion
 :: Provides simple installer utility, by using util scripts.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+::-- Config Vars
+set LOG_NAME="Installer Log"
+set LOG_LOC=C:\temp\installer.log
+set SCRIPT_FILE="install.cfg"
+
+::-- Functional Vars
 set ERRLEV=0
 set ERRMSG=
 set SCRIPT_DIR=%~dp0
@@ -21,7 +27,7 @@ set SCRIPT_DIR=%~dp0
 ::-----------------------------------------------------------------------------
 if not "%CMD_UTIL_HOME%"=="" set PATH=%CMD_UTIL_HOME%;%PATH%
 set PATH=%SCRIPT_DIR%;%SCRIPT_DIR%util\;%SCRIPT_DIR%..\util\;%PATH%
-call init_log "C:\temp\rss_scripts\installer.log" "Installer Log"
+call init_log "%LOG_LOC%" "%LOG_NAME%"
 
 call :RUN_FILE || goto :ERR
 
@@ -56,7 +62,7 @@ exit /b %ERRLEV%
 set "SENTINEL=%SCRIPT_DIR%.failed.%COMPUTERNAME%.tmp"
 echo > "%SENTINEL%"
 
-2>&1 (call interpret_file "%SCRIPT_DIR%install.cfg" && del "%SENTINEL%") | call log
+2>&1 (call interpret_file "%SCRIPT_DIR%%SCRIPT_FILE%" && del "%SENTINEL%") | call log
 
 if exist "%SENTINEL%" (
     set ERRLEV=1

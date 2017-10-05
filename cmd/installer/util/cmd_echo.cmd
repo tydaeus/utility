@@ -1,2 +1,2 @@
-echo %~1
+echo %*
 exit /b %ERRORLEVEL%
