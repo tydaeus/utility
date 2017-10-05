@@ -16,7 +16,9 @@ set ERRMSG=
 set FOUND=0
 
 set COMMAND_NAME=%~1
-set COMMAND=%*
+
+call xshift %*
+set "COMMAND=%LIST%"
 
 :: attempt to run the named command
 call :CMD_%COMMAND_NAME% %COMMAND%
@@ -57,12 +59,12 @@ exit /b %ERRLEV%
 ::-----------------------------------------------------------------------------
 
 :CMD_COPY
-call cmd_copy "%~2" "%~3"
+call cmd_copy %*
 set ERRLEV=%ERRORLEVEL%
 set FOUND=1
 exit /b %ERRLEV%
 
 :CMD_ECHO
-call cmd_echo "%~2"
+call cmd_echo %*
 set FOUND=1
 exit /b
