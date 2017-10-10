@@ -6,40 +6,40 @@ setLocal enableDelayedExpansion
 :: Initializes logging for use with the log.cmd script.
 ::
 :: Usage:
-::      init_log [LOGPATH] [LOGNAME]
+::      init_log [LOG_PATH] [LOG_NAME]
 ::
-:: If LOGPATH is not specified, logs will be placed in C:\temp\log.log
-:: Fully qualified path should get passed as LOGPATH, otherwise results may be
+:: If LOG_PATH is not specified, logs will be placed in C:\temp\log.log
+:: Fully qualified path should get passed as LOG_PATH, otherwise results may be
 :: inconsistent when operating over network or on different drives.
 ::
-:: LOGNAME is used to indicate start of logging
+:: LOG_NAME is used to indicate start of logging
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 set ERRLEV=0
-set LOGPATH=%~1
+set LOG_PATH=%~1
 :: default to filename, if present
-set LOGNAME=%~nx1
+set LOG_NAME=%~nx1
 
-if ["%LOGPATH%"]==[""] (
-    set LOGPATH=C:\temp\log.log
-    set LOGNAME=Log
+if ["%LOG_PATH%"]==[""] (
+    set LOG_PATH=C:\temp\log.log
+    set LOG_NAME=Log
 )
 
-if not ["%~2"]==[""] set "LOGNAME=%~2"
+if not ["%~2"]==[""] set "LOG_NAME=%~2"
 
-call :MAKE_DIRS "%LOGPATH%"
+call :MAKE_DIRS "%LOG_PATH%"
 set ERRLEV=%ERRORLEVEL%
 
 call eval short_date SDATE
 call eval short_time STIME
 
-echo Log started as %LOGNAME% at %LOGPATH%
+echo Log started as %LOG_NAME% at %LOG_PATH%
 
-echo -------------------------------------------------------------------------------- >> "%LOGPATH%"
-echo -- %LOGNAME% started %SDATE%-%STIME% >> "%LOGPATH%"
-echo -------------------------------------------------------------------------------- >> "%LOGPATH%"
+echo -------------------------------------------------------------------------------- >> "%LOG_PATH%"
+echo -- %LOG_NAME% started %SDATE%-%STIME% >> "%LOG_PATH%"
+echo -------------------------------------------------------------------------------- >> "%LOG_PATH%"
 
-endLocal & set LOGPATH=%LOGPATH% & set "LOGNAME=%LOGNAME%" & set ERRLEV=%ERRLEV%
+endLocal & set LOG_PATH=%LOG_PATH% & set "LOG_NAME=%LOG_NAME%" & set ERRLEV=%ERRLEV%
 exit /b %ERRLEV%
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

@@ -4,7 +4,7 @@ setLocal enableDelayedExpansion
 :: log
 ::
 :: Logs the specified message with a timestamp to the location specified by the
-:: LOGPATH var. Use init_log to conveniently initialize LOGPATH.
+:: LOG_PATH var. Use init_log to conveniently initialize LOG_PATH.
 ::
 :: Usage:
 ::      log MESSAGE...
@@ -53,7 +53,7 @@ set "MESSAGE=%*"
 call eval short_time STIME
 
 echo:%MESSAGE%
-echo [%STIME%]%MESSAGE%>> "%LOGPATH%"
+echo [%STIME%]%MESSAGE%>> "%LOG_PATH%"
 set LOG_ERR=%ERRORLEVEL%
 
 exit /b %LOG_ERR%

@@ -11,9 +11,9 @@ call eval short_time STIME
 
 echo Ending log %LOGNAME%
 
-echo -------------------------------------------------------------------------------- >> "%LOGPATH%"
-echo -- %LOGNAME% ended %SDATE%-%STIME% >> "%LOGPATH%"
-echo -------------------------------------------------------------------------------- >> "%LOGPATH%"
-echo: >> "%LOGPATH%"
+echo -------------------------------------------------------------------------------- >> "%LOG_PATH%"
+echo -- %LOGNAME% ended %SDATE%-%STIME% >> "%LOG_PATH%"
+echo -------------------------------------------------------------------------------- >> "%LOG_PATH%"
+echo: >> "%LOG_PATH%"
 
 endLocal
