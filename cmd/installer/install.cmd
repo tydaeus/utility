@@ -21,7 +21,15 @@ set DEST_PATH=
 :: base path for where files will be retrieved from; e.g. src path for copy
 set RSRC_PATH=
 
+::-----------------------------------------------------------------------------
 :: Ensure that path points to any necessary utility scripts
+::
+:: precedence:
+::  1. in script's dir
+::  2. in script's \util subdir
+::  3. in script's parent dir's \util subdir
+::  4. at CMD_UTIL_HOME
+::-----------------------------------------------------------------------------
 if not "%CMD_UTIL_HOME%"=="" set PATH=%CMD_UTIL_HOME%;%PATH%
 set PATH=%SCRIPT_DIR%;%SCRIPT_DIR%util\;%SCRIPT_DIR%..\util\;%PATH%
 ::-----------------------------------------------------------------------------
@@ -32,15 +40,6 @@ set ERRLEV=0
 set ERRMSG=
 set SCRIPT_DIR=%~dp0
 
-::-----------------------------------------------------------------------------
-:: setup the path to util scripts
-::
-:: precedence:
-::  1. in script's dir
-::  2. in script's \util subdir
-::  3. in script's parent dir's \util subdir
-::  4. at CMD_UTIL_HOME
-::-----------------------------------------------------------------------------
 call init_log "%LOG_LOC%" "%LOG_NAME%"
 
 call :RUN_FILE || goto :ERR
