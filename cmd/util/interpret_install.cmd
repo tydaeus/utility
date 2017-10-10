@@ -12,7 +12,7 @@ setLocal enableDelayedExpansion
 
 set "SCRIPT_PATH=%~1"
 
-call init_log "%LOG_PATH%" "%LOG_NAME%"
+call init_log "%LOG_PATH%" "%LOG_NAME%" || goto :ERR
 
 call :RUN_FILE || goto :ERR
 

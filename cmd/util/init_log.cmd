@@ -25,6 +25,11 @@ if ["%LOG_PATH%"]==[""] (
     set LOG_NAME=Log
 )
 
+if exist "%LOG_PATH%\*" (
+    echo:ERR: unable to use %LOG_PATH% for logging; exists as dir 1>&2
+    exit /b 1
+)
+
 if not ["%~2"]==[""] set "LOG_NAME=%~2"
 
 call :MAKE_DIRS "%LOG_PATH%"
