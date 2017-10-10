@@ -50,5 +50,6 @@ if not "%ERRLEV%"=="0" (
     echo Install complete.
 )
 
+pause
 endLocal and set ERRLEV=%ERRLEV%
 exit /b %ERRLEV%
