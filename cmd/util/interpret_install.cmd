@@ -10,7 +10,9 @@ setLocal enableDelayedExpansion
 ::  3. End Logging
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-call init_log "%LOG_LOC%" "%LOG_NAME%"
+set "SCRIPT_PATH=%~1"
+
+call init_log "%LOG_PATH%" "%LOG_NAME%"
 
 call :RUN_FILE || goto :ERR
 
@@ -41,7 +43,7 @@ exit /b %ERRLEV%
 set "SENTINEL=%INSTALLER_DIR%.failed.%COMPUTERNAME%.tmp"
 echo > "%SENTINEL%"
 
-2>&1 (call interpret_file "%INSTALLER_DIR%%SCRIPT_FILE%" && del "%SENTINEL%") | call log
+2>&1 (call interpret_file "%SCRIPT_PATH%" && del "%SENTINEL%") | call log
 
 if exist "%SENTINEL%" (
     set ERRLEV=1

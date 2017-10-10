@@ -19,7 +19,7 @@ set ERRLEV=0
 :: Identifier for subsection of log file
 set LOG_NAME="Installer Log"
 :: where to save the log
-set LOG_LOC=C:\temp\installer.log
+set LOG_PATH=C:\temp\installer.log
 :: name/location of script file to be interpreted
 set SCRIPT_FILE="install.cfg"
 :: base path for where files will manipulated; e.g. target path for copy
@@ -41,7 +41,7 @@ if not "%CMD_UTIL_HOME%"=="" set PATH=%CMD_UTIL_HOME%;%PATH%
 set PATH=%SCRIPT_DIR%;%SCRIPT_DIR%util\;%SCRIPT_DIR%..\util\;%PATH%
 ::-----------------------------------------------------------------------------
 
-call interpret_install
+call interpret_install "%INSTALLER_DIR%%SCRIPT_FILE%"
 set ERRLEV=%ERRORLEVEL%
 
 if not "%ERRLEV%"=="0" (
