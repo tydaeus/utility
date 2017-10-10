@@ -6,10 +6,26 @@ setLocal enableDelayedExpansion
 :: Provides simple installer utility, by using util scripts.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-::-- Config Vars
+::-----------------------------------------------------------------------------
+:: Config Vars - Use these to configure how the install should run
+::-----------------------------------------------------------------------------
+
+:: Identifier for subsection of log file
 set LOG_NAME="Installer Log"
+:: where to save the log
 set LOG_LOC=C:\temp\installer.log
+:: name/location of script file to be interpreted
 set SCRIPT_FILE="install.cfg"
+:: base path for where files will manipulated; e.g. target path for copy
+set DEST_PATH=
+:: base path for where files will be retrieved from; e.g. src path for copy
+set RSRC_PATH=
+
+:: Ensure that path points to any necessary utility scripts
+if not "%CMD_UTIL_HOME%"=="" set PATH=%CMD_UTIL_HOME%;%PATH%
+set PATH=%SCRIPT_DIR%;%SCRIPT_DIR%util\;%SCRIPT_DIR%..\util\;%PATH%
+::-----------------------------------------------------------------------------
+
 
 ::-- Functional Vars
 set ERRLEV=0
@@ -25,8 +41,6 @@ set SCRIPT_DIR=%~dp0
 ::  3. in script's parent dir's \util subdir
 ::  4. at CMD_UTIL_HOME
 ::-----------------------------------------------------------------------------
-if not "%CMD_UTIL_HOME%"=="" set PATH=%CMD_UTIL_HOME%;%PATH%
-set PATH=%SCRIPT_DIR%;%SCRIPT_DIR%util\;%SCRIPT_DIR%..\util\;%PATH%
 call init_log "%LOG_LOC%" "%LOG_NAME%"
 
 call :RUN_FILE || goto :ERR
