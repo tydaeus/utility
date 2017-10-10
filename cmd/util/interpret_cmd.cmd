@@ -15,6 +15,9 @@ set ERRLEV=0
 set ERRMSG=
 set FOUND=0
 
+if not defined DEST_PATH set DEST_PATH=
+if not defined RSRC_PATH set RSRC_PATH=
+
 set COMMAND_NAME=%~1
 
 call xshift %*
@@ -59,7 +62,15 @@ exit /b %ERRLEV%
 ::-----------------------------------------------------------------------------
 
 :CMD_COPY
-call cmd_copy %*
+echo copying %~1 to %~2
+call cmd_copy "%RSRC_PATH%%~1" "%DEST_PATH%%~2"
+set ERRLEV=%ERRORLEVEL%
+set FOUND=1
+exit /b %ERRLEV%
+
+:CMD_CALL
+echo calling script %~1
+call "%~1"
 set ERRLEV=%ERRORLEVEL%
 set FOUND=1
 exit /b %ERRLEV%
@@ -68,3 +79,23 @@ exit /b %ERRLEV%
 call cmd_echo %*
 set FOUND=1
 exit /b
+
+:CMD_backup
+echo backing up %~1
+call backup "%DEST_PATH%%~1"
+set ERRLEV=%ERRORLEVEL%
+set FOUND=1
+exit /b %ERRLEV%
+
+:CMD_touchAll
+call touch_all "%DEST_PATH%%~1"
+set ERRLEV=%ERRORLEVEL%
+set FOUND=1
+exit /b %ERRLEV%
+
+:CMD_DELETE
+echo deleting %~1
+call smart_delete "%DEST_PATH%%~1"
+set ERRLEV=%ERRORLEVEL%
+set FOUND=1
+exit /b %ERRLEV%
