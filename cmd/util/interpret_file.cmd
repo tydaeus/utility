@@ -10,23 +10,21 @@ setLocal enableDelayedExpansion
 :: of common sequences of steps from a config file instead of needing to write
 :: custom cmd scripts.
 ::
-:: On success, exits with ERRLEV and ERRORLEVEL set to 0, with ERRMSG blank.
+:: On success, exits with ERRLEV and ERRORLEVEL set to 0.
 :: On failure, exits after the first failed command with ERRLEV set to that 
-:: command's exit code, and ERRMSG set to a description of the error that 
-:: occurred (if available).
+:: command's exit code.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 set ERRLEV=0
-set ERRMSG=
 
 set FILENAME=%~1
 
 if not exist "%FILENAME%" (
-    set ERRMSG=file not found: "%FILENAME%"
+    echo:ERR: interpret_file: file not found: "%FILENAME%" 1>&2
     goto :ERR
 )
 
 if exist "%FILENAME%"\* (
-    set ERRMSG=file is dir: "%FILENAME%"
+    echo:ERR: interpret_file: unable to interpret dir "%FILENAME%" 1>&2
     goto :ERR
 )
 
@@ -38,13 +36,12 @@ goto :END
 :: error handling for default processing
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :ERR
-if "%ERRMSG%"=="" set ERRMSG=unknown error occurred
 if "%ERRLEV%"=="0" set ERRLEV=1
 goto :END
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :END
-endLocal & set ERRLEV=%ERRLEV% & set ERRMSG=%ERRMSG%
+endLocal & set ERRLEV=%ERRLEV%
 exit /b %ERRLEV%
 
 
@@ -63,11 +60,8 @@ goto :INTERPRET_FILE_END
 
 :INTERPRET_FILE_ERR
 set ERRLEV=%ERRORLEVEL%
-if "%ERRMSG%"=="" (
-    set ERRMSG=ERR: failed to interpret %LINE%
-    echo %ERRMSG% 1>&2
-)
+echo:ERR: intpret_file: failed to interpret %LINE% 1>&2
 
 :INTERPRET_FILE_END
-endLocal & set ERRLEV=%ERRLEV% & set "ERRMSG=%ERRMSG%"
+endLocal & set ERRLEV=%ERRLEV%
 exit /b %ERRLEV%

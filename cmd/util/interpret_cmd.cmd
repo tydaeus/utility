@@ -12,7 +12,6 @@ setLocal enableDelayedExpansion
 :: was found, otherwise they will be interpreted as not found.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 set ERRLEV=0
-set ERRMSG=
 set FOUND=0
 
 if not defined DEST_PATH set DEST_PATH=
@@ -28,12 +27,12 @@ call :CMD_%COMMAND_NAME% %COMMAND%
 
 :: check if the command was successfully found, error if not
 if "%FOUND%"=="1" goto :COMMAND_FOUND
-set ERRMSG=command not recognized: "%COMMAND_NAME%"
+echo:ERR: interpret_cmd: command not recognized: "%COMMAND_NAME%" 1>&2
 goto :ERR
 
 :COMMAND_FOUND
 if not "%ERRLEV%"=="0" (
-    set ERRMSG=ERR: failed to %COMMAND%
+    echo:ERR: interpret_cmd: failed to %COMMAND_NAME% %COMMAND% 1>&2
     goto :ERR
 )
 goto :END
@@ -43,14 +42,12 @@ goto :END
 :: error handling for default processing
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :ERR
-if "%ERRMSG%"=="" set ERRMSG=unknown error occurred
 if "%ERRLEV%"=="0" set ERRLEV=1
 goto :END
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :END
-if not "%ERRMSG%"=="" echo %ERRMSG% 1>&2
-endLocal & set ERRLEV=%ERRLEV% & set "ERRMSG=%ERRMSG%"
+endLocal & set ERRLEV=%ERRLEV%
 exit /b %ERRLEV%
 
 ::-----------------------------------------------------------------------------

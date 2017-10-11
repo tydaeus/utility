@@ -10,16 +10,14 @@ setLocal enableDelayedExpansion
 ::  file and using the appropriate command.
 ::
 ::  Sets ERRLEV to reflect error code
-::  Sets ERRMSG as user-readable error string
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 set ERRLEV=0
-set ERRMSG=
 set SRC=%~1
 set DEST=%~2
 
 if not exist "%SRC%" (
     set ERRLEV=1
-    set ERRMSG=Failed to copy "%SRC%": does not exist
+    echo:ERR: smart_copy: failed to copy "%SRC%": does not exist 1>&2
     goto :END
 )
 
@@ -35,8 +33,8 @@ if exist "%SRC%"\* (
 if "%ERRLEV%"=="0" goto :END
 
 :ERR
-set ERRMSG=Failed to copy "%SRC%" to "%DEST%"
+echo:ERR: smart_copy: Failed to copy "%SRC%" to "%DEST%" 1>&2
 
 :END
-endLocal & set ERRLEV=%ERRLEV% & set ERRMSG=%ERRMSG%
+endLocal & set ERRLEV=%ERRLEV%
 exit /b %ERRLEV%
