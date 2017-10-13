@@ -3,7 +3,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Text;
 using System.Security.Cryptography;
-// Must add reference to System.IO.Compression.FileSystem assembly
+// Must have reference to System.IO.Compression.FileSystem assembly for Zip/Unzip functionality
 using System.IO.Compression;
 
 namespace cSharpUtilities
