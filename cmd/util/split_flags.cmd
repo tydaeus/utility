@@ -34,7 +34,7 @@ set ERRLEV=0
 set "CUR_ARG=%1"
 if [%CUR_ARG%]==[] goto :END
 
-echo %CUR_ARG% | findstr /R "^-" > nul
+echo:%CUR_ARG%| findstr /R "^-" > nul
 if "%ERRORLEVEL%"=="0" (
     call :ADD_FLAG %CUR_ARG%
 ) else (
@@ -77,7 +77,7 @@ if [%LONG_FLAGS%]==[] (
 )
 
 :: is this a long flag?
-echo %FLAG% | findstr /R "^--" > nul
+echo:%FLAG%| findstr /R "^--" > nul
 
 if "%ERRORLEVEL%"=="0" (
     set "LONG_FLAGS=%LONG_FLAGS%%PREFIX%%FLAG:~2%"
