@@ -60,7 +60,7 @@ exit /b %ERRLEV%
 
 :CMD_COPY
 echo copying %~1 to %~2
-call cmd_copy "%RSRC_PATH%%~1" "%DEST_PATH%%~2"
+call smart_copy "%RSRC_PATH%%~1" "%DEST_PATH%%~2"
 set ERRLEV=%ERRORLEVEL%
 set FOUND=1
 exit /b %ERRLEV%
@@ -73,7 +73,7 @@ set FOUND=1
 exit /b %ERRLEV%
 
 :CMD_ECHO
-call cmd_echo %*
+echo:%*
 set FOUND=1
 exit /b
 
