@@ -52,7 +52,7 @@ exit /b %ERRLEV%
 setLocal enableDelayedExpansion
 set LINE=
 
-for /F "tokens=*" %%A in ('type "%FILENAME%"') do (
+for /F "eol=# tokens=*" %%A in ('type "%FILENAME%"') do (
     set "LINE=%%A"
     call interpret_cmd %%A || goto :INTERPRET_FILE_ERR
 )
