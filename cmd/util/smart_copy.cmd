@@ -12,15 +12,14 @@ setLocal enableDelayedExpansion
 ::  Sets ERRLEV to reflect error code
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 set ERRLEV=0
-set SRC=%~1
-set DEST=%~2
+set "SRC=%~1"
+set "DEST=%~2"
 
 if not exist "%SRC%" (
     set ERRLEV=1
     echo:ERR: smart_copy: failed to copy "%SRC%": does not exist 1>&2
     goto :END
 )
-
 
 if exist "%SRC%"\* (
     echo D | xcopy /E /Y /Q "%SRC%" "%DEST%" > nul
