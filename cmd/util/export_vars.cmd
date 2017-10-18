@@ -9,6 +9,13 @@ setLocal enableDelayedExpansion
 :: Process a list of variable names to store their names and values in a string
 :: formatted for use in variable tunneling.
 ::
+:: Returns the export string as EXPORT; this string will double quotes as "" to
+:: preserve them during transfer, so it will be necessary to de-duplicate 
+:: quotes before using the string in tunneling.
+::
+:: e.g:
+::      endLocal & set ERRLEV=%ERRLEV% & %EXPORT:""="%
+::
 :: DevNote: I've used ::" to balance quotes that my syntax highlighter doesn't
 :: recognize as balanced.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -20,10 +27,8 @@ set EXPORT=
 
 ::-----------------------------------------------------------------------------
 :LOOP
-echo Visiting %~1=!%~1!
 
 set VAR_VALUE=!%~1!
-echo initial var_value: %VAR_VALUE%
 
 ::"
 :: escape values
@@ -35,7 +40,6 @@ set "VAR_VALUE=%VAR_VALUE:^=^^%"
 ::set "VAR_VALUE=%VAR_VALUE:&=^&%"
 ::set "VAR_VALUE=%VAR_VALUE:|=^|%"
 ::"
-echo post-escape var_value: %VAR_VALUE%
 
 call :PROCESS_VAR "%~1" "%VAR_VALUE:"=""%"
 ::"
@@ -46,9 +50,7 @@ goto :LOOP
 ::-----------------------------------------------------------------------------
 
 :END
-echo EXPORT pre-return: !EXPORT!
 endLocal & set "EXPORT=%EXPORT%"
-echo EXPORT post-return: %EXPORT%
 exit /b
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -62,9 +64,7 @@ if not "%EXPORT%"=="" set "EXPORT=%EXPORT% ^&"
 
 set VAR_NAME=%~1
 set VAR_VALUE=%~2
-echo Processing %VAR_NAME%=%VAR_VALUE%
 
 set "EXPORT=%EXPORT% set ""%VAR_NAME%=%VAR_VALUE%"""
-echo EXPORT after processing: %EXPORT%
 endLocal & set "EXPORT=%EXPORT%"
 exit /b
