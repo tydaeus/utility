@@ -1,4 +1,4 @@
-@Echo Off
+@Echo off
 setLocal enableDelayedExpansion
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: interpret_file
@@ -52,7 +52,7 @@ exit /b %ERRLEV%
 setLocal enableDelayedExpansion
 set LINE=
 
-for /F "eol=# tokens=*" %%A in ('type "%FILENAME%"') do (
+for /F "eol=# tokens=* usebackq" %%A in (`type "%FILENAME%"`) do (
     set "LINE=%%A"
     call interpret_cmd %%A || goto :INTERPRET_FILE_ERR
 )
@@ -61,6 +61,7 @@ goto :INTERPRET_FILE_END
 :INTERPRET_FILE_ERR
 set ERRLEV=%ERRORLEVEL%
 echo:ERR: intpret_file: failed to interpret %LINE% 1>&2
+goto :INTERPRET_FILE_END
 
 :INTERPRET_FILE_END
 endLocal & set ERRLEV=%ERRLEV%
