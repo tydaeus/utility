@@ -11,7 +11,10 @@ setLocal enableDelayedExpansion
 ::      LIST - a copy of the original list with its first item removed
 ::
 :: Extended shift. Use to perform a shift on a space-separated list (ie 
-:: arguments), and retrieve the previous first element and the modified list
+:: arguments), and retrieve the previous first element and the modified list.
+::
+:: Note that because '=' is a delineator, it will be dropped from the resulting
+:: list unless enclosed in quotes(").
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 set RET=
 set LIST=
@@ -33,14 +36,15 @@ if [%1]==[] goto :END
 set "LIST=%1"
 
 :: loop through remaining elements (if any)----------------
-:LOOP
+:WHILE_LIST_HAS_ITEMS
 shift
 if [%1]==[] goto :END
 
 set "LIST=%LIST% %1"
-goto :LOOP
-::/LOOP----------------------------------------------------
+goto :WHILE_LIST_HAS_ITEMS
+::/WHILE_LIST_HAS_ITEMS----------------------------------------------------
 
 :END
+
 endLocal & set "LIST=%LIST%" & set "RET=%RET%" & set ERRLEVEL=%ERRLEVEL%
 exit /b %ERRLEVEL%
