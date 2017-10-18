@@ -57,10 +57,9 @@ exit /b %ERRLEV%
 :: implementations can provide their own versions of these files for alternate
 :: functionality.
 ::-----------------------------------------------------------------------------
-
-:CMD_COPY
-echo copying %~1 to %~2
-call smart_copy "%RSRC_PATH%%~1" "%DEST_PATH%%~2"
+:CMD_backup
+echo backing up %~1
+call backup "%DEST_PATH%%~1"
 set ERRLEV=%ERRORLEVEL%
 set FOUND=1
 exit /b %ERRLEV%
@@ -72,20 +71,9 @@ set ERRLEV=%ERRORLEVEL%
 set FOUND=1
 exit /b %ERRLEV%
 
-:CMD_ECHO
-echo:%*
-set FOUND=1
-exit /b
-
-:CMD_backup
-echo backing up %~1
-call backup "%DEST_PATH%%~1"
-set ERRLEV=%ERRORLEVEL%
-set FOUND=1
-exit /b %ERRLEV%
-
-:CMD_touchAll
-call touch_all "%DEST_PATH%%~1"
+:CMD_COPY
+echo copying %~1 to %~2
+call smart_copy "%RSRC_PATH%%~1" "%DEST_PATH%%~2"
 set ERRLEV=%ERRORLEVEL%
 set FOUND=1
 exit /b %ERRLEV%
@@ -96,3 +84,21 @@ call smart_delete "%DEST_PATH%%~1"
 set ERRLEV=%ERRORLEVEL%
 set FOUND=1
 exit /b %ERRLEV%
+
+:CMD_ECHO
+echo:%*
+set FOUND=1
+exit /b
+
+:CMD_EXE
+echo:exe "%*"
+%*
+set FOUND=1
+exit /b
+
+:CMD_touchAll
+call touch_all "%DEST_PATH%%~1"
+set ERRLEV=%ERRORLEVEL%
+set FOUND=1
+exit /b %ERRLEV%
+
