@@ -1,4 +1,4 @@
-@Echo Off
+@Echo off
 setLocal enableDelayedExpansion
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: interpret_cmd
@@ -21,6 +21,11 @@ set COMMAND_NAME=%~1
 
 call xshift %*
 set "COMMAND=%LIST%"
+
+:: process the command to interpret script vars
+set "COMMAND=!COMMAND:${=%%CMD[!"
+set "COMMAND=!COMMAND:}$=]%%!"
+call set "COMMAND=!COMMAND!"
 
 :: attempt to run the named command
 call :CMD_%COMMAND_NAME% %COMMAND%
@@ -47,9 +52,15 @@ goto :END
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :END
+if defined EXPORT goto :EXPORT_END
 endLocal & set ERRLEV=%ERRLEV%
 exit /b %ERRLEV%
 
+:: export variables set via the set command
+:EXPORT_END
+endLocal & set ERRLEV=%ERRLEV% & %EXPORT:""="%
+::"
+exit /b %ERRLEV%
 ::-----------------------------------------------------------------------------
 :: Define Invokable Commands
 :: 
@@ -93,6 +104,15 @@ exit /b
 :CMD_EXE
 echo:exe "%*"
 %*
+set FOUND=1
+exit /b
+
+:CMD_SET
+echo:set %*
+set VAR_NAME=%1
+call xshift %*
+set "CMD[%RET%]=%LIST%"
+call export_vars CMD[%RET%]
 set FOUND=1
 exit /b
 
