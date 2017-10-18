@@ -1,4 +1,4 @@
-@Echo Off
+@Echo off
 setLocal enableDelayedExpansion
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: install
@@ -17,11 +17,11 @@ set ERRLEV=0
 ::-----------------------------------------------------------------------------
 
 :: Identifier for subsection of log file
-set LOG_NAME="Installer Log"
+set "LOG_NAME=Installer Log"
 :: where to save the log
-set LOG_PATH=C:\temp\installer.log
+set "LOG_PATH=C:\temp\installer.log"
 :: name/location of script file to be interpreted
-set SCRIPT_FILE="install.cfg"
+set "SCRIPT_FILE=install.cfg"
 :: base path for where files will manipulated; e.g. target path for copy
 set DEST_PATH=
 :: base path for where files will be retrieved from; e.g. src path for copy
@@ -40,6 +40,8 @@ set RSRC_PATH=
 if not "%CMD_UTIL_HOME%"=="" set PATH=%CMD_UTIL_HOME%;%PATH%
 set PATH=%SCRIPT_DIR%;%SCRIPT_DIR%util\;%SCRIPT_DIR%..\util\;%PATH%
 ::-----------------------------------------------------------------------------
+
+echo Interpreting script %INSTALLER_DIR%%SCRIPT_FILE%
 
 call interpret_install "%INSTALLER_DIR%%SCRIPT_FILE%"
 set ERRLEV=%ERRORLEVEL%
