@@ -23,8 +23,8 @@ call xshift %*
 set "COMMAND=%LIST%"
 
 :: process the command to interpret script vars
-set "COMMAND=!COMMAND:${=%%CMD[!"
-set "COMMAND=!COMMAND:}$=]%%!"
+set "COMMAND=!COMMAND:{=%%CMD[!"
+set "COMMAND=!COMMAND:}=]%%!"
 call set "COMMAND=!COMMAND!"
 
 :: attempt to run the named command
@@ -69,28 +69,28 @@ exit /b %ERRLEV%
 :: functionality.
 ::-----------------------------------------------------------------------------
 :CMD_backup
-echo backing up %~1
+echo:backup %*
 call backup "%DEST_PATH%%~1"
 set ERRLEV=%ERRORLEVEL%
 set FOUND=1
 exit /b %ERRLEV%
 
 :CMD_CALL
-echo calling script %~1
+echo:calling script %~1
 call "%~1"
 set ERRLEV=%ERRORLEVEL%
 set FOUND=1
 exit /b %ERRLEV%
 
 :CMD_COPY
-echo copying %~1 to %~2
+echo:copy %*
 call smart_copy "%RSRC_PATH%%~1" "%DEST_PATH%%~2"
 set ERRLEV=%ERRORLEVEL%
 set FOUND=1
 exit /b %ERRLEV%
 
 :CMD_DELETE
-echo deleting %~1
+echo:delete %*
 call smart_delete "%DEST_PATH%%~1"
 set ERRLEV=%ERRORLEVEL%
 set FOUND=1
@@ -108,7 +108,6 @@ set FOUND=1
 exit /b
 
 :CMD_SET
-echo:set %*
 set VAR_NAME=%1
 call xshift %*
 set "CMD[%RET%]=%LIST%"
@@ -117,6 +116,7 @@ set FOUND=1
 exit /b
 
 :CMD_touchAll
+echo:touch_all %*
 call touch_all "%DEST_PATH%%~1"
 set ERRLEV=%ERRORLEVEL%
 set FOUND=1
