@@ -101,16 +101,25 @@ exit /b
 :CMD_EXE
 echo:exe %*
 %*
+set ERRLEV=%ERRORLEVEL%
 set FOUND=1
-exit /b
+exit /b %ERRLEV%
 
 :CMD_SET
 set VAR_NAME=%1
 call xshift %*
 set "CMD[%RET%]=%LIST%"
 call export_vars CMD[%RET%]
+set ERRLEV=%ERRORLEVEL%
 set FOUND=1
-exit /b
+exit /b %ERRLEV%
+
+:CMD_TOUCH
+echo:touch %*
+call touch %*
+set ERRLEV=%ERRORLEVEL%
+set FOUND=1
+exit /b %ERRLEV%
 
 :CMD_touchAll
 echo:touch_all %*
