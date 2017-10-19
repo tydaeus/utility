@@ -14,9 +14,6 @@ setLocal enableDelayedExpansion
 set ERRLEV=0
 set FOUND=0
 
-if not defined DEST_PATH set DEST_PATH=
-if not defined RSRC_PATH set RSRC_PATH=
-
 set COMMAND_NAME=%~1
 
 call xshift %*
@@ -70,28 +67,28 @@ exit /b %ERRLEV%
 ::-----------------------------------------------------------------------------
 :CMD_backup
 echo:backup %*
-call backup "%DEST_PATH%%~1"
+call backup %*
 set ERRLEV=%ERRORLEVEL%
 set FOUND=1
 exit /b %ERRLEV%
 
 :CMD_CALL
-echo:calling script %~1
-call "%~1"
+echo:call %*
+call %*
 set ERRLEV=%ERRORLEVEL%
 set FOUND=1
 exit /b %ERRLEV%
 
 :CMD_COPY
 echo:copy %*
-call smart_copy "%RSRC_PATH%%~1" "%DEST_PATH%%~2"
+call smart_copy %*
 set ERRLEV=%ERRORLEVEL%
 set FOUND=1
 exit /b %ERRLEV%
 
 :CMD_DELETE
 echo:delete %*
-call smart_delete "%DEST_PATH%%~1"
+call smart_delete %*
 set ERRLEV=%ERRORLEVEL%
 set FOUND=1
 exit /b %ERRLEV%
@@ -102,7 +99,7 @@ set FOUND=1
 exit /b
 
 :CMD_EXE
-echo:exe "%*"
+echo:exe %*
 %*
 set FOUND=1
 exit /b
@@ -117,7 +114,7 @@ exit /b
 
 :CMD_touchAll
 echo:touch_all %*
-call touch_all "%DEST_PATH%%~1"
+call touch_all %*
 set ERRLEV=%ERRORLEVEL%
 set FOUND=1
 exit /b %ERRLEV%
