@@ -11,6 +11,18 @@ setLocal enableDelayedExpansion
 set SCRIPT_DIR=%~dp0
 set "INSTALLER_DIR=%SCRIPT_DIR%"
 set ERRLEV=0
+::-----------------------------------------------------------------------------
+:: Ensure that PATH points to any necessary utility scripts
+::
+:: precedence:
+::  1. in script's dir
+::  2. in script's \util subdir
+::  3. in script's parent dir's \util subdir
+::  4. at CMD_UTIL_HOME
+::  5. elsewhere in PATH
+::-----------------------------------------------------------------------------
+if not "%CMD_UTIL_HOME%"=="" set PATH=%CMD_UTIL_HOME%;%PATH%
+set PATH=%SCRIPT_DIR%;%SCRIPT_DIR%util\;%SCRIPT_DIR%..\util\;%PATH%
 
 ::-----------------------------------------------------------------------------
 :: Config Vars - Use these to configure how the install should run
@@ -28,17 +40,16 @@ set DEST_PATH=
 set RSRC_PATH=
 
 ::-----------------------------------------------------------------------------
-:: Ensure that PATH points to any necessary utility scripts
+:: Init Script Vars: these variables will be accessible and modifiable from
+:: within the script as it is interpreted.
 ::
-:: precedence:
-::  1. in script's dir
-::  2. in script's \util subdir
-::  3. in script's parent dir's \util subdir
-::  4. at CMD_UTIL_HOME
-::  5. elsewhere in PATH
+:: These must be named in format CMD[VAR_NAME], and can be accessed within the
+:: script via {VAR_NAME}
 ::-----------------------------------------------------------------------------
-if not "%CMD_UTIL_HOME%"=="" set PATH=%CMD_UTIL_HOME%;%PATH%
-set PATH=%SCRIPT_DIR%;%SCRIPT_DIR%util\;%SCRIPT_DIR%..\util\;%PATH%
+set "CMD[DEST_PATH]=%DEST_PATH%"
+set "CMD[RSRC_PATH]=%RSRC_PATH%"
+set "CMD[INSTALLER_DIR]=%INSTALLER_DIR%"
+
 ::-----------------------------------------------------------------------------
 
 echo Interpreting script %INSTALLER_DIR%%SCRIPT_FILE%
