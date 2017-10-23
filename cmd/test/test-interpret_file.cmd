@@ -3,6 +3,6 @@ setLocal enableDelayedExpansion
 
 set PATH=..\util;%PATH%
 
-call xinterpret_file test.script
+call interpret_file test.script
 
 pause

@@ -3,13 +3,7 @@ setLocal enableDelayedExpansion
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: interpret_cmd
 ::
-:: Interprets a single simplified command statement. Kept as separate file for
-:: simplification.
-::
-:: DevNote: individual command subroutines will receive the original invocation
-:: params. %1 will be the command name, %2 will be param 1, etc.
-:: DevNote: individual commands must set FOUND=1 to indicate that the command
-:: was found, otherwise they will be interpreted as not found.
+:: Interprets a single simplified command statement.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 set ERRLEV=0
 set FOUND=0
@@ -17,24 +11,25 @@ set FOUND=0
 set COMMAND_NAME=%~1
 
 call xshift %*
-set "COMMAND=%LIST%"
+set "COMMAND_ARGS=%LIST%"
 
 :: process the command to interpret script vars
-set "COMMAND=!COMMAND:{=%%CMD[!"
-set "COMMAND=!COMMAND:}=]%%!"
-call set "COMMAND=!COMMAND!"
+set "COMMAND_ARGS=!COMMAND_ARGS:{=%%CMD[!"
+set "COMMAND_ARGS=!COMMAND_ARGS:}=]%%!"
+call set "COMMAND_ARGS=!COMMAND_ARGS!"
 
-:: attempt to run the named command
-call :CMD_%COMMAND_NAME% %COMMAND%
+call :INVOKE_COMMAND
 
 :: check if the command was successfully found, error if not
 if "%FOUND%"=="1" goto :COMMAND_FOUND
+
+:COMMAND_NOT_FOUND
 echo:ERR: interpret_cmd: command not recognized: "%COMMAND_NAME%" 1>&2
 goto :ERR
 
 :COMMAND_FOUND
 if not "%ERRLEV%"=="0" (
-    echo:ERR: interpret_cmd: failed to %COMMAND_NAME% %COMMAND% 1>&2
+    echo:ERR: interpret_cmd: failed to %COMMAND_NAME% %COMMAND_ARGS% 1>&2
     goto :ERR
 )
 goto :END
@@ -58,73 +53,82 @@ exit /b %ERRLEV%
 endLocal & set ERRLEV=%ERRLEV% & %EXPORT:""="%
 ::"
 exit /b %ERRLEV%
-::-----------------------------------------------------------------------------
-:: Define Invokable Commands
-:: 
-:: DevNote: by redirecting commands through "cmd_" files, derivative
-:: implementations can provide their own versions of these files for alternate
-:: functionality.
-::-----------------------------------------------------------------------------
-:CMD_backup
-echo:backup %*
-call backup %*
-set ERRLEV=%ERRORLEVEL%
-set FOUND=1
-exit /b %ERRLEV%
 
-:CMD_CALL
-echo:call %*
-call %*
-set ERRLEV=%ERRORLEVEL%
-set FOUND=1
-exit /b %ERRLEV%
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: INVOKE_COMMAND
+::
+:: Invokes the command named in COMMAND_NAME, with the arguments held in 
+:: COMMAND_ARGS.
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:INVOKE_COMMAND
 
-:CMD_COPY
-echo:copy %*
-call smart_copy %*
-set ERRLEV=%ERRORLEVEL%
-set FOUND=1
-exit /b %ERRLEV%
+::----- Command definition block
+:: Defines the invocable commands and optional configuration for them. 
+::
+:: Command invocations are defined in format CMD_DEF[NAME], with corresponding
+:: configuration in format CMD_CONFIG[NAME].
+::
+:: Only the invoked command and its configuration leave the block, as 
+:: INVOCATION and INVOCATION_CONFIG.
+setLocal
 
-:CMD_DELETE
-echo:delete %*
-call smart_delete %*
-set ERRLEV=%ERRORLEVEL%
-set FOUND=1
-exit /b %ERRLEV%
+set FOUND=0
+set INVOCATION=
+set INVOCATION_CONFIG=
 
-:CMD_ECHO
-echo:%*
-set FOUND=1
+set "CMD_DEF[BACKUP]=call backup"
+set "CMD_DEF[CALL]=call"
+set "CMD_DEF[COPY]=call smart_copy"
+set "CMD_DEF[DELETE]=call smart_delete"
+
+set "CMD_DEF[ECHO]=echo"
+set "CMD_CONFIG[ECHO]=set CONFIG_VERBOSE=0"
+
+set "CMD_DEF[SET]=call :CMD_SET"
+set "CMD_CONFIG[SET]=set CONFIG_VERBOSE=0"
+
+set "CMD_DEF[TOUCH]=call touch"
+set "CMD_DEF[touchAll]=call touch_all"
+
+if defined CMD_DEF[%COMMAND_NAME%] (
+    set "INVOCATION=!CMD_DEF[%COMMAND_NAME%]!"
+    set FOUND=1
+)
+
+if defined CMD_CONFIG[%COMMAND_NAME%] (
+    set "INVOCATION_CONFIG=!CMD_CONFIG[%COMMAND_NAME%]!"
+)
+
+endLocal & set "FOUND=%FOUND%" & set "INVOCATION=%INVOCATION%" & set "INVOCATION_CONFIG=%INVOCATION_CONFIG%"
+::----- End command definition block
+
+:: skip invoking command if not found (error)
+if %FOUND%==0 exit /b
+
+set CONFIG_VERBOSE=1
+
+::use config if provided
+if not ["%INVOCATION_CONFIG%"]==[""] call :CONFIG_INVOCATION
+
+if "%CONFIG_VERBOSE%"=="1" (
+    echo %INVOCATION% %COMMAND_ARGS%
+)
+
+%INVOCATION% %COMMAND_ARGS%
+set ERRLEV=%ERRORLEVEL%
 exit /b
 
-:CMD_EXE
-echo:exe %*
-%*
-set ERRLEV=%ERRORLEVEL%
-set FOUND=1
-exit /b %ERRLEV%
+:: helper function, because executing a variable's contents doesn't work within an if
+:CONFIG_INVOCATION
+%INVOCATION_CONFIG%
+exit /b
 
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: Commands that must be executed as functions of interpret_cmd
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :CMD_SET
 set VAR_NAME=%1
 call xshift %*
 set "CMD[%RET%]=%LIST%"
 call export_vars CMD[%RET%]
-set ERRLEV=%ERRORLEVEL%
-set FOUND=1
-exit /b %ERRLEV%
-
-:CMD_TOUCH
-echo:touch %*
-call touch %*
-set ERRLEV=%ERRORLEVEL%
-set FOUND=1
-exit /b %ERRLEV%
-
-:CMD_touchAll
-echo:touch_all %*
-call touch_all %*
-set ERRLEV=%ERRORLEVEL%
-set FOUND=1
-exit /b %ERRLEV%
-
+exit /b
