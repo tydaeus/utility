@@ -14,9 +14,11 @@ call xshift %*
 set "COMMAND_ARGS=%LIST%"
 
 :: process the command to interpret script vars
-set "COMMAND_ARGS=!COMMAND_ARGS:{=%%CMD[!"
-set "COMMAND_ARGS=!COMMAND_ARGS:}=]%%!"
-call set "COMMAND_ARGS=!COMMAND_ARGS!"
+if not "%COMMAND_ARGS%"=="" (
+    set "COMMAND_ARGS=!COMMAND_ARGS:{=%%CMD[!"
+    set "COMMAND_ARGS=!COMMAND_ARGS:}=]%%!"
+    call set "COMMAND_ARGS=!COMMAND_ARGS!"
+)
 
 call :INVOKE_COMMAND
 
@@ -50,8 +52,10 @@ exit /b %ERRLEV%
 
 :: export variables set via the set command
 :EXPORT_END
-endLocal & set ERRLEV=%ERRLEV% & %EXPORT:""="%
+:: need to convert double '"' to single
+set EXPORT=%EXPORT:""="%
 ::"
+endLocal & set ERRLEV=%ERRLEV% & %EXPORT%
 exit /b %ERRLEV%
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -87,6 +91,9 @@ set "CMD_CONFIG[ECHO]=set CONFIG_VERBOSE=0"
 set "CMD_DEF[SET]=call :CMD_SET"
 set "CMD_CONFIG[SET]=set CONFIG_VERBOSE=0"
 
+set "CMD_DEF[StartLog]=call :CMD_START_LOG"
+set "CMD_CONFIG[StartLog]=set CONFIG_VERBOSE=0"
+
 set "CMD_DEF[TOUCH]=call touch"
 set "CMD_DEF[touchAll]=call touch_all"
 
@@ -106,13 +113,20 @@ endLocal & set "FOUND=%FOUND%" & set "INVOCATION=%INVOCATION%" & set "INVOCATION
 if %FOUND%==0 exit /b
 
 set CONFIG_VERBOSE=1
+if "%CONFIG_LOGGING_ENABLED%"=="" (
+    set CONFIG_LOGGING_ENABLED=0
+)
 
 ::use config if provided
 if not ["%INVOCATION_CONFIG%"]==[""] call :CONFIG_INVOCATION
 
 if "%CONFIG_VERBOSE%"=="1" (
-    echo %INVOCATION% %COMMAND_ARGS%
+    call :ECHO_INVOCATION %INVOCATION% %COMMAND_ARGS%
 )
+
+:: TODO: skip logging separately from echo
+:: TODO: use log for command output logging
+:: TODO: test that using log for command output can still access ERRLEV
 
 %INVOCATION% %COMMAND_ARGS%
 set ERRLEV=%ERRORLEVEL%
@@ -123,6 +137,16 @@ exit /b
 %INVOCATION_CONFIG%
 exit /b
 
+:: echoes or logs command invocation
+:ECHO_INVOCATION
+:: logging performs its own echo op
+if "%CONFIG_LOGGING_ENABLED%"=="1" (
+    call log %INVOCATION% %COMMAND_ARGS%
+) else (
+    echo %INVOCATION% %COMMAND_ARGS%
+)
+exit /b
+
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Commands that must be executed as functions of interpret_cmd
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -131,4 +155,10 @@ set VAR_NAME=%1
 call xshift %*
 set "CMD[%RET%]=%LIST%"
 call export_vars CMD[%RET%]
+exit /b
+
+:CMD_START_LOG
+call init_log %*
+set CONFIG_LOGGING_ENABLED=1
+call export_vars LOG_PATH LOG_NAME CONFIG_LOGGING_ENABLED
 exit /b
