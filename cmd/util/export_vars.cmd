@@ -37,7 +37,7 @@ set "VAR_VALUE=!VAR_VALUE:"=""!"
 set "VAR_VALUE=%VAR_VALUE:^=^^%"
 ::set "VAR_VALUE=%VAR_VALUE:<=^<%"
 ::set "VAR_VALUE=%VAR_VALUE:>=^>%"
-::set "VAR_VALUE=%VAR_VALUE:&=^&%"
+set "VAR_VALUE=%VAR_VALUE:&=^&%"
 ::set "VAR_VALUE=%VAR_VALUE:|=^|%"
 ::"
 
