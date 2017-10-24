@@ -1,5 +1,7 @@
 # comment should get skipped
 echo start test script
 
+StartLog
+
 set X 25
 echo X: {X}
