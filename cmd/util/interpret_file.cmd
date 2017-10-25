@@ -176,5 +176,8 @@ call interpret_cmd %LINE%
 exit /b %ERRORLEVEL%
 
 :CHECK_FOR_START
-if "%LINE%"=="%START_TOKEN%" set SCRIPT_STARTED=1
+:: '"' confuses the compare op
+set "LINE=!LINE:"=!"
+::"
+if ["%LINE%"]==["%START_TOKEN%"] set SCRIPT_STARTED=1
 exit /b
