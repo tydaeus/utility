@@ -121,15 +121,30 @@ if "%CONFIG_LOGGING_ENABLED%"=="" (
 if not ["%INVOCATION_CONFIG%"]==[""] call :CONFIG_INVOCATION
 
 if "%CONFIG_VERBOSE%"=="1" (
-    call :ECHO_INVOCATION %INVOCATION% %COMMAND_ARGS%
+    call :ECHO_COMMAND
 )
 
-:: TODO: skip logging separately from echo
-:: TODO: use log for command output logging
-:: TODO: test that using log for command output can still access ERRLEV
+:: Invoke the command
+call instring "%INVOCATION%" ":"
 
+if "%RET%"=="1" goto :INVOKE_WITH_LABEL
+
+:: no label present in invocation, so it's safe to use with 'for /f'
+:INVOKE_WITHOUT_LABEL
+:: 'for /f' does not preserve ERRORLEVEL, so we use '##ERROR##' as an indicator that an error occurred
+for /f "tokens=* useBackQ" %%A in (`%INVOCATION% %COMMAND_ARGS% 2^>^&1 ^|^| echo ##ERROR##`) do (
+    call :ECHO_OUTPUT %%A
+)
+goto :END_INVOKE_COMMAND
+
+:: cannot call a function within for /f, so must invoke otherwise
+:: for this reason, functions must handle their own logging if desired
+:INVOKE_WITH_LABEL
 %INVOCATION% %COMMAND_ARGS%
 set ERRLEV=%ERRORLEVEL%
+goto :END_INVOKE_COMMAND
+
+:END_INVOKE_COMMAND
 exit /b
 
 :: helper function, because executing a variable's contents doesn't work within an if
@@ -138,13 +153,29 @@ exit /b
 exit /b
 
 :: echoes or logs command invocation
-:ECHO_INVOCATION
+:ECHO_COMMAND
 :: logging performs its own echo op
 if "%CONFIG_LOGGING_ENABLED%"=="1" (
-    call log %INVOCATION% %COMMAND_ARGS%
+    call log %COMMAND_NAME% %COMMAND_ARGS%
 ) else (
-    echo %INVOCATION% %COMMAND_ARGS%
+    echo %COMMAND_NAME% %COMMAND_ARGS%
 )
+exit /b
+
+:ECHO_OUTPUT
+:: check for error flag string
+if "##ERROR##"=="%*" (
+    set ERRLEV=1
+    goto :END_ECHO_OUTPUT
+)
+
+if "%CONFIG_LOGGING_ENABLED%"=="1" (
+    call log %*
+) else (
+    echo %*
+)
+
+:END_ECHO_OUTPUT
 exit /b
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
