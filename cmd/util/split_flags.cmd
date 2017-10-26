@@ -32,7 +32,7 @@ set ERRLEV=0
 
 :WHILE_ARGS_REMAIN
 set "CUR_ARG=%1"
-if [%CUR_ARG%]==[] goto :END
+if not defined CUR_ARG goto :END
 
 echo:%CUR_ARG%| findstr /R "^-" > nul
 if "%ERRORLEVEL%"=="0" (
@@ -54,7 +54,7 @@ exit /b
 :: Adds an argument to the ARGS list
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :ADD_ARG
-if [%ARGS%]==[] (
+if not defined ARGS (
     set ARGS=%*
 ) else (
     set ARGS=%ARGS% %*
@@ -70,7 +70,7 @@ exit /b
 set "FLAG=%*"
 
 :: setup prefix spacing
-if [%LONG_FLAGS%]==[] (
+if not defined LONG_FLAGS (
     set PREFIX=
 ) else (
     set PREFIX= 

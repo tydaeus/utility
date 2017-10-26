@@ -72,20 +72,21 @@ exit /b %ERRLEV%
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :PROCESS_ARGS
 
-if [%~1]==[] goto :END_PROCESS_ARGS
 set "SRC=%~1"
+if not defined SRC set USAGE_ERR=1
 shift
 
-if [%~1]==[] goto :END_PROCESS_ARGS
 set "DEST=%~1"
+if not defined DEST set USAGE_ERR=1
 shift
 
 :: too many args
-if not [%~1]==[] set USAGE_ERR=1
+setLocal
+set "ARG=%~1"
+if defined ARG set USAGE_ERR=1
+endLocal & set "USAGE_ERR=%USAGE_ERR%"
 
 :END_PROCESS_ARGS
-if ["%SRC%"]==[""] set USAGE_ERR=1
-if ["%DEST%"]==[""] set USAGE_ERR=1
 exit /b
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -121,8 +122,9 @@ exit /b
 :PROCESS_LONG_FLAGS
 
 :WHILE_LONG_FLAG
-if ["%~1"]==[""] goto :END_PROCESS_LONG_FLAGS
-call :PROCESS_LONG_FLAG "%~1"
+set "CUR_FLAG=%~1"
+if not defined CUR_FLAG goto :END_PROCESS_LONG_FLAGS
+call :PROCESS_LONG_FLAG "%CUR_FLAG%"
 shift
 goto :WHILE_LONG_FLAG
 
