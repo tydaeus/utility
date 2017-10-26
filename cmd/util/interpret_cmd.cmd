@@ -8,13 +8,13 @@ setLocal enableDelayedExpansion
 set ERRLEV=0
 set FOUND=0
 
-set COMMAND_NAME=%~1
+set "COMMAND_NAME=%~1"
 
 call xshift %*
 set "COMMAND_ARGS=%LIST%"
 
 :: process the command to interpret script vars
-if not "%COMMAND_ARGS%"=="" (
+if defined COMMAND_ARGS (
     set "COMMAND_ARGS=!COMMAND_ARGS:{=%%CMD[!"
     set "COMMAND_ARGS=!COMMAND_ARGS:}=]%%!"
     call set "COMMAND_ARGS=!COMMAND_ARGS!"
@@ -129,7 +129,6 @@ if "%CONFIG_VERBOSE%"=="1" (
 
 :: Invoke the command
 call instring "%INVOCATION%" ":"
-
 if "%RET%"=="1" goto :INVOKE_WITH_LABEL
 
 :: no label present in invocation, so it's safe to use with 'for /f'
