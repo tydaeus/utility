@@ -18,13 +18,14 @@ setLocal enableDelayedExpansion
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 set RET=
 set LIST=
-set ERRLEVEL=0
+set ERRLEV=0
 
 :: verify invocation
-if [%1]==[] (
+set "CUR_ARG=%~1"
+if not defined CUR_ARG (
     echo ERR: xshift invalid invocation 1>&2
     echo Usage: xshift ARG1...
-    set ERRLEVEL=1
+    set ERRLEV=1
     goto :END
 )
 
@@ -32,13 +33,15 @@ set "RET=%1"
 
 :: set first LIST elem without a space in front of it
 shift
-if [%1]==[] goto :END
+set "CUR_ARG=%~1"
+if not defined CUR_ARG goto :END
 set "LIST=%1"
 
 :: loop through remaining elements (if any)----------------
 :WHILE_LIST_HAS_ITEMS
 shift
-if [%1]==[] goto :END
+set "CUR_ARG=%~1"
+if not defined CUR_ARG goto :END
 
 set "LIST=%LIST% %1"
 goto :WHILE_LIST_HAS_ITEMS
@@ -46,5 +49,5 @@ goto :WHILE_LIST_HAS_ITEMS
 
 :END
 
-endLocal & set "LIST=%LIST%" & set "RET=%RET%" & set ERRLEVEL=%ERRLEVEL%
-exit /b %ERRLEVEL%
+endLocal & set "LIST=%LIST%" & set "RET=%RET%" & set ERRLEV=%ERRLEV%
+exit /b %ERRLEV%
