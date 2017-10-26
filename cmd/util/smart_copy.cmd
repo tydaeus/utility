@@ -49,7 +49,6 @@ if not exist "%SRC%" (
     goto :END
 )
 
-:: TODO: test err detection
 if exist "%SRC%"\* (
 	call :COPY_DIR || goto :ERR
 ) else (
