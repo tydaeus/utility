@@ -33,14 +33,14 @@ set "RET=%1"
 
 :: set first LIST elem without a space in front of it
 shift
-set "CUR_ARG=%~1"
+set "CUR_ARG=%1"
 if not defined CUR_ARG goto :END
 set "LIST=%1"
 
 :: loop through remaining elements (if any)----------------
 :WHILE_LIST_HAS_ITEMS
 shift
-set "CUR_ARG=%~1"
+set "CUR_ARG=%1"
 if not defined CUR_ARG goto :END
 
 set "LIST=%LIST% %1"
