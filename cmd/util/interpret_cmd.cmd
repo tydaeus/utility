@@ -88,14 +88,14 @@ set "CMD_DEF[DELETE]=call smart_delete"
 set "CMD_DEF[ECHO]=echo"
 set "CMD_CONFIG[ECHO]=set CONFIG_VERBOSE=0"
 
-set "CMD_DEF[EndLog]=call :CMD_END_LOG"
-set "CMD_CONFIG[EndLog]=set CONFIG_VERBOSE=0"
 
 set "CMD_DEF[SET]=call :CMD_SET"
 set "CMD_CONFIG[SET]=set CONFIG_VERBOSE=0"
 
 set "CMD_DEF[StartLog]=call :CMD_START_LOG"
 set "CMD_CONFIG[StartLog]=set CONFIG_VERBOSE=0"
+set "CMD_DEF[StopLog]=call :CMD_STOP_LOG"
+set "CMD_CONFIG[StopLog]=set CONFIG_VERBOSE=0"
 
 set "CMD_DEF[TOUCH]=call touch"
 set "CMD_DEF[touchAll]=call touch_all"
@@ -197,7 +197,7 @@ set CONFIG_LOGGING_ENABLED=1
 call export_vars LOG_PATH LOG_NAME CONFIG_LOGGING_ENABLED
 exit /b
 
-:CMD_END_LOG
+:CMD_STOP_LOG
 call end_log %*
 set CONFIG_LOGGING_ENABLED=0
 call export_vars CONFIG_LOGGING_ENABLED
