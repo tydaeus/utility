@@ -20,7 +20,7 @@ set LOG_PATH=%~1
 :: default to filename, if present
 set LOG_NAME=%~nx1
 
-if ["%LOG_PATH%"]==[""] (
+if not defined LOG_PATH (
     set LOG_PATH=C:\temp\log.log
     set LOG_NAME=Log
 )
@@ -30,7 +30,8 @@ if exist "%LOG_PATH%\*" (
     exit /b 1
 )
 
-if not ["%~2"]==[""] set "LOG_NAME=%~2"
+set "PARAM2=%~2"
+if defined PARAM2 set "LOG_NAME=%PARAM2%"
 
 call :MAKE_DIRS "%LOG_PATH%"
 set ERRLEV=%ERRORLEVEL%
