@@ -84,8 +84,8 @@ shift
 if not [%~1]==[] set USAGE_ERR=1
 
 :END_PROCESS_ARGS
-if ["%SRC:"=%"]==[""] set USAGE_ERR=1
-if ["%DEST:"=%"]==[""] set USAGE_ERR=1
+if ["%SRC%"]==[""] set USAGE_ERR=1
+if ["%DEST%"]==[""] set USAGE_ERR=1
 exit /b
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
