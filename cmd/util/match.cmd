@@ -5,7 +5,7 @@ goto :INIT
 ::-----USAGE-------------------------------------------------------------------
 :DISPLAY_USAGE_MESSAGE
 echo: Usage:
-echo:   %SCRIPT_NAME% [--output:OUTPUT] STRING PATTERN
+echo:   %SCRIPT_NAME% [-?h] [--help] [--output:OUTPUT] STRING PATTERN
 exit /b
 
 ::-----DISPLAY_HELP------------------------------------------------------------
@@ -40,7 +40,7 @@ set OUTPUT_VAR=
 call split_flags %*
 
 call :PROCESS_ARGS %ARGS%
-call :PROCESS_SIMPLE_FLAGS %SIMPLE_FLAGS%
+call :PROCESS_SIMPLE_FLAGS
 call :PROCESS_LONG_FLAGS %LONG_FLAGS%
 
 if [%DISPLAY_HELP%]==[1] (
@@ -62,11 +62,11 @@ if "%ERRLEV%"=="0" set ERRLEV=1
 goto :END
 
 :SUCCESS
-if ["%OUTPUT_VAR%"]==[""] echo:%RET%
+if not defined OUTPUT_VAR echo:%RET%
 goto :END
 
 :END
-if ["%OUTPUT_VAR%"]==[""] (
+if not defined OUTPUT_VAR (
 	endLocal & set ERRLEV=%ERRLEV%
 ) else (
 	endLocal & set %OUTPUT_VAR%=%RET%
@@ -80,56 +80,70 @@ exit /b %ERRLEV%
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :PROCESS_ARGS
 
-:: TODO: multi-patterns?
-
-if [%~1]==[] goto :END_PROCESS_ARGS
 set "STRING=%~1"
 shift
 
-if [%~1]==[] goto :END_PROCESS_ARGS
 set "PATTERN=%~1"
 shift
 
+:: no third arg currently supported
+:: Future: support multiple patterns?
+set "CUR_ARG=%~1"
+if defined CUR_ARG set USAGE_ERR=1
+
 :END_PROCESS_ARGS
-if [%STRING%]==[] set USAGE_ERR=1
-if [%PATTERN%]==[] set USAGE_ERR=1
+if not defined STRING set USAGE_ERR=1
+if not defined PATTERN set USAGE_ERR=1
 exit /b
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: PROCESS_SIMPLE_FLAGS
 ::
-:: Examines the set of simple flags to determine appropriate response
+:: Examines the contents of SIMPLE_FLAGS to determine appropriate response. We
+:: trust split_flags to ensure no '"' exists in SIMPLE_FLAGS.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :PROCESS_SIMPLE_FLAGS
 
 :: no flags
-if "%*"=="" exit /b
+if not defined SIMPLE_FLAGS exit /b
 
-:: check for invalid flags
-call :MATCH_SUB "%*" "[^?hH]"
-if "%RET%"=="1" (
-	set USAGE_ERR=1
-	exit /b
-)
+::-----
+:WHILE_SIMPLE_FLAGS
 
-:: check for help flags
-call :MATCH_SUB "%*" "[?hH]"
-if "%RET%"=="1" (
+:: get first char from SIMPLE_FLAGS as CUR_FLAG
+set "CUR_FLAG=%SIMPLE_FLAGS:~0,1%"
+if not defined CUR_FLAG goto :END_PROCESS_SIMPLE_FLAGS
+:: remove first char from SIMPLE_FLAGS
+set "SIMPLE_FLAGS=%SIMPLE_FLAGS:~1%"
+
+if "%CUR_FLAG%"=="?" (
 	set DISPLAY_HELP=1
+	goto :WHILE_SIMPLE_FLAGS
 )
 
+if "%CUR_FLAG%"=="h" (
+	set DISPLAY_HELP=1
+	goto :WHILE_SIMPLE_FLAGS
+)
+::-----
+
+:: unrecognized char
+set USAGE_ERR=1
+
+:END_PROCESS_SIMPLE_FLAGS
 exit /b
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: PROCESS_LONG_FLAGS
 ::
-:: Iterates through the set of long flags to determine appropriate config
+:: Iterates through LONG_FLAGS to determine appropriate config
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :PROCESS_LONG_FLAGS
 
 :WHILE_LONG_FLAG
-if ["%~1"]==[""] goto :END_PROCESS_LONG_FLAGS
-call :PROCESS_LONG_FLAG "%~1"
+set "CUR_FLAG=%~1"
+if not defined CUR_FLAG goto :END_PROCESS_LONG_FLAGS
+call :PROCESS_LONG_FLAG "%CUR_FLAG%"
 shift
 goto :WHILE_LONG_FLAG
 
@@ -149,8 +163,7 @@ if ["%FLAG%"]==["help"] (
 	exit /b
 )
 
-call :MATCH_SUB "%FLAG%" "^output:"
-if "%RET%"=="1" (
+if "%FLAG:~0,7%"=="output:" (
 	set OUTPUT_VAR=%FLAG:~7%
 	exit /b
 )
@@ -169,6 +182,7 @@ setLocal enableDelayedExpansion
 set FINDSTR_RET=
 set RET=
 
+:: we can assume STRING and PATTERN are defined
 set "STRING=%~1"
 :: '^' gets escaped as part of the call, so we need to unescape it prior to using findstr
 set "PATTERN=%~2"
