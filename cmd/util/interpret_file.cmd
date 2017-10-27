@@ -34,7 +34,7 @@ set FILENAME=
 call split_flags %*
 
 call :PROCESS_ARGS %ARGS%
-call :PROCESS_SIMPLE_FLAGS %SIMPLE_FLAGS%
+call :PROCESS_SIMPLE_FLAGS
 call :PROCESS_LONG_FLAGS %LONG_FLAGS%
 
 if "%USAGE_ERR%"=="1" (
@@ -104,11 +104,11 @@ exit /b
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: PROCESS_SIMPLE_FLAGS
 ::
-:: Examines the set of simple flags to determine appropriate response
+:: Examines the content of SIMPLE_FLAGS to determine appropriate response
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :PROCESS_SIMPLE_FLAGS
 :: no flags
-if "%*"=="" exit /b
+if not defined SIMPLE_FLAGS exit /b
 
 :: currently, no simple flags are supported
 set USAGE_ERR=1
