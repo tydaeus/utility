@@ -104,15 +104,13 @@ exit /b
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :PROCESS_SIMPLE_FLAGS
 
-:: no flags
-if not defined SIMPLE_FLAGS exit /b
 
 ::-----
 :WHILE_SIMPLE_FLAGS
-
+:: no flags remain
+if not defined SIMPLE_FLAGS exit /b
 :: get first char from SIMPLE_FLAGS as CUR_FLAG
 set "CUR_FLAG=%SIMPLE_FLAGS:~0,1%"
-if not defined CUR_FLAG goto :END_PROCESS_SIMPLE_FLAGS
 :: remove first char from SIMPLE_FLAGS
 set "SIMPLE_FLAGS=%SIMPLE_FLAGS:~1%"
 
