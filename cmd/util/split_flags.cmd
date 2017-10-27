@@ -29,20 +29,31 @@ set SIMPLE_FLAGS=
 set LONG_FLAGS=
 set ARGS=
 set ERRLEV=0
+set QUOTE="
+::"
 
+::-----
 :WHILE_ARGS_REMAIN
 set "CUR_ARG=%1"
 if not defined CUR_ARG goto :END
 
-echo:%CUR_ARG%| findstr /R "^-" > nul
-if "%ERRORLEVEL%"=="0" (
+:: if arg starts with quotes, it cannot be a flag, but it will disrupt the dash check
+if !CUR_ARG:~0^,1!==!QUOTE! (
+    call :ADD_ARG %CUR_ARG%
+    goto :CUR_ARG_PROCESSED
+)
+
+:: if arg starts with a dash, it must be a flag
+if "%CUR_ARG:~0,1%"=="-" (
     call :ADD_FLAG %CUR_ARG%
 ) else (
     call :ADD_ARG %CUR_ARG%
 )
 
+:CUR_ARG_PROCESSED
 shift
 goto :WHILE_ARGS_REMAIN
+::-----
 
 :END
 endLocal & set "SIMPLE_FLAGS=%SIMPLE_FLAGS%" & set "LONG_FLAGS=%LONG_FLAGS%" & set "ARGS=%ARGS%" & set ERRLEV=%ERRLEV%
@@ -77,9 +88,7 @@ if not defined LONG_FLAGS (
 )
 
 :: is this a long flag?
-echo:%FLAG%| findstr /R "^--" > nul
-
-if "%ERRORLEVEL%"=="0" (
+if "%FLAG:~0,2%"=="--" (
     set "LONG_FLAGS=%LONG_FLAGS%%PREFIX%%FLAG:~2%"
 ) else (
     set "SIMPLE_FLAGS=%SIMPLE_FLAGS%%FLAG:~1%"
