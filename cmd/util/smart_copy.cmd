@@ -34,7 +34,7 @@ set DEST=
 call split_flags %*
 
 call :PROCESS_ARGS %ARGS%
-call :PROCESS_SIMPLE_FLAGS %SIMPLE_FLAGS%
+call :PROCESS_SIMPLE_FLAGS
 call :PROCESS_LONG_FLAGS %LONG_FLAGS%
 
 if [%USAGE_ERR%]==[1] (
@@ -92,27 +92,32 @@ exit /b
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: PROCESS_SIMPLE_FLAGS
 ::
-:: Examines the set of simple flags to determine appropriate response
+:: Examines SIMPLE_FLAGS to determine appropriate response
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :PROCESS_SIMPLE_FLAGS
 
-:: no flags
-if "%*"=="" exit /b
+::-----
+:WHILE_SIMPLE_FLAGS
+:: no flags remain
+if not defined SIMPLE_FLAGS goto :END_PROCESS_SIMPLE_FLAGS
+:: get first char from SIMPLE_FLAGS as CUR_FLAG
+set "CUR_FLAG=%SIMPLE_FLAGS:~0,1%"
+:: remove first char from SIMPLE_FLAGS
+set "SIMPLE_FLAGS=%SIMPLE_FLAGS:~1%"
 
-:: check for invalid flags
-call match --output:RET "%*" "[^n]"
-if "%RET%"=="1" (
-	set USAGE_ERR=1
-	exit /b
+if "%CUR_FLAG%"=="n" (
+    set NO_CLOBBER=1
+    goto :WHILE_SIMPLE_FLAGS
 )
+::-----
 
-:: check for help flags
-call match --output:RET "%*" "n"
-if "%RET%"=="1" (
-	set NO_CLOBBER=1
-)
+:: unrecognized char
+echo:unrecognized char in SIMPLE_FLAGS: %CUR_FLAG%
+set USAGE_ERR=1
 
+:END_PROCESS_SIMPLE_FLAGS
 exit /b
+
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: PROCESS_LONG_FLAGS
