@@ -26,12 +26,12 @@ call :INVOKE_COMMAND
 if "%FOUND%"=="1" goto :COMMAND_FOUND
 
 :COMMAND_NOT_FOUND
-echo:ERR: interpret_cmd: command not recognized: "%COMMAND_NAME%" 1>&2
+call :ECHO_OUTPUT ##STDERR##ERR: interpret_cmd: command not recognized: "%COMMAND_NAME%"
 goto :ERR
 
 :COMMAND_FOUND
 if not "%ERRLEV%"=="0" (
-    echo:ERR: interpret_cmd: failed to %COMMAND_NAME% %COMMAND_ARGS% 1>&2
+    call :ECHO_OUTPUT ##STDERR##ERR: interpret_cmd: failed to %COMMAND_NAME% %COMMAND_ARGS%
     goto :ERR
 )
 goto :END
@@ -125,7 +125,7 @@ if "%CONFIG_LOGGING_ENABLED%"=="" (
 if not ["%INVOCATION_CONFIG%"]==[""] call :CONFIG_INVOCATION
 
 if "%CONFIG_VERBOSE%"=="1" (
-    call :ECHO_COMMAND
+    call :ECHO_OUTPUT %COMMAND_NAME% %COMMAND_ARGS%
 )
 
 :: Invoke the command
@@ -155,23 +155,42 @@ exit /b
 %INVOCATION_CONFIG%
 exit /b
 
-:: echoes or logs command invocation
-:ECHO_COMMAND
-:: logging performs its own echo op
-if "%CONFIG_LOGGING_ENABLED%"=="1" (
-    call log %COMMAND_NAME% %COMMAND_ARGS%
-) else (
-    echo %COMMAND_NAME% %COMMAND_ARGS%
-)
-exit /b
-
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: ECHO_OUTPUT
+::
+:: Should get used for all echo statements. Outputs to log if logging is 
+:: enabled; log also displays to stdout.
+::
+:: Checks for flags wrapped in "##" and uses them to indicate special 
+:: processing:
+::      ##ERROR## indicates that a nonzero ERRORLEVEL occurred
+::      ##STDERR## indicates that the remainder should get echoed as stderr
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :ECHO_OUTPUT
-:: check for error flag string
-if "##ERROR##"=="%*" (
+set "MSG=%*"
+
+:: blank lines are stdout only and need no pre-processing
+if not defined MSG goto :ECHO_OUTPUT_STDOUT
+
+:: ##ERROR## is used to indicate a nonzero errorlevel occurred
+if "##ERROR##"=="%MSG%" (
     set ERRLEV=1
     goto :END_ECHO_OUTPUT
 )
 
+:: ##STDERR## is used to indicate that the remainder of the line should get output to stdout if logging is off
+if not "%MSG:~0,10%"=="##STDERR##" goto :ECHO_OUTPUT_STDOUT
+
+:ECHO_OUTPUT_STDERR
+set "MSG=%MSG:~10%"
+if "%CONFIG_LOGGING_ENABLED%"=="1" (
+    call log %MSG%
+) else (
+    echo:%MSG% 1>&2
+)
+goto :END_ECHO_OUTPUT
+
+:ECHO_OUTPUT_STDOUT
 if "%CONFIG_LOGGING_ENABLED%"=="1" (
     call log %*
 ) else (
