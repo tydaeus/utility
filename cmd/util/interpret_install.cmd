@@ -12,8 +12,6 @@ setLocal enableDelayedExpansion
 
 set "SCRIPT_PATH=%~1"
 
-call init_log "%LOG_PATH%" "%LOG_NAME%" || goto :ERR
-
 call :RUN_FILE || goto :ERR
 
 goto :SUCCESS
@@ -29,7 +27,6 @@ goto :END
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :END
-call end_log
 endLocal & set ERRLEV=%ERRLEV%
 
 exit /b %ERRLEV%
@@ -39,15 +36,7 @@ exit /b %ERRLEV%
 :: Read and execute provided install.cfg
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :RUN_FILE
-:: use a sentinel file to detect success/failure, due to pipe limitations
-set "SENTINEL=%INSTALLER_DIR%.failed.%COMPUTERNAME%.tmp"
-echo > "%SENTINEL%"
 
-2>&1 (call interpret_file "%SCRIPT_PATH%" && del "%SENTINEL%") | call log
-
-if exist "%SENTINEL%" (
-    set ERRLEV=1
-    del "%SENTINEL%"
-)
+call interpret_file "%SCRIPT_PATH%"
 
 exit /b %ERRLEV%
