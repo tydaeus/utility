@@ -66,11 +66,15 @@ exit /b %ERRLEV%
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :INVOKE_COMMAND
 
-::----- Command definition block
+::----- FIND_COMMAND subsection
+:FIND_COMMAND
 :: Defines the invocable commands and optional configuration for them. 
 ::
 :: Command invocations are defined in format CMD_DEF[NAME], with corresponding
 :: configuration in format CMD_CONFIG[NAME].
+::
+:: These invocations can be overridden by adding a file named cmd_NAME.cmd in
+:: the path.
 ::
 :: Only the invoked command and its configuration leave the block, as 
 :: INVOCATION and INVOCATION_CONFIG.
@@ -101,6 +105,14 @@ set "CMD_DEF[touchAll]=call touch_all"
 
 set "CMD_DEF[UNZIP]=unzip"
 
+call find_on_path "cmd_%COMMAND_NAME%.cmd"
+
+if defined RET (
+    set "INVOCATION=call cmd_%COMMAND_NAME%.cmd"
+    set FOUND=1
+    goto :END_FIND_COMMAND
+)
+
 if defined CMD_DEF[%COMMAND_NAME%] (
     set "INVOCATION=!CMD_DEF[%COMMAND_NAME%]!"
     set FOUND=1
@@ -110,6 +122,7 @@ if defined CMD_CONFIG[%COMMAND_NAME%] (
     set "INVOCATION_CONFIG=!CMD_CONFIG[%COMMAND_NAME%]!"
 )
 
+:END_FIND_COMMAND
 endLocal & set "FOUND=%FOUND%" & set "INVOCATION=%INVOCATION%" & set "INVOCATION_CONFIG=%INVOCATION_CONFIG%"
 ::----- End command definition block
 
