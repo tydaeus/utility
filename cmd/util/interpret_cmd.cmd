@@ -103,8 +103,6 @@ set "CMD_CONFIG[StopLog]=set CONFIG_VERBOSE=0"
 set "CMD_DEF[TOUCH]=call touch"
 set "CMD_DEF[touchAll]=call touch_all"
 
-set "CMD_DEF[UNZIP]=unzip"
-
 call find_on_path "cmd_%COMMAND_NAME%.cmd"
 
 if defined RET (
