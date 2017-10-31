@@ -103,6 +103,8 @@ set "CMD_CONFIG[StopLog]=set CONFIG_VERBOSE=0"
 set "CMD_DEF[TOUCH]=call touch"
 set "CMD_DEF[touchAll]=call touch_all"
 
+set "CMD_DEF[UNZIP]=call unzip"
+
 call find_on_path "cmd_%COMMAND_NAME%.cmd"
 
 if defined RET (
@@ -128,12 +130,12 @@ endLocal & set "FOUND=%FOUND%" & set "INVOCATION=%INVOCATION%" & set "INVOCATION
 if %FOUND%==0 exit /b
 
 set CONFIG_VERBOSE=1
-if "%CONFIG_LOGGING_ENABLED%"=="" (
+if not defined CONFIG_LOGGING_ENABLED (
     set CONFIG_LOGGING_ENABLED=0
 )
 
 ::use config if provided
-if not ["%INVOCATION_CONFIG%"]==[""] call :CONFIG_INVOCATION
+if defined INVOCATION_CONFIG call :CONFIG_INVOCATION
 
 if "%CONFIG_VERBOSE%"=="1" (
     call :ECHO_OUTPUT %COMMAND_NAME% %COMMAND_ARGS%
@@ -190,7 +192,7 @@ if "##ERROR##"=="%MSG%" (
 )
 
 :: ##STDERR## is used to indicate that the remainder of the line should get output to stdout if logging is off
-if not "%MSG:~0,10%"=="##STDERR##" goto :ECHO_OUTPUT_STDOUT
+if not "!MSG:~0,10!"=="##STDERR##" goto :ECHO_OUTPUT_STDOUT
 
 :ECHO_OUTPUT_STDERR
 set "MSG=%MSG:~10%"
