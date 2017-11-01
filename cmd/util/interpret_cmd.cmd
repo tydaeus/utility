@@ -92,6 +92,8 @@ set "CMD_DEF[DELETE]=call smart_delete"
 set "CMD_DEF[ECHO]=echo"
 set "CMD_CONFIG[ECHO]=set CONFIG_VERBOSE=0"
 
+set "CMD_DEF[EXE]=cmd /C"
+
 set "CMD_DEF[SET]=call :CMD_SET"
 set "CMD_CONFIG[SET]=set CONFIG_VERBOSE=0"
 
