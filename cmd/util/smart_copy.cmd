@@ -31,6 +31,7 @@ set NO_CLOBBER=0
 set SRC=
 set DEST=
 
+::-----Process Parameters
 call split_flags %*
 
 call :PROCESS_ARGS %ARGS%
