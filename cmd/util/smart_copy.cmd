@@ -178,12 +178,12 @@ exit /b %ERRLEV%
 :: COPY_DIR
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :COPY_DIR
-:: Always copy if no prexisting dest dir
-if not exist "%DEST%" goto :RUN_COPY_DIR
+:: Always copy if no preexisting dest dir
+if not exist "%DEST%\*" goto :RUN_COPY_DIR
 :: Overwrite if no-clobber is off
 if not "%NO_CLOBBER%"=="1" goto :RUN_COPY_DIR
 :: dest dir exists and no-clobber is on; skip copy
-echo:Dir %DEST% already exists
+echo:Dir %DEST% already exists, copy skipped
 goto :END_COPY_DIR
 
 :RUN_COPY_DIR
