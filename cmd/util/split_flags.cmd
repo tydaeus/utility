@@ -36,7 +36,7 @@ set QUOTE="
 :WHILE_ARGS_REMAIN
 
 set "CUR_ARG=%1"
-if "%CUR_ARG%"=="" goto :END
+if not defined CUR_ARG goto :END
 
 :: note that we must use GOTO logic here, because file names may contain parens
 
