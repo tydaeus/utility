@@ -188,7 +188,7 @@ set "MSG=%*"
 if not defined MSG goto :ECHO_OUTPUT_STDOUT
 
 :: ##ERROR## is used to indicate a nonzero errorlevel occurred
-if "##ERROR##"=="%MSG%" (
+if "##ERROR##"=="!MSG!" (
     set ERRLEV=1
     goto :END_ECHO_OUTPUT
 )
@@ -209,7 +209,7 @@ goto :END_ECHO_OUTPUT
 if "%CONFIG_LOGGING_ENABLED%"=="1" (
     call log %*
 ) else (
-    echo %*
+    echo:%*
 )
 
 :END_ECHO_OUTPUT
