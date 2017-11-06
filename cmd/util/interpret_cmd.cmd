@@ -93,6 +93,7 @@ set "CMD_DEF[ECHO]=echo"
 set "CMD_CONFIG[ECHO]=set CONFIG_VERBOSE=0"
 
 set "CMD_DEF[EXE]=cmd /C"
+set "CMD_DEF[EXPORT]=call :CMD_EXPORT"
 
 set "CMD_DEF[SET]=call :CMD_SET"
 set "CMD_CONFIG[SET]=set CONFIG_VERBOSE=0"
@@ -218,6 +219,13 @@ exit /b
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Commands that must be executed as functions of interpret_cmd
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:CMD_EXPORT
+set VAR_NAME=%1
+call xshift %*
+set "!VAR_NAME!=!LIST!"
+call export_vars !VAR_NAME!
+exit /b
+
 :CMD_SET
 set VAR_NAME=%1
 call xshift %*
