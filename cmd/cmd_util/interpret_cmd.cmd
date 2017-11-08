@@ -86,6 +86,7 @@ set INVOCATION_CONFIG=
 
 set "CMD_DEF[BACKUP]=call backup"
 set "CMD_DEF[CALL]=call"
+set "CMD_DEF[CD]=cd"
 set "CMD_DEF[COPY]=call smart_copy"
 set "CMD_DEF[DELETE]=call smart_delete"
 
@@ -94,6 +95,7 @@ set "CMD_CONFIG[ECHO]=set CONFIG_VERBOSE=0"
 
 set "CMD_DEF[EXE]=cmd /C"
 set "CMD_DEF[EXPORT]=call :CMD_EXPORT"
+set "CMD_DEF[FILTER]=call :CMD_FILTER"
 
 set "CMD_DEF[SET]=call :CMD_SET"
 set "CMD_CONFIG[SET]=set CONFIG_VERBOSE=0"
@@ -224,6 +226,12 @@ set VAR_NAME=%1
 call xshift %*
 set "!VAR_NAME!=!LIST!"
 call export_vars !VAR_NAME!
+exit /b
+
+:CMD_FILTER
+set "INPUT_FILE=%~1"
+call xshift %*
+type "%INPUT_FILE%" | call filter !LIST!
 exit /b
 
 :CMD_SET
