@@ -1,0 +1,20 @@
+# Prerequisites
+The following prerequisite tools must be installed globally within access of
+your user account before you'll be able to really use this project. 
+
+## NodeJS and NPM
+This project requires nodejs and the NPM package management utility, both
+installed by the node installer.
+
+Download from https://nodejs.org/en/download/.
+
+## Grunt-CLI
+Grunt is the primary build tool used in this project.
+
+Use `npm install -g grunt-cli` to install the grunt commandline interface, for 
+use on this and all projects. (After npm has been installed).
+
+## Yarn
+Yarn provides package management for this project's front-end dependencies.
+
+Install from https://yarnpkg.com/en/docs/install.
