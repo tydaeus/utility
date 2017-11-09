@@ -5,7 +5,7 @@ goto :INIT
 ::-----USAGE-------------------------------------------------------------------
 :DISPLAY_USAGE_MESSAGE
 echo: Usage:
-echo:   %SCRIPT_NAME% [--match:"MATCH_PATTERN"] [--omit:"OMIT_PATTERN"] 
+echo:   %SCRIPT_NAME% [-q] [--match:"MATCH_PATTERN"] [--omit:"OMIT_PATTERN"] 
 echo:     [INPUT_PATH [OUTPUT_PATH]]
 exit /b
 
@@ -14,11 +14,14 @@ exit /b
 ::
 :: Filters piped input and then outputs to standard output.
 ::
-:: If --match is specified, only input that matches MATCH_PATTERN will be output.
-:: If --omit is specified, only input that does not match OMIT_PATTERN will be 
-:: output.
-:: Both may be specified. If neither is specified, input will be output 
-:: unmodified.
+:: Options:
+::      --match:"MATCH_PATTERN"
+::          remove any lines that do not match MATCH_PATTERN
+::
+::      --omit:"OMIT_PATTERN"
+::          remove any lines that do match OMIT_PATTERN
+::
+::      -q  Quiet mode. The only output will be to OUTPUT_PATH.
 ::
 :: Empty lines will always be included. An empty line will be added to the end
 :: of output, even if none is present on input, due to cmd limitations.
@@ -33,8 +36,8 @@ exit /b
 :: cmd scripting. 
 ::      Cmd special characters (^, &, !, %, |) may cause problems.
 ::
-:: ##ERR: ERRMSG## will be output if an error occurs (and is successfully 
-:: detected)
+:: Any error messages will be prefixed with "#ERR#:" if an error occurs (and is 
+:: successfully detected), and output to STDERR.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::-----INIT--------------------------------------------------------------------
@@ -48,6 +51,7 @@ set INPUT_PATH=
 set OUTPUT_PATH=
 set MATCH_PATTERN=
 set OMIT_PATTERN=
+set QUIET=0
 
 call split_flags %*
 
@@ -75,7 +79,7 @@ call :READ_PIPE || goto :ERR
 goto :END
 
 :ERR
-echo:ERR: filter failed
+echo:#ERR#: filter failed 1>&2
 if "%ERRLEV%"=="0" set ERRLEV=1
 goto :END
 
@@ -91,7 +95,7 @@ exit /b %ERRLEV%
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :READ_FILE
 if not exist "!INPUT_PATH!" (
-    echo:ERR: filter: input file !INPUT_PATH! does not exist
+    echo:#ERR#: filter: input file !INPUT_PATH! does not exist 1>&2
     goto :READ_FILE_ERR
 )
 
@@ -199,13 +203,16 @@ exit /b 0
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: OUTPUT_LINE
 ::
-:: If PRESERVE_LINE remains true, output the line to stdout, and, if defined,
-:: to OUTPUT_PATH
+:: If PRESERVE_LINE remains true: 
+::     - output the line to stdout if not in quiet mode
+::     - output the line to OUTPUT_PATH if defined
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :OUTPUT_LINE
 if !PRESERVE_LINE!==0 exit /b 0
-echo:%~1
+
+if "%QUIET%"=="0" echo:%~1
 if defined OUTPUT_PATH echo:%~1>>"%OUTPUT_PATH%"
+
 exit /b 0
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -246,6 +253,11 @@ if not defined SIMPLE_FLAGS exit /b
 set "CUR_FLAG=%SIMPLE_FLAGS:~0,1%"
 :: remove first char from SIMPLE_FLAGS
 set "SIMPLE_FLAGS=%SIMPLE_FLAGS:~1%"
+
+if "!CUR_FLAG!"=="q" (
+    set QUIET=1
+    goto :WHILE_SIMPLE_FLAGS
+)
 
 ::-----
 
