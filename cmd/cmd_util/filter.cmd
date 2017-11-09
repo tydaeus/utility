@@ -5,8 +5,8 @@ goto :INIT
 ::-----USAGE-------------------------------------------------------------------
 :DISPLAY_USAGE_MESSAGE
 echo: Usage:
-echo:   %SCRIPT_NAME% [--match:"MATCH_PATTERN"] [--omit:"OMIT_PATTERN"] [INPUT_PATH]
-echo:     [OUTPUT_PATH]
+echo:   %SCRIPT_NAME% [--match:"MATCH_PATTERN"] [--omit:"OMIT_PATTERN"] 
+echo:     [INPUT_PATH [OUTPUT_PATH]]
 exit /b
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -22,6 +22,9 @@ exit /b
 ::
 :: Empty lines will always be included. An empty line will be added to the end
 :: of output, even if none is present on input, due to cmd limitations.
+::
+:: If INPUT_PATH is specified, input will be read from this file, instead of
+:: from the pipe.
 ::
 :: If OUTPUT_PATH is specified, output will also be directed there, wiping any
 :: existing file.
@@ -87,16 +90,21 @@ exit /b %ERRLEV%
 :: Reads from INPUT_PATH
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :READ_FILE
-for /F "tokens=* usebackq" %%A in (`type "!INPUT_PATH!"`) do (
-    call :READ_LINE %%A || goto :READ_LINE_ERR
+if not exist "!INPUT_PATH!" (
+    echo:ERR: filter: input file !INPUT_PATH! does not exist
+    goto :READ_FILE_ERR
 )
-goto :READ_LINE_END
 
-:READ_LINE_ERR
+for /F "tokens=* usebackq" %%A in (`type "!INPUT_PATH!"`) do (
+    call :READ_LINE %%A || goto :READ_FILE_ERR
+)
+goto :READ_FILE_END
+
+:READ_FILE_ERR
 set ERRLEV=1
-goto :READ_LINE_END
+goto :READ_FILE_END
 
-:READ_LINE_END
+:READ_FILE_END
 exit /b %ERRLEV%
 
 
