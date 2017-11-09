@@ -7,7 +7,7 @@ setLocal enableDelayedExpansion
 :: LOG_PATH var. Use init_log to conveniently initialize LOG_PATH.
 ::
 :: Usage:
-::      log MESSAGE...
+::      log [--pipe] MESSAGE...
 ::
 :: Note that all arguments are used as MESSAGEs for output to the same line.
 ::
@@ -21,12 +21,25 @@ setLocal enableDelayedExpansion
 :: use a separate var for logger errors, so conventional ERRLEV is untouched
 set LOG_ERR=0
 
-if [%1]==[] (
-    call :PIPED_INPUT
-) else (
-    call :ARG_INPUT %*
-)
+set "ARG1=%~1"
+
+:: output blank input to log
+if not defined ARG1 goto :LOG_ARGS
+:: look for --pipe flag as first parameter
+if "!ARG1!"=="--pipe" goto :LOG_PIPE
+:: default to logging whatever was passed
+goto :LOG_ARGS
+
+
+:LOG_PIPE
+call :PIPED_INPUT
 set LOG_ERR=%ERRORLEVEL%
+goto :END
+
+:LOG_ARGS
+call :ARG_INPUT %*
+set LOG_ERR=%ERRORLEVEL%
+goto :END
 
 :END
 endLocal & set LOG_ERR=%LOG_ERR%
@@ -37,7 +50,6 @@ exit /b %LOG_ERR%
 :PIPED_INPUT
 
 for /F "tokens=*" %%A in ('findstr /n "^"') do (
-    rem echo in-loop ERRLEV %ERRLEV%
     set "line=%%A"
     setlocal enableDelayedExpansion
     set "line=!line:*:=!"
@@ -52,8 +64,8 @@ exit /b %ERRORLEVEL%
 set "MESSAGE=%*"
 call eval short_time STIME
 
-echo:%MESSAGE%
-echo [%STIME%]%MESSAGE%>> "%LOG_PATH%"
-set LOG_ERR=%ERRORLEVEL%
+echo:!MESSAGE!
+echo:[!STIME!]!MESSAGE!>> "!LOG_PATH!"
+set "LOG_ERR=%ERRORLEVEL%"
 
 exit /b %LOG_ERR%
