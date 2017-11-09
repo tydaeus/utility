@@ -9,3 +9,5 @@ Debug/
 .vs/
 *.cache
 *.iml
+*.bak
+*.log
