@@ -22,12 +22,7 @@ set ERRLEV=0
 
 :: verify invocation
 set "CUR_ARG=%1"
-if not defined CUR_ARG (
-    echo ERR: xshift invalid invocation 1>&2
-    echo Usage: xshift ARG1...
-    set ERRLEV=1
-    goto :END
-)
+if not defined CUR_ARG goto :END
 
 set "RET=%1"
 
