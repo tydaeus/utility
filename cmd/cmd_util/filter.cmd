@@ -5,7 +5,8 @@ goto :INIT
 ::-----USAGE-------------------------------------------------------------------
 :DISPLAY_USAGE_MESSAGE
 echo: Usage:
-echo:   %SCRIPT_NAME% [--match:"MATCH_PATTERN"] [--omit:"OMIT_PATTERN"] [FILE_PATH]
+echo:   %SCRIPT_NAME% [--match:"MATCH_PATTERN"] [--omit:"OMIT_PATTERN"] [INPUT_PATH]
+echo:     [OUTPUT_PATH]
 exit /b
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -22,7 +23,7 @@ exit /b
 :: Empty lines will always be included. An empty line will be added to the end
 :: of output, even if none is present on input, due to cmd limitations.
 ::
-:: If FILE_PATH is specified, output will also be directed there, wiping any
+:: If OUTPUT_PATH is specified, output will also be directed there, wiping any
 :: existing file.
 ::
 :: Note that this is an inherently flawed implementation due to the limits of
@@ -40,7 +41,8 @@ set ERRLEV=0
 
 set USAGE_ERR=0
 
-set FILE_PATH=
+set INPUT_PATH=
+set OUTPUT_PATH=
 set MATCH_PATTERN=
 set OMIT_PATTERN=
 
@@ -56,14 +58,21 @@ if [%USAGE_ERR%]==[1] (
     goto :ERR
 )
 
-call :CLEAR_FILE
+:: remove anything existing at OUTPUT_PATH, if provided
+if defined OUTPUT_PATH call smart_delete "%OUTPUT_PATH%"
 
-call :START_PIPE || goto :ERR
+if not defined INPUT_PATH goto :PIPED_INPUT
 
+:FILE_INPUT
+call :READ_FILE || goto :ERR
+goto :END
+
+:PIPED_INPUT
+call :READ_PIPE || goto :ERR
 goto :END
 
 :ERR
-echo:ERR
+echo:ERR: filter failed
 if "%ERRLEV%"=="0" set ERRLEV=1
 goto :END
 
@@ -73,31 +82,65 @@ endLocal & set ERRLEV=%ERRLEV%
 exit /b %ERRLEV%
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:: CLEAR_FILE
+:: READ_FILE
 ::
-:: Deletes the output file if it already exists
+:: Reads from INPUT_PATH
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:CLEAR_FILE
+:READ_FILE
+for /F "tokens=* usebackq" %%A in (`type "!INPUT_PATH!"`) do (
+    call :READ_LINE %%A || goto :READ_LINE_ERR
+)
+goto :READ_LINE_END
 
-if not defined FILE_PATH exit /b 0
-call smart_delete "%FILE_PATH%"
+:READ_LINE_ERR
+set ERRLEV=1
+goto :READ_LINE_END
+
+:READ_LINE_END
+exit /b %ERRLEV%
+
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:: START_PIPE
+:: READ_PIPE
 ::
 :: Runs the input filter pipe until the pipe is complete.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:START_PIPE
+:READ_PIPE
 
 for /F "tokens=*" %%A in ('findstr /n "^"') do (
-    set "LINE=%%A"
-    set PRESERVE_LINE=1
-    set "LINE=!LINE:*:=!"
-    call :CHECK_MATCH "!LINE!"
-    call :CHECK_OMIT "!LINE!"
-    call :OUTPUT_LINE "!LINE!"
+    call :READ_LINE %%A || goto :READ_PIPE_ERR
 )
-exit /b %ERRORLEVEL%
+goto :READ_PIPE_END
+
+:READ_PIPE_ERR
+set ERRLEV=1
+goto :READ_PIPE_END
+
+:READ_PIPE_END
+exit /b %ERRLEV%
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: READ_LINE
+::
+:: Processes a single line, either from the pipe or the input file.
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:READ_LINE
+
+set "LINE=%*"
+set PRESERVE_LINE=1
+set "LINE=!LINE:*:=!" || goto :READ_LINE_ERR
+call :CHECK_MATCH "!LINE!" || goto :READ_LINE_ERR
+call :CHECK_OMIT "!LINE!" || goto :READ_LINE_ERR
+call :OUTPUT_LINE "!LINE!" || goto :READ_LINE_ERR
+
+goto :READ_LINE_END
+
+:READ_LINE_ERR
+set ERRLEV=1
+goto :READ_LINE_END
+
+:READ_LINE_END
+exit /b %ERRLEV%
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: CHECK_MATCH
@@ -149,12 +192,12 @@ exit /b 0
 :: OUTPUT_LINE
 ::
 :: If PRESERVE_LINE remains true, output the line to stdout, and, if defined,
-:: to FILE_PATH
+:: to OUTPUT_PATH
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :OUTPUT_LINE
 if !PRESERVE_LINE!==0 exit /b 0
 echo:%~1
-if defined FILE_PATH echo:%~1>>"%FILE_PATH%"
+if defined OUTPUT_PATH echo:%~1>>"%OUTPUT_PATH%"
 exit /b 0
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -164,10 +207,13 @@ exit /b 0
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :PROCESS_ARGS
 
-set "FILE_PATH=%~1"
+set "INPUT_PATH=%~1"
 shift
 
-:: no second arg currently supported
+set "OUTPUT_PATH=%~1"
+shift
+
+:: no more args currently supported
 set "CUR_ARG=%~1"
 if defined CUR_ARG (
     set USAGE_ERR=1
