@@ -96,7 +96,7 @@ set "CMD_CONFIG[ECHO]=set CONFIG_VERBOSE=0"
 
 set "CMD_DEF[EXE]=cmd /C"
 set "CMD_DEF[EXPORT]=call :CMD_EXPORT"
-set "CMD_DEF[FILTER]=call :CMD_FILTER"
+set "CMD_DEF[FILTER]=call filter -q"
 
 set "CMD_DEF[SET]=call :CMD_SET"
 set "CMD_CONFIG[SET]=set CONFIG_VERBOSE=0"
@@ -263,12 +263,6 @@ set "VAR_NAME=%~1"
 call xshift %*
 set "SCRIPT_CONFIG[!VAR_NAME!]=!LIST!"
 call export_vars "SCRIPT_CONFIG[!VAR_NAME!]"
-exit /b
-
-:CMD_FILTER
-set "INPUT_FILE=%~1"
-call xshift %*
-type "%INPUT_FILE%" | call filter !LIST!
 exit /b
 
 :CMD_SET
