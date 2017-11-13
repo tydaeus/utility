@@ -87,6 +87,7 @@ set INVOCATION_CONFIG=
 set "CMD_DEF[BACKUP]=call backup"
 set "CMD_DEF[CALL]=call"
 set "CMD_DEF[CD]=cd"
+set "CMD_DEF[CONFIG]=call :CMD_CONFIG"
 set "CMD_DEF[COPY]=call smart_copy"
 set "CMD_DEF[DELETE]=call smart_delete"
 
@@ -95,7 +96,7 @@ set "CMD_CONFIG[ECHO]=set CONFIG_VERBOSE=0"
 
 set "CMD_DEF[EXE]=cmd /C"
 set "CMD_DEF[EXPORT]=call :CMD_EXPORT"
-set "CMD_DEF[FILTER]=call :CMD_FILTER"
+set "CMD_DEF[FILTER]=call filter -q"
 
 set "CMD_DEF[SET]=call :CMD_SET"
 set "CMD_CONFIG[SET]=set CONFIG_VERBOSE=0"
@@ -146,21 +147,50 @@ if "%CONFIG_VERBOSE%"=="1" (
     call :ECHO_OUTPUT %COMMAND_NAME% %COMMAND_ARGS%
 )
 
-:: Invoke the command
+::----- Determine Appropriate Invocation
+:: function calls don't play nice with the for /f loop, so must handle their 
+:: own output
 call instring "%INVOCATION%" ":"
-if "%RET%"=="1" goto :INVOKE_WITH_LABEL
+if "%RET%"=="1" goto :INVOKE_WITH_MANUAL_OUTPUT
 
-:: no label present in invocation, so it's safe to use with 'for /f'
-:INVOKE_WITHOUT_LABEL
+if not defined SCRIPT_CONFIG[OUTPUT_MODE] set "SCRIPT_CONFIG[OUTPUT_MODE]=DEFAULT"
+
+if "!SCRIPT_CONFIG[OUTPUT_MODE]!"=="DEFAULT" goto :INVOKE_WITH_LOOP_OUTPUT
+if "!SCRIPT_CONFIG[OUTPUT_MODE]!"=="LOOP" goto :INVOKE_WITH_LOOP_OUTPUT
+if "!SCRIPT_CONFIG[OUTPUT_MODE]!"=="REDIRECT" goto :INVOKE_WITH_REDIRECT_OUTPUT
+if "!SCRIPT_CONFIG[OUTPUT_MODE]!"=="MANUAL" goto :INVOKE_WITH_MANUAL_OUTPUT
+
+:: invalid configuration
+call :ECHO_OUTPUT ##STDERR##WARN: interpret_cmd: invalid OUTPUT_MODE config !SCRIPT_CONFIG[OUTPUT_MODE]!, using DEFAULT
+set SCRIPT_CONFIG[OUTPUT_MODE]=DEFAULT
+:: acceptable issue: this export will be overridden if current command does its own exporting
+call export_vars SCRIPT_CONFIG[OUTPUT_MODE]
+goto :INVOKE_WITH_LOOP_OUTPUT
+::-----
+
+:: Loop through the command's output and log each line. Does not work 
+:: correctly with if command is a function, or in some cases where an invoked
+:: script or executable does some of its own output manipulation.
+:INVOKE_WITH_LOOP_OUTPUT
 :: 'for /f' does not preserve ERRORLEVEL, so we use '##ERROR##' as an indicator that an error occurred
 for /f "tokens=* useBackQ" %%A in (`%INVOCATION% %COMMAND_ARGS% 2^>^&1 ^|^| echo ##ERROR##`) do (
     call :ECHO_OUTPUT %%A
 )
 goto :END_INVOKE_COMMAND
 
+:: Run the command, redirecting its output to the log file if logging is on.
+:: Safer to use with some scripts and executables, but does not tee the output
+:: to stdout
+:INVOKE_WITH_REDIRECT_OUTPUT
+if not "%CONFIG_LOGGING_ENABLED%"=="1" goto :INVOKE_WITH_MANUAL_OUTPUT
+%INVOCATION% %COMMAND_ARGS% >> "%LOG_PATH%"
+set ERRLEV=%ERRORLEVEL%
+goto :END_INVOKE_COMMAND
+
 :: cannot call a function within for /f, so must invoke otherwise
-:: for this reason, functions must handle their own logging if desired
-:INVOKE_WITH_LABEL
+:: for this reason, functions must handle their own output and logging if 
+:: desired
+:INVOKE_WITH_MANUAL_OUTPUT
 %INVOCATION% %COMMAND_ARGS%
 set ERRLEV=%ERRORLEVEL%
 goto :END_INVOKE_COMMAND
@@ -222,16 +252,17 @@ exit /b
 :: Commands that must be executed as functions of interpret_cmd
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :CMD_EXPORT
-set VAR_NAME=%1
+set "VAR_NAME=%~1"
 call xshift %*
 set "!VAR_NAME!=!LIST!"
 call export_vars !VAR_NAME!
 exit /b
 
-:CMD_FILTER
-set "INPUT_FILE=%~1"
+:CMD_CONFIG
+set "VAR_NAME=%~1"
 call xshift %*
-type "%INPUT_FILE%" | call filter !LIST!
+set "SCRIPT_CONFIG[!VAR_NAME!]=!LIST!"
+call export_vars "SCRIPT_CONFIG[!VAR_NAME!]"
 exit /b
 
 :CMD_SET

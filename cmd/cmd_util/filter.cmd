@@ -5,7 +5,8 @@ goto :INIT
 ::-----USAGE-------------------------------------------------------------------
 :DISPLAY_USAGE_MESSAGE
 echo: Usage:
-echo:   %SCRIPT_NAME% [--match:"MATCH_PATTERN"] [--omit:"OMIT_PATTERN"] [FILE_PATH]
+echo:   %SCRIPT_NAME% [-q] [--match:"MATCH_PATTERN"] [--omit:"OMIT_PATTERN"] 
+echo:     [INPUT_PATH [OUTPUT_PATH]]
 exit /b
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -13,24 +14,30 @@ exit /b
 ::
 :: Filters piped input and then outputs to standard output.
 ::
-:: If --match is specified, only input that matches MATCH_PATTERN will be output.
-:: If --omit is specified, only input that does not match OMIT_PATTERN will be 
-:: output.
-:: Both may be specified. If neither is specified, input will be output 
-:: unmodified.
+:: Options:
+::      --match:"MATCH_PATTERN"
+::          remove any lines that do not match MATCH_PATTERN
+::
+::      --omit:"OMIT_PATTERN"
+::          remove any lines that do match OMIT_PATTERN
+::
+::      -q  Quiet mode. The only output will be to OUTPUT_PATH.
 ::
 :: Empty lines will always be included. An empty line will be added to the end
 :: of output, even if none is present on input, due to cmd limitations.
 ::
-:: If FILE_PATH is specified, output will also be directed there, wiping any
+:: If INPUT_PATH is specified, input will be read from this file, instead of
+:: from the pipe.
+::
+:: If OUTPUT_PATH is specified, output will also be directed there, wiping any
 :: existing file.
 ::
 :: Note that this is an inherently flawed implementation due to the limits of
 :: cmd scripting. 
 ::      Cmd special characters (^, &, !, %, |) may cause problems.
 ::
-:: ##ERR: ERRMSG## will be output if an error occurs (and is successfully 
-:: detected)
+:: Any error messages will be prefixed with "#ERR#:" if an error occurs (and is 
+:: successfully detected), and output to STDERR.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::-----INIT--------------------------------------------------------------------
@@ -40,9 +47,11 @@ set ERRLEV=0
 
 set USAGE_ERR=0
 
-set FILE_PATH=
+set INPUT_PATH=
+set OUTPUT_PATH=
 set MATCH_PATTERN=
 set OMIT_PATTERN=
+set QUIET=0
 
 call split_flags %*
 
@@ -56,14 +65,21 @@ if [%USAGE_ERR%]==[1] (
     goto :ERR
 )
 
-call :CLEAR_FILE
+:: remove anything existing at OUTPUT_PATH, if provided
+if defined OUTPUT_PATH call smart_delete "%OUTPUT_PATH%"
 
-call :START_PIPE || goto :ERR
+if not defined INPUT_PATH goto :PIPED_INPUT
 
+:FILE_INPUT
+call :READ_FILE || goto :ERR
+goto :END
+
+:PIPED_INPUT
+call :READ_PIPE || goto :ERR
 goto :END
 
 :ERR
-echo:ERR
+echo:#ERR#: filter failed 1>&2
 if "%ERRLEV%"=="0" set ERRLEV=1
 goto :END
 
@@ -73,31 +89,70 @@ endLocal & set ERRLEV=%ERRLEV%
 exit /b %ERRLEV%
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:: CLEAR_FILE
+:: READ_FILE
 ::
-:: Deletes the output file if it already exists
+:: Reads from INPUT_PATH
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:CLEAR_FILE
+:READ_FILE
+if not exist "!INPUT_PATH!" (
+    echo:#ERR#: filter: input file !INPUT_PATH! does not exist 1>&2
+    goto :READ_FILE_ERR
+)
 
-if not defined FILE_PATH exit /b 0
-call smart_delete "%FILE_PATH%"
+for /F "tokens=* usebackq" %%A in (`type "!INPUT_PATH!"`) do (
+    call :READ_LINE %%A || goto :READ_FILE_ERR
+)
+goto :READ_FILE_END
+
+:READ_FILE_ERR
+set ERRLEV=1
+goto :READ_FILE_END
+
+:READ_FILE_END
+exit /b %ERRLEV%
+
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:: START_PIPE
+:: READ_PIPE
 ::
 :: Runs the input filter pipe until the pipe is complete.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:START_PIPE
+:READ_PIPE
 
 for /F "tokens=*" %%A in ('findstr /n "^"') do (
-    set "LINE=%%A"
-    set PRESERVE_LINE=1
-    set "LINE=!LINE:*:=!"
-    call :CHECK_MATCH "!LINE!"
-    call :CHECK_OMIT "!LINE!"
-    call :OUTPUT_LINE "!LINE!"
+    call :READ_LINE %%A || goto :READ_PIPE_ERR
 )
-exit /b %ERRORLEVEL%
+goto :READ_PIPE_END
+
+:READ_PIPE_ERR
+set ERRLEV=1
+goto :READ_PIPE_END
+
+:READ_PIPE_END
+exit /b %ERRLEV%
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: READ_LINE
+::
+:: Processes a single line, either from the pipe or the input file.
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:READ_LINE
+
+set "LINE=%*"
+set PRESERVE_LINE=1
+set "LINE=!LINE:*:=!" || goto :READ_LINE_ERR
+call :CHECK_MATCH "!LINE!" || goto :READ_LINE_ERR
+call :CHECK_OMIT "!LINE!" || goto :READ_LINE_ERR
+call :OUTPUT_LINE "!LINE!" || goto :READ_LINE_ERR
+
+goto :READ_LINE_END
+
+:READ_LINE_ERR
+set ERRLEV=1
+goto :READ_LINE_END
+
+:READ_LINE_END
+exit /b %ERRLEV%
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: CHECK_MATCH
@@ -148,13 +203,16 @@ exit /b 0
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: OUTPUT_LINE
 ::
-:: If PRESERVE_LINE remains true, output the line to stdout, and, if defined,
-:: to FILE_PATH
+:: If PRESERVE_LINE remains true: 
+::     - output the line to stdout if not in quiet mode
+::     - output the line to OUTPUT_PATH if defined
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :OUTPUT_LINE
 if !PRESERVE_LINE!==0 exit /b 0
-echo:%~1
-if defined FILE_PATH echo:%~1>>"%FILE_PATH%"
+
+if "%QUIET%"=="0" echo:%~1
+if defined OUTPUT_PATH echo:%~1>>"%OUTPUT_PATH%"
+
 exit /b 0
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -164,10 +222,13 @@ exit /b 0
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :PROCESS_ARGS
 
-set "FILE_PATH=%~1"
+set "INPUT_PATH=%~1"
 shift
 
-:: no second arg currently supported
+set "OUTPUT_PATH=%~1"
+shift
+
+:: no more args currently supported
 set "CUR_ARG=%~1"
 if defined CUR_ARG (
     set USAGE_ERR=1
@@ -192,6 +253,11 @@ if not defined SIMPLE_FLAGS exit /b
 set "CUR_FLAG=%SIMPLE_FLAGS:~0,1%"
 :: remove first char from SIMPLE_FLAGS
 set "SIMPLE_FLAGS=%SIMPLE_FLAGS:~1%"
+
+if "!CUR_FLAG!"=="q" (
+    set QUIET=1
+    goto :WHILE_SIMPLE_FLAGS
+)
 
 ::-----
 
