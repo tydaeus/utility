@@ -20,7 +20,7 @@ if defined ProgramFiles(x86) (
 
 :64bit
 :: no XP support
-copy /b "%TARGET_FILE%"+,, "%TARGET_DIR" > nul
+copy /b "%TARGET_FILE%"+,, "%TARGET_DIR%" > nul
 set ERRLEV=%ERRORLEVEL%
 if not "%ERRLEV%"=="0" goto :ERR
 
