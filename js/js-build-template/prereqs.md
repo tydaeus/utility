@@ -8,6 +8,8 @@ installed by the node installer.
 
 Download from https://nodejs.org/en/download/.
 
+NPM will only be used for global dependencies; yarn will be used for project dependencies.
+
 ## Grunt-CLI
 Grunt is the primary build tool used in this project.
 
