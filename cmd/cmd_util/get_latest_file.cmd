@@ -14,7 +14,7 @@ setLocal enableDelayedExpansion
 :: FILE_PATTERN as RET. Note that FILE_PATTERN is processed using findstr /R,
 :: so some basic regex can be used.
 ::
-:: Sets ERRLEV and ERRORLEVEL to 1 if no files matched.
+:: Sets ERRLEV and ERRORLEVEL to 1, RET to blank if no files matched.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 set DIR_PATH=%~1
