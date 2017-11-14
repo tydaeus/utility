@@ -15,7 +15,7 @@ set "SPINNER[3]=\"
 :WHILE_INCOMPLETE
 :: TODO: check for stop condition, e.g. file presence/absence, process presence/absence
 
-ping 127.0.0.1 -n 1 >nul
+ping 127.0.0.1 -n 2 >nul
 
 set /a "I=I+1"
 
