@@ -7,6 +7,7 @@ setLocal enableDelayedExpansion
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 set ERRLEV=0
 set FOUND=0
+set EXPORT=
 
 set "COMMAND_NAME=%~1"
 
@@ -53,7 +54,7 @@ exit /b %ERRLEV%
 :: export variables set via the set command
 :EXPORT_END
 :: need to convert double '"' to single
-set EXPORT=%EXPORT:""="%
+set EXPORT=!EXPORT:""="!
 ::"
 endLocal & set ERRLEV=%ERRLEV% & %EXPORT%
 exit /b %ERRLEV%
@@ -147,6 +148,9 @@ if "%CONFIG_VERBOSE%"=="1" (
     call :ECHO_OUTPUT %COMMAND_NAME% %COMMAND_ARGS%
 )
 
+:: remove previous value
+set CMD[ReturnValue]=
+
 ::----- Determine Appropriate Invocation
 :: function calls don't play nice with the for /f loop, so must handle their 
 :: own output
@@ -172,9 +176,11 @@ goto :INVOKE_WITH_LOOP_OUTPUT
 :: correctly with if command is a function, or in some cases where an invoked
 :: script or executable does some of its own output manipulation.
 :INVOKE_WITH_LOOP_OUTPUT
+
 :: 'for /f' does not preserve ERRORLEVEL, so we use '##ERROR##' as an indicator that an error occurred
 for /f "tokens=* useBackQ" %%A in (`%INVOCATION% %COMMAND_ARGS% 2^>^&1 ^|^| echo ##ERROR##`) do (
     call :ECHO_OUTPUT %%A
+    set "CMD[ReturnValue]=%%A"
 )
 goto :END_INVOKE_COMMAND
 
@@ -196,6 +202,7 @@ set ERRLEV=%ERRORLEVEL%
 goto :END_INVOKE_COMMAND
 
 :END_INVOKE_COMMAND
+if defined CMD[ReturnValue] call export_vars CMD[ReturnValue]
 exit /b
 
 :: helper function, because executing a variable's contents doesn't work within an if
