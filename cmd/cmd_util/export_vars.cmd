@@ -13,6 +13,10 @@ setLocal enableDelayedExpansion
 :: preserve them during transfer, so it will be necessary to de-duplicate 
 :: quotes before using the string in tunneling.
 ::
+:: EXPORT does not clear any previous values of var EXPORT (allowing multiple
+:: consecutive calls to build the string); this means EXPORT must get cleared
+:: manually before/after usage if you don't want it to get cluttered.
+::
 :: e.g:
 ::      endLocal & set ERRLEV=%ERRLEV% & %EXPORT:""="%
 ::
@@ -21,13 +25,14 @@ setLocal enableDelayedExpansion
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :: no var names - invalid invocation
-if [%~1]==[] exit /b 1
+set "CUR_VAR=%~1"
+if not defined CUR_VAR exit /b 1
 
-set EXPORT=
+:: deliberately leaving EXPORT containing its previous value, so that 
+:: export_vars can be used multiple times
 
 ::-----------------------------------------------------------------------------
 :LOOP
-
 set VAR_VALUE=!%~1!
 
 ::"
@@ -44,7 +49,8 @@ set "VAR_VALUE=%VAR_VALUE:&=^&%"
 call :PROCESS_VAR "%~1" "%VAR_VALUE:"=""%"
 ::"
 
-if [%~2]==[] goto :END
+set "CUR_VAR=%~2"
+if not defined CUR_VAR goto :END
 shift
 goto :LOOP
 ::-----------------------------------------------------------------------------
@@ -58,13 +64,15 @@ exit /b
 :: Processes one variable to store its name and value in the export string.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :PROCESS_VAR
-setLocal
+setLocal enableDelayedExpansion
 
-if not "%EXPORT%"=="" set "EXPORT=%EXPORT% ^&"
+if defined EXPORT (
+    set "EXPORT=!EXPORT! ^&"
+)
 
 set VAR_NAME=%~1
 set VAR_VALUE=%~2
 
-set "EXPORT=%EXPORT% set ""%VAR_NAME%=%VAR_VALUE%"""
+set "EXPORT=!EXPORT! set ""!VAR_NAME!=!VAR_VALUE!"""
 endLocal & set "EXPORT=%EXPORT%"
 exit /b
