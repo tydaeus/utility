@@ -23,7 +23,12 @@ if "%CMD[Root]%"=="" set "CMD[Root]=C:\"
 call interpret_file "%SCRIPT_FILE%" --startToken:StartSimpleScript
 set "ERRLEV=%ERRORLEVEL%"
 
-echo:script %SCRIPT_NAME% complete with status %ERRLEV%
+if "%ERRLEV%"=="0" (
+    echo script %SCRIPT_NAME% successful
+) else (
+    echo script %SCRIPT_NAME% failed with status %ERRLEV%
+)
+
 pause
 endLocal & set "ERRLEV=%ERRLEV%"
 exit /b %ERRLEV%
