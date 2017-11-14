@@ -60,5 +60,5 @@ echo:ERR: %SCRIPT_NAME% failed
 goto :END
 
 :END
-endLocal & set ERRLEV=%ERRLEV% & set "RET=!BASE_PATH!"
+endLocal & set ERRLEV=%ERRLEV% & set "RET=%BASE_PATH%"
 exit /b %ERRLEV%
