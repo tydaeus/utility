@@ -98,6 +98,7 @@ set "CMD_CONFIG[ECHO]=set CONFIG_VERBOSE=0"
 set "CMD_DEF[EXE]=cmd /C"
 set "CMD_DEF[EXPORT]=call :CMD_EXPORT"
 set "CMD_DEF[FILTER]=call filter -q"
+set "CMD_DEF[ResolvePath]=call resolve_path"
 
 set "CMD_DEF[SET]=call :CMD_SET"
 set "CMD_CONFIG[SET]=set CONFIG_VERBOSE=0"
