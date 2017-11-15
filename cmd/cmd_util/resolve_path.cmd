@@ -19,7 +19,7 @@ exit /b
 :: most recently modified file/dir matching the pattern. Uses get_latest_file
 :: for this purpose.
 ::
-:: Returns by setting RET to the final computed file path.
+:: Returns by outputting the final computed file path to stdout
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :INIT
 set ERRLEV=0
@@ -52,6 +52,7 @@ goto :WHILE_PATTERN
 
 :END_WHILE_PATTERN
 
+echo:!BASE_PATH!
 goto :END
 
 :ERR
@@ -60,5 +61,5 @@ echo:ERR: %SCRIPT_NAME% failed
 goto :END
 
 :END
-endLocal & set ERRLEV=%ERRLEV% & set "RET=%BASE_PATH%"
+endLocal & set ERRLEV=%ERRLEV%
 exit /b %ERRLEV%
