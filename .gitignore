@@ -12,3 +12,4 @@ Debug/
 *.bak
 *.log
 *.no-git.*
+*.ignore.*
