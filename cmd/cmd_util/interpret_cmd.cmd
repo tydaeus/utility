@@ -92,7 +92,7 @@ set "CMD_DEF[CONFIG]=call :CMD_CONFIG"
 set "CMD_DEF[COPY]=call smart_copy"
 set "CMD_DEF[DELETE]=call smart_delete"
 
-set "CMD_DEF[ECHO]=echo"
+set "CMD_DEF[ECHO]=echo:"
 set "CMD_CONFIG[ECHO]=set CONFIG_VERBOSE=0"
 
 set "CMD_DEF[EXE]=cmd /C"
