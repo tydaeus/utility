@@ -60,8 +60,11 @@ if "!CUR_ARG:~0,1!"=="-" (
     goto :PROCESS_FLAGS
 )
 ::------
-
 :: we're past any flags now
+
+:: ensure OUTPUT_VAR starts blank if we're using one
+if defined %OUTPUT_VAR% set %OUTPUT_VAR%=
+
 :PROCESS_ARGS
 set "BASE_PATH=%~dpnx1"
 
