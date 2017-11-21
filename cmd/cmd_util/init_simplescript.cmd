@@ -13,6 +13,8 @@ set "UTIL_HOME=%~dp0"
 
 set "PATH=%UTIL_HOME%;%PATH%"
 
+if exist "%UTIL_HOME%..\cmd_util_ext\" set "PATH=%UTIL_HOME%..\cmd_util_ext;%PATH%"
+
 set "CMD[ScriptHome]=%SCRIPT_HOME%"
 set "CMD[ScriptName]=%SCRIPT_NAME%"
 set "CMD[UtilHome]=%UTIL_HOME%"
