@@ -11,3 +11,4 @@ Debug/
 *.iml
 *.bak
 *.log
+*.no-git.*
