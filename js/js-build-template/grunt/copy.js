@@ -36,12 +36,11 @@ module.exports.less = {
 // copy post-build files into <%= publishDir %>
 module.exports.publish = {
     files: [
-        // TODO generate description for each app
         {
             expand: true,
-            src: ['<%= buildDir %>/**'],
+            cwd: '<%= buildDir %>',
+            src: ['./**'],
             dest: '<%= publishDir %>/',
-            flatten: true
         }
     ]
 };
