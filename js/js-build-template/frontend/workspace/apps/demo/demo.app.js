@@ -1,11 +1,15 @@
 'use strict';
 
-var _ = require('lodash');
+var angular = require('angular');
 
 console.info('demo.app.js run');
 
-var arr = [1, 2, 3, 4];
+var demoApp = angular.module('demoApp', []);
 
-_.each(arr, function(elem) {
-    console.info(elem);
+demoApp.controller('demoController', function($scope, $interval) {
+    $scope.i = 1;
+
+    $interval(function() {
+        $scope.i++;
+    }, 500);
 });
