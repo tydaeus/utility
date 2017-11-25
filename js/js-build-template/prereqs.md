@@ -25,4 +25,4 @@ Install from https://yarnpkg.com/en/docs/install.
 
 ### http-server
 http-server can be used as a test server to verify that the template works correctly. Install via 
-`npm install -g http-server`. Use via `http-server frontend/public/apps/demo/demo.index.html`.
+`npm install -g http-server`. Use via `http-server frontend/public/apps/demo`.
