@@ -1,0 +1,1 @@
+console.info('demo.app.js run');
