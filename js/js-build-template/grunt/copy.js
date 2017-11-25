@@ -1,27 +1,19 @@
 'use strict';
 
-var _ = require('lodash');
-
 module.exports = {};
 
-// list each app's name here TODO get this list from Gruntfile
-var apps = ['demo'];
+module.exports.build = {
+    files: [
+        {
+            expand: true,
+            cwd: '<%= source %>',
+            src: ['./**'],
+            dest: '<%= buildDir %>'
+        }
+    ]
+};
 
-// copy core files for each app
-_.each(apps, function(app) {
-    module.exports[app] = {
-        // each app's index file(s)
-        files: [
-            {
-                expand: true,
-                src: ['<%= source %>/apps/' + app + '/*.index.html'],
-                dest: '<%= buildDir %>/apps/' + app,
-                flatten: true
-            }
-        ]
-    };
-});
-
+// copy pre-build files from <%= source %> to <%= buildDir %>
 module.exports.less = {
     files: [
         {
@@ -40,7 +32,7 @@ module.exports.publish = {
             expand: true,
             cwd: '<%= buildDir %>',
             src: ['./**'],
-            dest: '<%= publishDir %>/',
+            dest: '<%= publishDir %>/'
         }
     ]
 };
