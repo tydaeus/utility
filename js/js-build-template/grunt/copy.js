@@ -26,7 +26,7 @@ module.exports.publish = {
         {
             expand: true,
             cwd: '<%= buildDir %>',
-            src: ['./**'],
+            src: ['./**/*.app.js', './**/*.index.html'],
             dest: '<%= publishDir %>/'
         }
     ]
