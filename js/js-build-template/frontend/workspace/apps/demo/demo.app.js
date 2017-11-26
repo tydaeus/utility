@@ -17,7 +17,7 @@ require('./demo.templates.js'); // created as part of build
 
 
 // must declare angular app module before declaring/requiring any parts of this app
-angular.module('demo', ['ngRoute', 'test']);
+var demo = angular.module('demo', ['ngRoute', 'test', 'demo.templates']);
 
 // perform angular service, directive, and controller declarations
 require('./home/home.controller');
