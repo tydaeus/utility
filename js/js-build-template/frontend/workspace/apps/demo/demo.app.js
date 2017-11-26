@@ -13,16 +13,14 @@ require('angular-ui-bootstrap');
 
 // require modules that will be used by app before declaring app
 require('../../modules/test/test.module');
+require('./demo.templates.js'); // created as part of build
 
-// must declare angular app module before adding/requiring any parts of this module
-var demoApp = angular.module('demoApp', ['test']);
 
-demoApp.controller('demoController', function($scope, $interval, tester) {
-    $scope.i = 1;
+// must declare angular app module before declaring/requiring any parts of this app
+angular.module('demo', ['ngRoute', 'test']);
 
-    $interval(function() {
-        $scope.i++;
-    }, 500);
+// perform angular service, directive, and controller declarations
+require('./home/home.controller');
 
-    tester();
-});
+// perform angular config
+require ('./demo.routes');
