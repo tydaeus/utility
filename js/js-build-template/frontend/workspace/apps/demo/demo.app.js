@@ -6,7 +6,10 @@ var _ = require('lodash');
 var $ = require('jquery');
 
 // require angular and all angular libraries before requiring/declaring custom angular
+//      NOTE: angular dependencies decorate the angular object, so further requires are unnecessary
 var angular = require('angular');
+require('angular-route');
+require('angular-ui-bootstrap');
 
 // require modules that will be used by app before declaring app
 require('../../modules/test/test.module');
