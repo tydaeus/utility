@@ -1,7 +1,10 @@
 module.exports = {
+
+    // provide reasonable default options
+    // target-specific options will override
     options: {
         // portion of path to get stripped when determining template url
-        base: '<%= buildDir %>/app/',
+        base: '<%= buildDir %>/apps',
         // angular module to contain the generated templates
         module: 'templates',
         // create a single wrapping module with run block, instead of a module per template
@@ -24,9 +27,12 @@ module.exports = {
     },
     // future: consider splitting application such that shared modules are in one location and app-specific
     // modules contained in their own folder
-    general: {
-
-        src: ['<%= buildDir %>/app/**/*.tpl.html'],
-        dest: '<%= buildDir %>/app/modules/templates/templates.js'
+    demo: {
+        options: {
+            base: '<%= buildDir %>/apps/demo/',
+            module: 'demo.templates'
+        },
+        src: ['<%= buildDir %>/apps/demo/**/*.tpl.html'],
+        dest: '<%= buildDir %>/apps/demo/demo.templates.js'
     }
 };

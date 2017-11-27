@@ -17,13 +17,13 @@
  */
 
 module.exports = {
-	app: {
+	demo: {
 	    // src files are considered as entry points into the application;
         // requirements are resolved starting with these files and resolving
         // each require()'s path
     	src: [
-            '<%= buildDir %>/app/app.js'
+            '<%= buildDir %>/apps/demo/demo.app.js'
     	],
-    	dest: '<%= publishDir %>/app.js'
+    	dest: '<%= publishDir %>/apps/demo/demo.app.js'
 	}
 };

@@ -20,3 +20,9 @@ use on this and all projects. (After npm has been installed).
 Yarn provides package management for this project's front-end dependencies.
 
 Install from https://yarnpkg.com/en/docs/install.
+
+## Optional Prereqs
+
+### http-server
+http-server can be used as a test server to verify that the template works correctly. Install via 
+`npm install -g http-server`. Use via `http-server frontend/public/apps/demo`.
