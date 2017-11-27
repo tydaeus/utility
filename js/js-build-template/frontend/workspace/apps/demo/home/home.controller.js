@@ -1,9 +1,7 @@
 'use strict';
 
-var angular = require('angular');
-
-angular.module('demo')
-    .controller('homeController', function($scope, $interval) {
+require('angular').module('demo')
+    .controller('homeController', function($scope, $interval, $location) {
 
         function updateTime() {
             var time = new Date();
@@ -11,6 +9,10 @@ angular.module('demo')
         }
 
         updateTime();
+
+        $scope.goto = function goto(path) {
+            $location.path(path);
+        };
 
         $interval(updateTime, 250);
     });
