@@ -24,3 +24,9 @@ require('./home/home.controller');
 
 // perform angular config
 require ('./demo.routes');
+
+demo.run(function($rootScope, $location) {
+    $rootScope.goto = function goto(path) {
+        $location.path(path);
+    }
+});

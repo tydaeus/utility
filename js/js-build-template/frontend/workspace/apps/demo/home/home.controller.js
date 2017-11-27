@@ -10,9 +10,5 @@ require('angular').module('demo')
 
         updateTime();
 
-        $scope.goto = function goto(path) {
-            $location.path(path);
-        };
-
         $interval(updateTime, 250);
     });
