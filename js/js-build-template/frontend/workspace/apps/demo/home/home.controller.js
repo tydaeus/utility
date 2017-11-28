@@ -1,14 +1,17 @@
 'use strict';
 
 require('angular').module('demo')
-    .controller('homeController', function($scope, $interval, $location) {
+    .controller('homeController',[
+        '$scope',
+        '$interval',
+        function ($scope, $interval) {
 
-        function updateTime() {
-            var time = new Date();
-            $scope.time = time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
-        }
+            function updateTime() {
+                var time = new Date();
+                $scope.time = time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
+            }
 
-        updateTime();
+            updateTime();
 
-        $interval(updateTime, 250);
-    });
+            $interval(updateTime, 250);
+        }]);
