@@ -19,14 +19,18 @@ require('./demo.templates.js'); // created as part of build
 // must declare angular app module before declaring/requiring any parts of this app
 var demo = angular.module('demo', ['ngRoute', 'test', 'demo.templates']);
 
-// perform angular service, directive, and controller declarations
+// require app-specific angular service, directive, and controller declarations
 require('./home/home.controller');
+require('./page2/page2.controller');
 
 // perform angular config
-require ('./demo.routes');
+require('./demo.routes');
 
-demo.run(function($rootScope, $location) {
-    $rootScope.goto = function goto(path) {
-        $location.path(path);
-    }
-});
+demo.run([
+    '$rootScope',
+    '$location',
+    function ($rootScope, $location) {
+        $rootScope.goto = function goto(path) {
+            $location.path(path);
+        }
+    }]);
