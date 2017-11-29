@@ -27,7 +27,7 @@ set OUTPUT_NAME=%~2
 
 if defined BACKUP_HOME set "TARGET_PATH=%BACKUP_HOME%\"
 
-if not defined OUTPUT_NAME set "OUTPUT_NAME=TARGET_NAME"
+if not defined OUTPUT_NAME set "OUTPUT_NAME=!TARGET_NAME!"
 
 call eval "short_date" SDATE
 call eval "short_time" STIME
