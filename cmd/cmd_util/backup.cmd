@@ -27,7 +27,7 @@ set OUTPUT_NAME=%~2
 
 if defined BACKUP_HOME set "TARGET_PATH=%BACKUP_HOME%\"
 
-if not defined OUTPUT_NAME set "OUTPUT_NAME=!TARGET_NAME!"
+call :BUILD_OUTPUT_NAME
 
 call eval "short_date" SDATE
 call eval "short_time" STIME
@@ -47,3 +47,15 @@ goto :END
 :END
 endLocal & set ERRLEVEL=%ERRLEVEL%
 exit /b %ERRLEVEL%
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: ensure we have a good name for the output backup file
+:BUILD_OUTPUT_NAME
+if not defined OUTPUT_NAME set "OUTPUT_NAME=!TARGET_NAME!"
+:: if TARGET_NAME ends in '\', we'll need to strip that off and use the end of the path
+if not defined OUTPUT_NAME (
+    set OUTPUT_NAME=!TARGET_PATH:~0,-1!
+    call eval "call extend_param !OUTPUT_NAME! nx" OUTPUT_NAME
+)
+
+exit /b
