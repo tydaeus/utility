@@ -55,7 +55,8 @@ exit /b %ERRLEVEL%
 :BUILD_OUTPUT_NAME
 
 if not defined OUTPUT_NAME set "OUTPUT_NAME=!TARGET_NAME!"
-:: if TARGET_NAME ends in '\', we'll need to strip that off and use the end of the path
+:: if TARGET_PATH ends in '\', TARGET_NAME will be blank, so we'll need to 
+:: strip that off and use the end of the path
 if not defined OUTPUT_NAME (
     set OUTPUT_NAME=!TARGET_PATH:~0,-1!
     call extend_param --output:OUTPUT_NAME "!OUTPUT_NAME!" nx
