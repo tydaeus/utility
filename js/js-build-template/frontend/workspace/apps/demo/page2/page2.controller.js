@@ -1,20 +1,14 @@
 'use strict';
 
+var pickFiles = require('../../../modules/browser-files/pick-files');
+
 require('angular')
     .module('demo')
     .controller('page2Controller', [
         '$scope',
         function ($scope) {
             $scope.loadFiles = function() {
-                var elem = document.createElement('input');
-                elem.setAttribute('type', 'file');
-                elem.setAttribute('style', 'display:none');
-                elem.setAttribute('multiple', 'true');
-                // can setAttribute 'accept' to a comma-separated list of mime types or extensions to restrict
-                elem.onchange = function() { filesSelected(elem.files); };
-                // document.appendChild(elem);
-                elem.click();
-                // document.removeChild(elem);
+                pickFiles().then(filesSelected);
             };
 
             function filesSelected(files) {
