@@ -31,9 +31,8 @@ call :ECHO_OUTPUT ##STDERR##ERR: interpret_cmd: command not recognized: "%COMMAN
 goto :ERR
 
 :COMMAND_FOUND
-echo:COMMAND_FOUND, ERRLEV=%ERRLEV%
 if not "%ERRLEV%"=="0" (
-    call :ECHO_OUTPUT ##STDERR##ERR: interpret_cmd: failed to %COMMAND_NAME% %COMMAND_ARGS%
+    call :ECHO_OUTPUT ##STDERR##ERR: interpret_cmd: failed to !COMMAND_NAME! !COMMAND_ARGS!
     goto :ERR
 )
 goto :END
@@ -43,13 +42,11 @@ goto :END
 :: error handling for default processing
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :ERR
-echo:ERR, ERRLEV=%ERRLEV%
 if "%ERRLEV%"=="0" set ERRLEV=1
 goto :END
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :END
-echo:END, ERRLEV=%ERRLEV%
 if defined EXPORT goto :EXPORT_END
 endLocal & set ERRLEV=%ERRLEV%
 exit /b %ERRLEV%
