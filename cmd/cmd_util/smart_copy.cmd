@@ -44,6 +44,8 @@ if [%USAGE_ERR%]==[1] (
 	goto :ERR
 )
 
+call :NORMALIZE_SRC || goto :ERR
+
 if not exist "%SRC%" (
     set ERRLEV=1
     echo:ERR: smart_copy: failed to copy "%SRC%": does not exist 1>&2
@@ -191,4 +193,23 @@ echo D | xcopy /E /Y /Q "%SRC%" "%DEST%" > nul
 set ERRLEV=%ERRORLEVEL%
 
 :END_COPY_DIR
+exit /b %ERRLEV%
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: NORMALIZE_SRC
+::
+:: Ensures SRC is in a usable form
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:NORMALIZE_SRC
+:: strip ending '\' or '/', because this can cause issues
+if "!SRC:~-1!"=="\" set "SRC=!SRC:~0,-1!" || goto :ERR_NORMALIZE_SRC
+if "!SRC:~-1!"=="/" set "SRC=!SRC:~0,-1!" || goto :ERR_NORMALIZE_SRC
+goto :END_NORMALIZE_SRC
+
+:ERR_NORMALIZE_SRC
+set ERRLEV=1
+echo:ERR:%SCRIPT_NAME%:failed to normalize %SRC% 1>&2
+
+:END_NORMALIZE_SRC
+:: XP gets weird ERRORLEVELs here, must rely on ERRLEV
 exit /b %ERRLEV%
