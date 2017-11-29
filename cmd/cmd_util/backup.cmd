@@ -35,6 +35,8 @@ set "TIMESTAMP=[%SDATE%-%STIME%]"
 
 if exist "%TARGET%" (
     call smart_copy "%TARGET%" "%TARGET_PATH%%TIMESTAMP%%OUTPUT_NAME%.bak" > nul || goto :ERR
+) else (
+    echo:backup skipped: %TARGET% does not exist
 )
 
 goto :END
@@ -51,11 +53,12 @@ exit /b %ERRLEVEL%
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: ensure we have a good name for the output backup file
 :BUILD_OUTPUT_NAME
+:: TODO: remove debug
+
 if not defined OUTPUT_NAME set "OUTPUT_NAME=!TARGET_NAME!"
 :: if TARGET_NAME ends in '\', we'll need to strip that off and use the end of the path
 if not defined OUTPUT_NAME (
     set OUTPUT_NAME=!TARGET_PATH:~0,-1!
-    call eval "call extend_param !OUTPUT_NAME! nx" OUTPUT_NAME
+    call extend_param --output:OUTPUT_NAME "!OUTPUT_NAME!" nx
 )
-
 exit /b
