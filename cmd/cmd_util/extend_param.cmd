@@ -2,7 +2,7 @@
 goto :INIT
 :DISPLAY_USAGE
 echo: Usage:
-echo:   %SCRIPT_NAME% PARAM EXTENSIONS
+echo:   %SCRIPT_NAME% [--output:VARAME] PARAM EXTENSIONS
 exit /b
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -21,7 +21,21 @@ setLocal enableDelayedExpansion
 set "SCRIPT_NAME=%~n0"
 set ERRLEV=0
 set RET=
+set OUTPUT_VAR=
+set QUOTE="
+::"
 
+:: check for output flag
+:CHECK_FLAG
+set "FLAG_CHECK=%1"
+:: flag cannot be wrapped in quotes
+if !FLAG_CHECK:~0^,1!==!QUOTE! goto :READ_PARAM
+if "!FLAG_CHECK:~0,9!"=="--output:" (
+    set "OUTPUT_VAR=!FLAG_CHECK:~9!"
+    shift
+)
+
+:READ_PARAM
 set "PARAM=%~1"
 
 if not defined PARAM (
@@ -30,6 +44,7 @@ if not defined PARAM (
     goto :ERR
 )
 
+:READ_EXTENSIONS
 set "EXTENSIONS=%~2"
 
 if not defined EXTENSIONS (
@@ -56,7 +71,7 @@ goto :SUCCESS
 
 
 :SUCCESS
-echo:!RET!
+if not defined OUTPUT_VAR echo:!RET!
 goto :END
 
 :ERR
@@ -65,7 +80,11 @@ echo:ERR: %SCRIPT_NAME% failed 1>&2
 goto :END
 
 :END
-endLocal & set "ERRLEV=%ERRLEV%"
+if not defined OUTPUT_VAR (
+    endLocal & set "ERRLEV=%ERRLEV%"
+) else (
+    endLocal & set "ERRLEV=%ERRLEV%" & set "%OUTPUT_VAR%=%RET%"
+)
 exit /b %ERRLEV%
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
