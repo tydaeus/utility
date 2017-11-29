@@ -53,7 +53,6 @@ exit /b %ERRLEVEL%
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: ensure we have a good name for the output backup file
 :BUILD_OUTPUT_NAME
-:: TODO: remove debug
 
 if not defined OUTPUT_NAME set "OUTPUT_NAME=!TARGET_NAME!"
 :: if TARGET_NAME ends in '\', we'll need to strip that off and use the end of the path
