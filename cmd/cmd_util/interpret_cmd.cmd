@@ -31,6 +31,7 @@ call :ECHO_OUTPUT ##STDERR##ERR: interpret_cmd: command not recognized: "%COMMAN
 goto :ERR
 
 :COMMAND_FOUND
+echo:COMMAND_FOUND, ERRLEV=%ERRLEV%
 if not "%ERRLEV%"=="0" (
     call :ECHO_OUTPUT ##STDERR##ERR: interpret_cmd: failed to %COMMAND_NAME% %COMMAND_ARGS%
     goto :ERR
@@ -42,11 +43,13 @@ goto :END
 :: error handling for default processing
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :ERR
+echo:ERR, ERRLEV=%ERRLEV%
 if "%ERRLEV%"=="0" set ERRLEV=1
 goto :END
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :END
+echo:END, ERRLEV=%ERRLEV%
 if defined EXPORT goto :EXPORT_END
 endLocal & set ERRLEV=%ERRLEV%
 exit /b %ERRLEV%
@@ -92,7 +95,7 @@ set "CMD_DEF[CONFIG]=call :CMD_CONFIG"
 set "CMD_DEF[COPY]=call smart_copy"
 set "CMD_DEF[DELETE]=call smart_delete"
 
-set "CMD_DEF[ECHO]=echo:"
+set "CMD_DEF[ECHO]=call :CMD_ECHO"
 set "CMD_CONFIG[ECHO]=set CONFIG_VERBOSE=0"
 
 set "CMD_DEF[EXE]=cmd /C"
@@ -205,7 +208,7 @@ goto :END_INVOKE_COMMAND
 
 :END_INVOKE_COMMAND
 if defined CMD[ReturnValue] call export_vars CMD[ReturnValue]
-exit /b
+exit /b %ERRLEV%
 
 :: helper function, because executing a variable's contents doesn't work within an if
 :CONFIG_INVOCATION
@@ -222,6 +225,8 @@ exit /b
 :: processing:
 ::      ##ERROR## indicates that a nonzero ERRORLEVEL occurred
 ::      ##STDERR## indicates that the remainder should get echoed as stderr
+::
+:: Implemented with goto logic in an attempt to support parentheses in message.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :ECHO_OUTPUT
 set "MSG=%*"
@@ -230,29 +235,34 @@ set "MSG=%*"
 if not defined MSG goto :ECHO_OUTPUT_STDOUT
 
 :: ##ERROR## is used to indicate a nonzero errorlevel occurred
-if "##ERROR##"=="!MSG!" (
-    set ERRLEV=1
-    goto :END_ECHO_OUTPUT
-)
+:EO_CHECK_FOR_ERROR
+if not "##ERROR##"=="!MSG!" goto :EO_CHECK_FOR_STDERR
+set ERRLEV=1
+goto :END_ECHO_OUTPUT
 
+:EO_CHECK_FOR_STDERR
 :: ##STDERR## is used to indicate that the remainder of the line should get output to stdout if logging is off
 if not "!MSG:~0,10!"=="##STDERR##" goto :ECHO_OUTPUT_STDOUT
 
 :ECHO_OUTPUT_STDERR
 set "MSG=%MSG:~10%"
-if "%CONFIG_LOGGING_ENABLED%"=="1" (
-    call log %MSG%
-) else (
-    echo:%MSG% 1>&2
-)
+
+if not "%CONFIG_LOGGING_ENABLED%"=="1" goto :EO_ECHO_STDERR
+call log %MSG%
+goto :END_ECHO_OUTPUT
+
+:EO_ECHO_STDERR
+echo:!MSG! 1>&2
 goto :END_ECHO_OUTPUT
 
 :ECHO_OUTPUT_STDOUT
-if "%CONFIG_LOGGING_ENABLED%"=="1" (
-    call log %*
-) else (
-    echo:%*
-)
+if not "%CONFIG_LOGGING_ENABLED%"=="1" goto :EO_ECHO_STDOUT
+call log !MSG!
+goto :END_ECHO_OUTPUT
+
+:EO_ECHO_STDOUT
+echo:!MSG!
+goto :END_ECHO_OUTPUT
 
 :END_ECHO_OUTPUT
 exit /b
@@ -260,6 +270,11 @@ exit /b
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Commands that must be executed as functions of interpret_cmd
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:CMD_ECHO
+set "OUTPUT=%*"
+call :ECHO_OUTPUT !OUTPUT!
+exit /b
+
 :CMD_EXPORT
 set "VAR_NAME=%~1"
 call xshift %*
