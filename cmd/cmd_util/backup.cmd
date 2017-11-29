@@ -25,16 +25,16 @@ set TARGET_PATH=%~dp1
 set TARGET_NAME=%~nx1
 set OUTPUT_NAME=%~2
 
-if defined BACKUP_HOME set "TARGET_PATH=%BACKUP_HOME%\"
+call :READ_PARAMS
 
-call :BUILD_OUTPUT_NAME
+if defined BACKUP_HOME set "TARGET_PATH=%BACKUP_HOME%\"
 
 call eval "short_date" SDATE
 call eval "short_time" STIME
 set "TIMESTAMP=[%SDATE%-%STIME%]"
 
 if exist "%TARGET%" (
-    call smart_copy "%TARGET%" "%TARGET_PATH%%TIMESTAMP%%OUTPUT_NAME%.bak" > nul || goto :ERR
+    call smart_copy "%TARGET%" "%TARGET_PATH%%TIMESTAMP%%OUTPUT_NAME%.bak" || goto :ERR
 ) else (
     echo:backup skipped: %TARGET% does not exist
 )
@@ -51,14 +51,30 @@ endLocal & set ERRLEVEL=%ERRLEVEL%
 exit /b %ERRLEVEL%
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:: ensure we have a good name for the output backup file
-:BUILD_OUTPUT_NAME
+:: READ_PARAMS 
+::
+:: Process the params to ensure they're set appropriately. Ensure our 
+:: parameters are not screwy.
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:READ_PARAMS
+set BAD_TARGET=0
 
+:: if OUTPUT_NAME was not passed, set it based on TARGET_NAME
 if not defined OUTPUT_NAME set "OUTPUT_NAME=!TARGET_NAME!"
-:: if TARGET_PATH ends in '\', TARGET_NAME will be blank, so we'll need to 
-:: strip that off and use the end of the path
+
+:: if TARGET ends in '\', TARGET_NAME will be blank, so we'll need to strip off
+:: the '\' and use the end of the path
 if not defined OUTPUT_NAME (
-    set OUTPUT_NAME=!TARGET_PATH:~0,-1!
+    set BAD_TARGET=1
+    set "OUTPUT_NAME=!TARGET_PATH:~0,-1!"
     call extend_param --output:OUTPUT_NAME "!OUTPUT_NAME!" nx
 )
+
+:: if TARGET ends in '\', TARGET_PATH will be the targeted dir. We don't want
+:: to attempt to copy the backup into a targeted directory, so we need to go
+:: up one level
+if %BAD_TARGET%==1 (
+    set "TARGET_PATH=!TARGET_PATH!..\"
+)
+
 exit /b
