@@ -1,7 +1,6 @@
 'use strict';
 
 // require non-angular library dependencies first
-var _ = require('lodash');
 // require jquery before angular to use full jquery instead of angular's jqLite
 var $ = require('jquery');
 
