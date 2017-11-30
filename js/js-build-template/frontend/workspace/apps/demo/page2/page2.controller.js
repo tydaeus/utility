@@ -3,6 +3,7 @@
 var pickFiles = require('../../../modules/browser-files/pick-files');
 var readFiles = require('../../../modules/browser-files/read-files');
 var resizeImage = require('../../../modules/browser-files/resize-image');
+var saveFile = require('../../../modules/browser-files/save-file');
 
 require('angular')
     .module('demo')
@@ -33,7 +34,15 @@ require('angular')
                 resizeImage(image, 100, 75).then(function(resizedImage) {
                     file.imageData = resizedImage.src;
                     $scope.$apply();
+                    saveImage(file);
                 });
+            }
+
+            function saveImage(file) {
+                saveFile({
+                    data: file.imageData,
+                    name: file.name
+                })
             }
 
         }]);
