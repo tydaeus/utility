@@ -2,4 +2,10 @@
     <h2>Page 2</h2>
     <a href ng-click="$root.goto('/')">Home</a><br />
     <a href ng-click="loadFiles()">Load Files</a>
+    <ul>
+        <li ng-repeat="file in files">
+            <img style="max-height: 250px; max-width: 250px;" ng-src="{{file.data}}">
+            {{file.name}}
+        </li>
+    </ul>
 </div>

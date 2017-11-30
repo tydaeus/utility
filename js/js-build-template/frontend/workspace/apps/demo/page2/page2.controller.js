@@ -1,6 +1,7 @@
 'use strict';
 
 var pickFiles = require('../../../modules/browser-files/pick-files');
+var readFiles = require('../../../modules/browser-files/read-files');
 
 require('angular')
     .module('demo')
@@ -8,26 +9,17 @@ require('angular')
         '$scope',
         function ($scope) {
             $scope.loadFiles = function() {
-                pickFiles().then(filesSelected);
+                pickFiles()
+                    .then(function(files) {
+                        return readFiles(files, 'dataURL');
+                    })
+                    .then(filesRead);
             };
 
-            function filesSelected(files) {
+            function filesRead(files) {
+                $scope.files = files;
+                $scope.$apply();
                 console.info(files);
             }
 
-            // todo: read uploaded files
-            function readFile(file) {
-                var fileReader = new FileReader();
-                fileReader.onloadend = function(e) {
-                    deferred.resolve(e.target.result);
-                };
-
-                if (!method || method === "arrayBuffer") {
-                    fileReader.readAsArrayBuffer(file);
-                } else if (method === "text") {
-                    fileReader.readAsText(file);
-                } else if (method === "dataURL") {
-                    fileReader.readAsDataURL(file);
-                }
-            }
         }]);
