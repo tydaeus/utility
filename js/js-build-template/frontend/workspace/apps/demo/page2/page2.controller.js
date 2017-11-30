@@ -31,7 +31,7 @@ require('angular')
                 var image = new Image();
                 image.src = file.data;
 
-                resizeImage(image, 100, 75).then(function(resizedImage) {
+                resizeImage(image, { width: 768, height: 75}).then(function(resizedImage) {
                     file.imageData = resizedImage.src;
                     $scope.$apply();
                     saveImage(file);

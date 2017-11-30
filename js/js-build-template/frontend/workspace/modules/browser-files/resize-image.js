@@ -2,10 +2,16 @@
 
 var _ = require('underscore');
 
+var defaultSettings = {
+    proportional : true,
+    prefer: -1
+};
+
 function resizeImage(image, settings) {
 
-    var _settings = _.extend({}, resizeImage.defaultSettings, settings);
-    
+    var settings = _.extend({}, defaultSettings, settings);
+    console.info('settings', settings);
+
     return new Promise(function(resolve, reject) {
 
         // ensure the base image is ready for use before attempting resize
@@ -16,12 +22,25 @@ function resizeImage(image, settings) {
         }
 
         function performResize() {
+            // calculate proper size if proportionality desired
+            // TODO: reject if sizing data not valid
+            if (settings.proportional) {
+                var ratio = image.width / image.height;
+
+                // for now, favor preserving target width over preserving target height
+                if (settings.width) {
+                    settings.height = Math.floor(settings.width / ratio);
+                } else {
+                    settings.width = Math.floor(settings.height * ratio);
+                }
+            }
+
             var canvas = document.createElement('canvas');
             var context = canvas.getContext('2d');
 
-            canvas.height = _settings.height;
-            canvas.width = _settings.width;
-            context.drawImage(image, 0, 0, _settings.width, _settings.height);
+            canvas.height = settings.height;
+            canvas.width = settings.width;
+            context.drawImage(image, 0, 0, settings.width, settings.height);
 
             var result = new Image();
             result.src = canvas.toDataURL('image/jpeg');
@@ -32,13 +51,5 @@ function resizeImage(image, settings) {
     });
 
 }
-
-resizeImage.defaultSettings = {
-    proportional : true,
-    width: 500,
-    height: 500,
-    prefer: -1
-};
-
 
 module.exports = resizeImage;
