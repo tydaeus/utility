@@ -4,8 +4,9 @@
     <a href ng-click="loadFiles()">Load Files</a>
     <ul>
         <li ng-repeat="file in files">
-            <img style="max-height: 250px; max-width: 250px;" ng-src="{{file.imageData}}">
-            {{file.name}}
+            <img style="max-height: 250px; max-width: 250px;" ng-src="{{file.imageData}}"><br />
+            {{file.name}} <br />
+            <a href ng-click="saveFile(file)">Save File</a>
         </li>
     </ul>
 </div>

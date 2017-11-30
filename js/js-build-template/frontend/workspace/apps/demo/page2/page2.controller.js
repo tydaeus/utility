@@ -34,15 +34,14 @@ require('angular')
                 resizeImage(image, { width: 768, height: 75}).then(function(resizedImage) {
                     file.imageData = resizedImage.src;
                     $scope.$apply();
-                    saveImage(file);
                 });
             }
 
-            function saveImage(file) {
+            $scope.saveFile = function(file) {
                 saveFile({
                     data: file.imageData,
                     name: file.name
-                })
+                });
             }
 
         }]);
