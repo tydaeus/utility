@@ -2,6 +2,7 @@
 
 var pickFiles = require('../../../modules/browser-files/pick-files');
 var readFiles = require('../../../modules/browser-files/read-files');
+var resizeImage = require('../../../modules/browser-files/resize-image');
 
 require('angular')
     .module('demo')
@@ -17,9 +18,23 @@ require('angular')
             };
 
             function filesRead(files) {
+
+                for (var i = 0; i < files.length; i++) {
+                    modifyImage(files[i]);
+                }
                 $scope.files = files;
-                $scope.$apply();
                 console.info(files);
+            }
+
+            function modifyImage(file) {
+                var image = new Image();
+                image.src = file.data;
+                image.onload = function() {
+                    resizeImage(image, 100, 75).then(function(resizedImage) {
+                        file.imageData = resizedImage.src;
+                        $scope.$apply();
+                    });
+                }
             }
 
         }]);
