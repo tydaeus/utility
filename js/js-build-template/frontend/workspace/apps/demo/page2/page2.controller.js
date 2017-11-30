@@ -29,12 +29,11 @@ require('angular')
             function modifyImage(file) {
                 var image = new Image();
                 image.src = file.data;
-                image.onload = function() {
-                    resizeImage(image, 100, 75).then(function(resizedImage) {
-                        file.imageData = resizedImage.src;
-                        $scope.$apply();
-                    });
-                }
+
+                resizeImage(image, 100, 75).then(function(resizedImage) {
+                    file.imageData = resizedImage.src;
+                    $scope.$apply();
+                });
             }
 
         }]);
