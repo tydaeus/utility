@@ -11,6 +11,9 @@ require('angular')
     .controller('page2Controller', [
         '$scope',
         function ($scope) {
+            $scope.imageWidth = 1200;
+            $scope.saveName = 'reduced';
+
             $scope.loadFiles = function() {
                 pickFiles()
                     .then(function(files) {
@@ -32,7 +35,7 @@ require('angular')
                 var image = new Image();
                 image.src = file.data;
 
-                resizeImage(image, { width: 768, height: 75}).then(function(resizedImage) {
+                resizeImage(image, { width: $scope.imageWidth }).then(function(resizedImage) {
                     file.imageData = resizedImage.src;
                     $scope.$apply();
                 });
@@ -40,9 +43,13 @@ require('angular')
 
             $scope.saveFile = function(file) {
                 new Promise(function(resolve, reject) {
+                    if (!file.saveName) {
+                        file.saveName = $scope.saveName
+                    }
+
                     saveFile({
                         data: file.imageData,
-                        name: file.name
+                        name: file.saveName
                     });
                     resolve();
                 });
@@ -51,7 +58,8 @@ require('angular')
             // note that this has the unfortunate side effect of opening multiple save dialogs at once if user's
             // settings specify to ask where to save each file
             $scope.saveAllFiles = function () {
-                _($scope.files).each(function(file) {
+                _($scope.files).each(function(file, i) {
+                    file.saveName = $scope.saveName + '-' + i;
                     $scope.saveFile(file);
                 });
             };

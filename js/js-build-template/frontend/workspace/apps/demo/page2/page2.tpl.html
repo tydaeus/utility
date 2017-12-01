@@ -1,6 +1,8 @@
 <div>
     <h2>Page 2</h2>
     <a href ng-click="$root.goto('/')">Home</a><br />
+    <label>Image Width<input title="Image Width" type="text" ng-model="imageWidth" /></label><br />
+    <label>Save As Name<input title="Save As Name" type="text" ng-model="saveName" /></label><br />
     <a href ng-click="loadFiles()">Load Files</a><br />
     <button type="button" ng-click="saveAllFiles()">Save Files</button>
     <ul>
