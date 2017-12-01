@@ -2,6 +2,11 @@
 
 var _ = require('underscore');
 
+var defaults = {
+    data: "",
+    name: "untitled"
+};
+
 function saveFile(fileInfo) {
     fileInfo = _.extend({}, saveFile.defaults, fileInfo);
 
@@ -21,9 +26,6 @@ function saveFile(fileInfo) {
 // 'data:text/plain;charset=utf-8,' + encodeURIComponent(fileInfo.data)
 
 
-saveFile.defaults = {
-    data: "",
-    name: "untitled"
-};
+saveFile.defaults = defaults;
 
 module.exports = saveFile;
