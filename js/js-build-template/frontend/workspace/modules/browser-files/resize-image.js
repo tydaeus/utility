@@ -40,6 +40,7 @@ function resizeImage(image, settings) {
 
             canvas.height = settings.height;
             canvas.width = settings.width;
+            context.imageSmoothingQuality = 'high';
             context.drawImage(image, 0, 0, settings.width, settings.height);
 
             var result = new Image();
