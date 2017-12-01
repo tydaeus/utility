@@ -1,7 +1,8 @@
 <div>
     <h2>Page 2</h2>
     <a href ng-click="$root.goto('/')">Home</a><br />
-    <a href ng-click="loadFiles()">Load Files</a>
+    <a href ng-click="loadFiles()">Load Files</a><br />
+    <button type="button" ng-click="saveAllFiles()">Save Files</button>
     <ul>
         <li ng-repeat="file in files">
             <img style="max-height: 250px; max-width: 250px;" ng-src="{{file.imageData}}"><br />
