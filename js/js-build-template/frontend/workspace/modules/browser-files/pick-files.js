@@ -7,7 +7,11 @@ function pickFiles() {
         elem.setAttribute('multiple', 'true');
         // can setAttribute 'accept' to a comma-separated list of mime types or extensions to restrict
         elem.onchange = function() { resolve(elem.files); };
-        elem.click();
+
+        setTimeout(function() {
+            elem.click();
+        }, 0);
+
     });
 }
 
