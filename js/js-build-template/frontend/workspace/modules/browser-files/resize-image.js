@@ -10,7 +10,6 @@ var defaultSettings = {
 function resizeImage(image, settings) {
 
     var settings = _.extend({}, defaultSettings, settings);
-    console.info('settings', settings);
 
     return new Promise(function(resolve, reject) {
 
