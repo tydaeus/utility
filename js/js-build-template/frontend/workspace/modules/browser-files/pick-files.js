@@ -1,5 +1,5 @@
 /* global document */
-function pickFiles(callback) {
+function pickFiles() {
     return new Promise(function(resolve, reject) {
         var elem = document.createElement('input');
         elem.setAttribute('type', 'file');
