@@ -9,13 +9,18 @@ module.exports.build = {
             cwd: '<%= source %>',
             src: ['./**'],
             dest: '<%= buildDir %>'
-        },
-        // copy over pre-build bootstrap less files
+        }
+    ]
+};
+
+// copy over pre-build bootstrap less files
+module.exports['bootstrap-lib'] = {
+    files: [
         {
             expand: true,
-            src: ['node_modules/bootstrap/less/*'],
-            dest: '<%= buildDir %>/styles/less/bootstrap',
-            flatten: true
+            cwd: 'node_modules/bootstrap/less/',
+            src: ['**/*'],
+            dest: '<%= buildDir %>/styles/less/bootstrap'
         }
     ]
 };
