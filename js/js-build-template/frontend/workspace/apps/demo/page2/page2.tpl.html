@@ -6,7 +6,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="form col-md-4">
+        <div class="form col-md-6">
             <div class="form-group">
                 <label>
                     Image Width
@@ -22,9 +22,11 @@
             <button type="button" class="btn btn-default" ng-click="loadFiles()">Load Files</button>
             <button type="button" class="btn btn-default" ng-click="saveAllFiles()">Save Files</button>
         </div>
-        <div class="col-md-6" ng-repeat="file in files">
+    </div>
+    <div class="row" style="margin-top:10px">
+        <div class="col-md-4" ng-repeat="file in files">
             <img style="max-height: 250px; max-width: 250px;" ng-src="{{file.imageData}}"><br />
-            {{file.name}} <br />
+            {{$index}}. {{file.name}} <br />
             <a href ng-click="saveFile(file)">Save File</a>
         </div>
     </div>
