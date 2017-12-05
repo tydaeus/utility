@@ -1,15 +1,29 @@
-<div>
-    <h2>Page 2</h2>
-    <a href ng-click="$root.goto('/')">Home</a><br />
-    <label>Image Width<input title="Image Width" type="text" ng-model="imageWidth" /></label><br />
-    <label>Save As Name<input title="Save As Name" type="text" ng-model="saveName" /></label><br />
-    <a href ng-click="loadFiles()">Load Files</a><br />
-    <button type="button" ng-click="saveAllFiles()">Save Files</button>
-    <ul>
-        <li ng-repeat="file in files">
+<div class="container-fluid">
+    <div class="row">
+        <h2>Page 2</h2>
+        <a href ng-click="$root.goto('/')">Home</a><br />
+    </div>
+    <div class="row">
+        <div class="form col-md-4">
+            <div class="form-group">
+                <label>
+                    Image Width
+                </label>
+                <input class="form-control" title="Image Width" type="text" ng-model="imageWidth" />
+            </div>
+            <div class="form-group">
+                <label>
+                    Save as Name
+                </label>
+                <input class="form-control" title="Save As Name" type="text" ng-model="saveName" />
+            </div>
+            <button type="button" class="btn btn-default" ng-click="loadFiles()">Load Files</button>
+            <button type="button" class="btn btn-default" ng-click="saveAllFiles()">Save Files</button>
+        </div>
+        <div class="col-md-6" ng-repeat="file in files">
             <img style="max-height: 250px; max-width: 250px;" ng-src="{{file.imageData}}"><br />
             {{file.name}} <br />
             <a href ng-click="saveFile(file)">Save File</a>
-        </li>
-    </ul>
+        </div>
+    </div>
 </div>
