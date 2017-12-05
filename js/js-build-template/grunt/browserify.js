@@ -24,6 +24,6 @@ module.exports = {
     	src: [
             '<%= buildDir %>/apps/demo/demo.app.js'
     	],
-    	dest: '<%= publishDir %>/apps/demo/demo.app.js'
+    	dest: '<%= buildDir %>/demo.app.js'
 	}
 };

@@ -1,3 +1,3 @@
 @Echo Off
 
-http-server frontend/public/apps/demo
+http-server frontend/public
