@@ -1,3 +1,7 @@
+/*
+ * Removes unused css from build
+ */
+
 module.exports = {
 	dist: {
         options: {
