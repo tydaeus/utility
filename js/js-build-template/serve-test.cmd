@@ -1,3 +1,3 @@
 @Echo Off
 
-http-server frontend/public
+start "test server" cmd /c http-server frontend/public
