@@ -3,7 +3,7 @@ var exports = {};
 exports.demo = [
     'clean',
     'copy:build',
-    'compile-bootstrap',
+    'build-css',
     'html2js:demo',
     'browserify:demo',
     'copy:publish-js',
@@ -18,6 +18,12 @@ exports['compile-bootstrap'] = [
     'copy:bootstrap-custom',
     'less:compile-bootstrap-core',
     'less:compile-bootstrap-theme'
+];
+
+exports['build-css'] = [
+    'compile-bootstrap',
+    'autoprefixer',
+    'csscomb'
 ];
 
 module.exports = exports;

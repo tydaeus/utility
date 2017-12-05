@@ -3,7 +3,7 @@ module.exports = {
     options: {
         config: 'config/.csscomb.json'
     },
-    dist: {
+    default: {
         expand: true,
         cwd: '<%= buildDir %>/css/',
         // skip already minified css
