@@ -13,3 +13,5 @@ Debug/
 *.log
 *.no-git.*
 *.ignore.*
+*.tmp.*
+*.temp.*
