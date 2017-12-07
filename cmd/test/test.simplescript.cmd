@@ -14,6 +14,7 @@ echo Something with (parentheses)
 echo Something with (parentheses-colon):
 
 config ERROR_MODE RETRY
+config MAX_RETRIES 3
 call "{ScriptHome}fail-toggle.test"
 config ERROR_MODE DEFAULT
 
