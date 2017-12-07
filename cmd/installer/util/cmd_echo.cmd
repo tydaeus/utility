@@ -1,2 +1,0 @@
-echo %*
-exit /b %ERRORLEVEL%
