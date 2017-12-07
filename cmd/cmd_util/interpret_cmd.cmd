@@ -51,13 +51,18 @@ if "!SCRIPT_CONFIG[ERROR_MODE]!"=="DEFAULT" goto :ERR_REPORT_FAILURE
 if "!SCRIPT_CONFIG[ERROR_MODE]!"=="FAIL" goto :ERR_REPORT_FAILURE
 :: attempt to retry the command
 if "!SCRIPT_CONFIG[ERROR_MODE]!"=="RETRY" goto :ERR_CHECK_RETRY
+if "!SCRIPT_CONFIG[ERROR_MODE]!"=="IGNORE" (
+    call :ECHO_OUTPUT Ignoring error.
+    set ERRLEV=0
+    goto :END
+)
 
 :: See if we should still retry the command
 :ERR_CHECK_RETRY
 if not defined SCRIPT_CONFIG[MAX_RETRIES] set "SCRIPT_CONFIG[MAX_RETRIES]=1"
 
 if !RETRIES! geq !SCRIPT_CONFIG[MAX_RETRIES]! (
-    echo:Retries exceeded.
+    call :ECHO_OUTPUT Retries exceeded.
     goto :ERR_REPORT_FAILURE
 )
 call :ECHO_OUTPUT Retrying...
