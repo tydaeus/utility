@@ -1,0 +1,6 @@
+foo.txt
+bar.txt
+skwee.xml
+baz.txt
+hoobadoob.xml
+shazbot.xml
