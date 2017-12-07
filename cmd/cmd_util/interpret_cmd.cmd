@@ -9,7 +9,6 @@ set ERRLEV=0
 set FOUND=0
 set EXPORT=
 set RETRIES=0
-
 set "COMMAND_NAME=%~1"
 
 call xshift %*
@@ -163,7 +162,7 @@ if not defined CONFIG_LOGGING_ENABLED (
 if defined INVOCATION_CONFIG call :CONFIG_INVOCATION
 
 if "%CONFIG_VERBOSE%"=="1" (
-    call :ECHO_OUTPUT %COMMAND_NAME% %COMMAND_ARGS%
+    call :ECHO_OUTPUT !COMMAND_NAME! !COMMAND_ARGS!
 )
 
 :: remove previous value
