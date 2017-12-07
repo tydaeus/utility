@@ -13,8 +13,7 @@ echo Root: {Root}
 echo Something with (parentheses)
 echo Something with (parentheses-colon):
 
-config ERROR_MODE RETRY
-config MAX_RETRIES 3
+config ERROR_MODE IGNORE
 call "{ScriptHome}fail-toggle.test"
 config ERROR_MODE DEFAULT
 

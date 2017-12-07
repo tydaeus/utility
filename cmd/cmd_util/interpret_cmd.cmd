@@ -142,6 +142,7 @@ set "CMD_DEF[touchAll]=call touch_all"
 
 set "CMD_DEF[UNZIP]=call unzip"
 set "CMD_DEF[WAIT]=call :CMD_WAIT"
+set "CMD_CONFIG[WAIT]=set CONFIG_VERBOSE=0"
 
 call find_on_path "cmd_%COMMAND_NAME%.cmd"
 
@@ -337,9 +338,7 @@ exit /b
 :: use ping to wait specified number of seconds
 :CMD_WAIT
 set "WAIT_SECONDS=%~1"
-if not defined WAIT_SECONDS set WAIT_SECONDS=1
 call :ECHO_OUTPUT Waiting %WAIT_SECONDS%s...
-set /a "WAIT_SECONDS=%WAIT_SECONDS% + 1"
-ping 127.0.0.1 -n %WAIT_SECONDS% >nul
+call pwait %WAIT_SECONDS%
 exit /b
 
