@@ -65,7 +65,8 @@ if !RETRIES! geq !SCRIPT_CONFIG[MAX_RETRIES]! (
     call :ECHO_OUTPUT Retries exceeded.
     goto :ERR_REPORT_FAILURE
 )
-call :ECHO_OUTPUT Retrying...
+call :ECHO_OUTPUT Waiting 5s then retrying...
+call pwait 5
 set /a "RETRIES+=1"
 goto :COMMAND_READY_TO_INVOKE
 
