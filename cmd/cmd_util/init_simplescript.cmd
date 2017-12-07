@@ -52,7 +52,6 @@ set INVOKED_FROM_PATH=0
 
 :: invocation includes path to init_simplescript, so use that as the home of
 :: init_simplescript; otherwise we need to lookup init_simplescript from PATH
-echo:dpnx1:%~dpnx1
 if exist "%~dpnx1" (
     rem init invoked via full path
     set "UTIL_HOME=%~dp1"
