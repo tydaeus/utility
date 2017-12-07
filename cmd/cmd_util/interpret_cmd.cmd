@@ -8,6 +8,7 @@ setLocal enableDelayedExpansion
 set ERRLEV=0
 set FOUND=0
 set EXPORT=
+set RETRIES=0
 
 set "COMMAND_NAME=%~1"
 
@@ -20,6 +21,9 @@ if defined COMMAND_ARGS (
     set "COMMAND_ARGS=!COMMAND_ARGS:}=]%%!"
     call set "COMMAND_ARGS=!COMMAND_ARGS!"
 )
+
+:: processing on command string is complete, time to invoke it
+:COMMAND_READY_TO_INVOKE
 
 call :INVOKE_COMMAND
 
@@ -38,10 +42,22 @@ if not "%ERRLEV%"=="0" (
 goto :END
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:: Ensure errors have some default handling, allowing for a simple jump for
+:: Ensure errors have standardized handling, allowing for a simple jump for
 :: error handling for default processing
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :ERR
+if not defined SCRIPT_CONFIG[ERROR_MODE] set "SCRIPT_CONFIG[ERROR_MODE]=DEFAULT"
+
+if "!SCRIPT_CONFIG[ERROR_MODE]!"=="DEFAULT" goto :ERR_REPORT_FAILURE
+if "!SCRIPT_CONFIG[ERROR_MODE]!"=="FAIL" goto :ERR_REPORT_FAILURE
+:: attempt to retry the command
+if "!SCRIPT_CONFIG[ERROR_MODE]!"=="RETRY" (
+    call :ECHO_OUTPUT Retrying...
+    goto :COMMAND_READY_TO_INVOKE
+)
+
+:: Indicate that command interpretation has failed
+:ERR_REPORT_FAILURE
 if "%ERRLEV%"=="0" set ERRLEV=1
 goto :END
 
