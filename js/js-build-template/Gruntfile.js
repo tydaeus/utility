@@ -1,11 +1,15 @@
 'use strict';
 
+const path = require('path');
+
 module.exports = function(grunt) {
 
-    var path = require('path');
-
-    // folder to start as base of the build (anything outside this won't get built)
-    var buildRoot = path.join(process.cwd(), 'frontend');
+    // where to look for dirs containing source
+    const sourceRoot = path.join(process.cwd(), 'frontend');
+    // where to place dirs containing temporary build files
+    const buildRoot = path.join(process.cwd(), 'temp');
+    // where to place dirs containing built output files
+    const publishRoot = path.join(process.cwd());
 
     /*
         load-grunt-config sets grunt up to easily pull tasks from multiple
@@ -28,11 +32,11 @@ module.exports = function(grunt) {
         //  - in strings, will replace <%= vname %> with the value of var vname
         data: {
             // source for build
-            source: path.join(buildRoot, 'workspace'),
+            source: path.join(sourceRoot, 'workspace'),
             // where to put temporary generated files during the build process
             build: path.join(buildRoot, 'build'),
             // where built code ends up
-            publish: path.join(buildRoot, 'public')
+            publish: path.join(publishRoot, 'public')
         },
 
         // function to use to merge the config files

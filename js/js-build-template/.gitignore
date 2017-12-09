@@ -1,3 +1,4 @@
 node_modules/*
-frontend/build/*
-frontend/public/*
+temp/**
+# assume all contents of public are build-generated
+public/*
