@@ -32,7 +32,7 @@ module.exports = function(grunt) {
         //  - in strings, will replace <%= vname %> with the value of var vname
         data: {
             // source for build
-            source: path.join(sourceRoot, 'workspace'),
+            source: path.join(sourceRoot),
             // where to put temporary generated files during the build process
             build: path.join(buildRoot, 'build'),
             // where built code ends up
