@@ -4,9 +4,9 @@ module.exports = {
     prod: {
         files: [{
         	expand: true,
-      		cwd: '<%= buildDir %>/styles/output',
+      		cwd: '<%= build %>/styles/output',
             src : ['**/*.css'],
-            dest : '<%= buildDir %>/styles/output'
+            dest : '<%= build %>/styles/output'
         }]
     }
 };

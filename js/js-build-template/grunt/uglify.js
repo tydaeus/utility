@@ -9,7 +9,7 @@ module.exports = {
     },
     dist: {
         files: {
-            "<%= buildDir %>**/*.app.js": "<%= buildDir %>**/*.app.js"
+            "<%= build %>**/*.app.js": "<%= build %>**/*.app.js"
         }
     }
 

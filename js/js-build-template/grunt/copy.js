@@ -8,7 +8,7 @@ module.exports.build = {
             expand: true,
             cwd: '<%= source %>',
             src: ['**/*.js', '**/*.html'],
-            dest: '<%= buildDir %>'
+            dest: '<%= build %>'
         }
     ]
 };
@@ -20,7 +20,7 @@ module.exports['bootstrap-lib'] = {
             expand: true,
             cwd: 'node_modules/bootstrap/less/',
             src: ['**/*'],
-            dest: '<%= buildDir %>/styles/less/bootstrap'
+            dest: '<%= build %>/styles/less/bootstrap'
         }
     ]
 };
@@ -32,45 +32,45 @@ module.exports['bootstrap-custom'] = {
             expand: true,
             cwd: '<%= source %>/styles/less/bootstrap',
             src: ['**/*'],
-            dest: '<%= buildDir %>/styles/less/bootstrap'
+            dest: '<%= build %>/styles/less/bootstrap'
         }
     ]
 };
 
-// copy built js files into <%= publishDir %>
+// copy built js files into <%= publish %>
 module.exports['publish-js'] = {
     files: [
         {
             expand: true,
-            cwd: '<%= buildDir %>',
+            cwd: '<%= build %>',
             src: '*.app.js',
-            dest: '<%= publishDir %>/',
+            dest: '<%= publish %>/',
             flatten: true
         }
     ]
 };
 
-// copy built html files into <%= publishDir %>
+// copy built html files into <%= publish %>
 module.exports['publish-html'] = {
     files: [
         {
             expand: true,
-            cwd: '<%= buildDir %>',
+            cwd: '<%= build %>',
             src: '**/*.index.html',
-            dest: '<%= publishDir %>/',
+            dest: '<%= publish %>/',
             flatten: true
         }
     ]
 };
 
-// copy built css files into <%= publishDir %>
+// copy built css files into <%= publish %>
 module.exports['publish-css'] = {
     files: [
         {
             expand: true,
-            cwd: '<%= buildDir %>',
+            cwd: '<%= build %>',
             src: ['styles/css/*.css'],
-            dest: '<%= publishDir %>/',
+            dest: '<%= publish %>/',
             flatten: true
         }
     ]

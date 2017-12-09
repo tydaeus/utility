@@ -22,8 +22,8 @@ module.exports = {
         // requirements are resolved starting with these files and resolving
         // each require()'s path
     	src: [
-            '<%= buildDir %>/apps/demo/demo.app.js'
+            '<%= build %>/apps/demo/demo.app.js'
     	],
-    	dest: '<%= buildDir %>/demo.app.js'
+    	dest: '<%= build %>/demo.app.js'
 	}
 };

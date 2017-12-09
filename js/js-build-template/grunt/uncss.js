@@ -24,12 +24,12 @@ module.exports = {
         },
         files: {
             // where to put the resulting css
-            '<%= buildDir %>/assets/css/bootstrap.min.css':
+            '<%= build %>/assets/css/bootstrap.min.css':
             // list all files that use css (e.g. all html files) so uncss can
             // determine what css code is and isn't used.
             [
-                '<%= buildDir %>/index.html',
-                '<%= buildDir %>/app/**/*.tpl.html'
+                '<%= build %>/index.html',
+                '<%= build %>/app/**/*.tpl.html'
             ]
         }
   }

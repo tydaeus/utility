@@ -1,5 +1,5 @@
 module.exports = {
-    'default' : ['<%= buildDir %>', '<%= publishDir %>'],
-    'build' : '<%= buildDir %>',
-    'publish' : '<%= publishDir %>'
+    'default' : ['<%= build %>', '<%= publish %>'],
+    'build' : '<%= build %>',
+    'publish' : '<%= publish %>'
 };

@@ -14,10 +14,10 @@ module.exports = {
             sourceMap: true,
             outputSourceFiles: true,
             sourceMapURL: 'bootstrap.css.map',
-            sourceMapFilename: '<%= buildDir %>/styles/css/bootstrap.css.map'
+            sourceMapFilename: '<%= build %>/styles/css/bootstrap.css.map'
         },
-        src: '<%= buildDir %>/styles/less/bootstrap/bootstrap.less',
-        dest: '<%= buildDir %>/styles/css/bootstrap.css'
+        src: '<%= build %>/styles/less/bootstrap/bootstrap.less',
+        dest: '<%= build %>/styles/css/bootstrap.css'
     },
     // customizations are achieved by modifying bootstrap-theme and/or its dependencies
     "compile-bootstrap-theme": {
@@ -26,9 +26,9 @@ module.exports = {
             sourceMap: true,
             outputSourceFiles: true,
             sourceMapURL: 'bootstrap-theme.css.map',
-            sourceMapFilename: '<%= buildDir %>/styles/css/lib/bootstrap-theme.css.map'
+            sourceMapFilename: '<%= build %>/styles/css/lib/bootstrap-theme.css.map'
         },
-        src: '<%= buildDir %>/styles/less/bootstrap/theme.less',
-        dest: '<%= buildDir %>/styles/css/bootstrap-theme.css'
+        src: '<%= build %>/styles/less/bootstrap/theme.less',
+        dest: '<%= build %>/styles/css/bootstrap-theme.css'
     }
 };

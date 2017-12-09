@@ -30,9 +30,9 @@ module.exports = function(grunt) {
             // source for build
             source: path.join(buildRoot, 'workspace'),
             // where to put temporary generated files during the build process
-            buildDir: path.join(buildRoot, 'build'),
+            build: path.join(buildRoot, 'build'),
             // where built code ends up
-            publishDir: path.join(buildRoot, 'public')
+            publish: path.join(buildRoot, 'public')
         },
 
         // function to use to merge the config files

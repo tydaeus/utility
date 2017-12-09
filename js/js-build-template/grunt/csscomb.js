@@ -5,9 +5,9 @@ module.exports = {
     },
     default: {
         expand: true,
-        cwd: '<%= buildDir %>/css/',
+        cwd: '<%= build %>/css/',
         // skip already minified css
         src: ['*.css', '!*.min.css'],
-        dest: '<%= buildDir %>/css/'
+        dest: '<%= build %>/css/'
     }
 };

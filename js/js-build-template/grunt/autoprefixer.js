@@ -15,6 +15,6 @@ module.exports = {
         options: {
             map: true
         },
-        src: '<%= buildDir %>/**/*.css'
+        src: '<%= build %>/**/*.css'
     }
 };
