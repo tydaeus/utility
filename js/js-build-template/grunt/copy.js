@@ -56,7 +56,7 @@ module.exports['publish-html'] = {
         {
             expand: true,
             cwd: '<%= build %>',
-            src: '**/*.index.html',
+            src: ['**/*.index.html', '**/index.html'],
             dest: '<%= publish %>/',
             flatten: true
         }
