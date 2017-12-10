@@ -25,5 +25,11 @@ module.exports = {
             '<%= build %>/apps/demo.app.js'
     	],
     	dest: '<%= build %>/demo.app.js'
+	},
+	main: {
+        src: [
+            '<%= build %>/apps/main.app.js'
+        ],
+        dest: '<%= build %>/main.app.js'
 	}
 };

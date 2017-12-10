@@ -1,0 +1,13 @@
+<h2>
+    Linking
+</h2>
+<p>
+    Linking within the current "application" in AngularJS should be done using <code>$location.path()</code>,
+    using only the angular-specific portion of the path. If you want to do things the hard way, you could
+    probably also use <code>location.hash</code>.
+</p>
+<p>
+    Linking to another "application" outside the current AngularJS app can be done using a standard anchor
+    (<code>&lt;a&gt;</code>) tag with <var>href</var> set to the URI of the destination "application", or by
+    using methods or properties on the <code>location</code> object, such as <code>location.pathname</code>.
+</p>

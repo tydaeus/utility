@@ -1,17 +1,17 @@
 var exports = {};
 
-exports.demo = [
+exports.default = [
     'clean',
     'copy:build',
     'build-css',
     'html2js:demo',
+    'html2js:main',
     'browserify:demo',
+    'browserify:main',
     'copy:publish-js',
     'copy:publish-css',
     'copy:publish-html'
 ];
-
-exports.default = exports.demo;
 
 exports['compile-bootstrap'] = [
     'copy:bootstrap-lib',

@@ -25,8 +25,7 @@ module.exports = {
         // allow in conjunction with a watch task
         watch: true
     },
-    // future: consider splitting application such that shared modules are in one location and app-specific
-    // modules contained in their own folder
+
     demo: {
         options: {
             base: '<%= build %>/apps/demo/',
@@ -34,5 +33,14 @@ module.exports = {
         },
         src: ['<%= build %>/apps/demo/**/*.tpl.html'],
         dest: '<%= build %>/apps/demo/demo.templates.js'
+    },
+
+    main: {
+        options: {
+            base: '<%= build %>/apps/main/',
+            module: 'main.templates'
+        },
+        src: ['<%= build %>/apps/main/**/*.tpl.html'],
+        dest: '<%= build %>/apps/main/main.templates.js'
     }
 };

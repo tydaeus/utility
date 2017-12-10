@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JS-Template-Main</title>
+    <link rel="stylesheet" type="text/css" href="bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="bootstrap-theme.css" />
+    <script src="main.app.js"></script>
+</head>
+<body>
+<div ng-app="main" ng-strict-di="true">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>JS-Template-Main</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+                <a href ng-click="$root.goto('/')">Home</a>
+            </div>
+            <div class="col-md-1">
+                <a href ng-click="$root.goto('/linking')">Linking</a>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div ng-view></div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
