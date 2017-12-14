@@ -35,9 +35,18 @@ Install from https://yarnpkg.com/en/docs/install.
 ### Optional Prereqs
 
 #### http-server
-http-server can be used as a test server to verify that the template works correctly. Install via 
-`npm install -g http-server`. Use via `http-server frontend/public/apps/demo`.
+http-server can be used as a test server to verify that the template works 
+correctly. Install via 
+`npm install -g http-server`. Use via `http-server FOLDERNAME`.
+
+`serve-test.cmd` can be used to conveniently start http-server for testing 
+purposes.
 
 ## First-Time Setup
 
 1. Run `yarn` to install dependencies
+
+## Build
+
+Run `grunt` to build the project. Optimized (distribution-ready) build has not 
+been set up yet.
