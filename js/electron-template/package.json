@@ -1,0 +1,12 @@
+{
+  "name": "electron-template",
+  "version": "1.0.0",
+  "description": "template for easily setting up an electron project",
+  "main": "main.js",
+  "author": "tydaeus <tydaeus@gmail.com>",
+  "license": "ISC",
+  "private": true,
+  "devDependencies": {
+    "electron": "^1.7.9"
+  }
+}
