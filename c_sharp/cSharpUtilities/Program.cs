@@ -40,14 +40,21 @@ namespace cSharpUtilities
             });
             Console.WriteLine(string.Format("Long Flags: {0}", longFlags));
 
+            // Prototype help display
             Configuration.Properties.ForEach(delegate (Property property)
             {
                 Console.WriteLine(property.Name);
+                Console.WriteLine();
+                Console.WriteLine(string.Format("Flags: {0}", property.LongFlags));
                 Console.WriteLine();
                 Console.WriteLine(property.Description);
                 Console.WriteLine("--------------------------------------------------------------------------------");
                 Console.WriteLine();
             });
+
+            Configuration.ReadLongFlags(cliArguments.LongFlags);
+
+            Configuration.Properties.ForEach(property => Console.WriteLine(property));
         }
 
         static void TextFileDemo()

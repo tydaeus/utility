@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CliArguments.cs" />
+    <Compile Include="Configuration.cs" />
     <Compile Include="RegEditor.cs" />
     <Compile Include="FileTree.cs" />
     <Compile Include="Program.cs" />

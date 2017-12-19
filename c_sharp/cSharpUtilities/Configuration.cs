@@ -68,6 +68,8 @@ namespace cSharpUtilities
             {
                 return string.Compare(a.Name, b.Name);
             });
+
+            initialized = true;
         }
 
         /// <summary>
@@ -104,36 +106,67 @@ namespace cSharpUtilities
             });
         }
 
-        public Property GetPropertyByName(string name)
+        public static Property GetPropertyByName(string name)
         {
-            propertiesByName.TryGetValue(name, out Property result);
+            configuration.Init();
+            configuration.propertiesByName.TryGetValue(name, out Property result);
             return result;
         }
 
-        public Property GetPropertyByLongFlag(string longFlag)
+        public static Property GetPropertyByLongFlag(string longFlag)
         {
-            propertiesByLongFlag.TryGetValue(longFlag, out Property result);
+            configuration.Init();
+            configuration.propertiesByLongFlag.TryGetValue(longFlag, out Property result);
             return result;
+        }
+
+        /// <summary>
+        /// Sets the property identified by longFlag's name to the value specified by its parameter (or lack thereof).
+        /// </summary>
+        /// <param name="longFlag">used to identify what property to change and what to set its value to</param>
+        public static void SetPropertyByLongFlag(string longFlag)
+        {
+            KeyValuePair<string, string> keyValuePair = CliArguments.SplitLongFlag(longFlag);
+
+            Property property = GetPropertyByLongFlag(keyValuePair.Key);
+
+            if (property == null)
+            {
+                throw new ArgumentException(string.Format("unknown long flag specified: '{0}'", keyValuePair.Key));
+            }
+
+            property.SetValue(keyValuePair.Value);
+        }
+
+        public static void ReadLongFlags(List<string> longFlags)
+        {
+            configuration.Init();
+
+            longFlags.ForEach(longFlag => SetPropertyByLongFlag(longFlag));
         }
 
         public static StringProperty Zebes = new StringProperty()
             .SetName("Zebes")
-            // .SetDescription("Configurates the Zebes-type frob-modulator.")
+            .SetDescription("Configurates the Zebes-type frob-modulator.")
+            .AddLongFlag("zebes")
             .SetDefaultValue("A");
 
         public static StringProperty Environment = new StringProperty()
             .SetName("Environment")
             .SetDescription("What environment this application is currently running in.")
+            .AddLongFlag("environment")
             .SetDefaultValue("DEV");
 
         public static StringProperty ErrorContacts = new StringProperty()
             .SetName("Error Contacts")
             .SetDescription("Comma-separated list of email addresses for people who should be contacted in the event of trouble.")
+            .AddLongFlag("error-contacts")
             .SetDefaultValue("undefined&badAddress.com");
     }
 
     public abstract class Property
     {
+        // name must be specified and must be unique at some point prior to using configuration
         protected string name = "Unnamed";
         public string Name {  get { return name; } }
 
@@ -141,8 +174,32 @@ namespace cSharpUtilities
         public string Description { get { return description; } }
 
         internal List<string> longFlags = new List<string>();
+        public List<string> LongFlags { get { return longFlags; } }
 
+        /// <summary>
+        /// Restores the property's value to its default.
+        /// </summary>
         public abstract void RestoreDefaultValue();
+
+        /// <summary></summary>
+        /// <returns>whether the property's value is currently set to its default</returns>
+        public abstract Boolean IsDefault();
+
+        /// <summary>
+        /// Sets the property's value to the appropriate result of processing value.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns>This Property for chaining</returns>
+        /// <exception cref="ArgumentException">If the value cannot be used</exception>
+        public abstract void SetValue(string value);
+
+        public override string ToString()
+        {
+            return new StringBuilder().AppendFormat("{0}:[", this.GetType().Name)
+                .AppendFormat("Name:{0};", this.Name)
+                .AppendFormat("Description:{0};", this.Description)
+                .Append("]").ToString();
+        }
     }
 
     public class StringProperty : Property
@@ -167,16 +224,20 @@ namespace cSharpUtilities
             return this;
         }
 
+        public override bool IsDefault()
+        {
+            return value == defaultValue;
+        }
+
         private string value = "";
         public string Value
         {
             get { return value; }
             set { this.value = value; }
         }
-        public StringProperty SetValue(string value)
+        public override void SetValue(string value)
         {
             this.value = value;
-            return this;
         }
 
         internal StringProperty AddLongFlag(string longFlag)
@@ -192,6 +253,16 @@ namespace cSharpUtilities
 
         internal StringProperty() {
             Configuration.AddProperty(this);
+        }
+        public override string ToString()
+        {
+            return new StringBuilder().AppendFormat("{0}:[", this.GetType().Name)
+                .AppendFormat("Name:{0};", this.Name)
+                .AppendFormat("Description:{0};", this.Description)
+                .AppendFormat("DefaultValue:{0};", this.DefaultValue)
+                .AppendFormat("LongFlags:{0};", this.LongFlags)
+                .AppendFormat("Value:{0};", this.Value)
+                .Append("]").ToString();
         }
 
 
