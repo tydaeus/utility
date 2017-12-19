@@ -39,6 +39,15 @@ namespace cSharpUtilities
                 longFlags.AppendFormat("[key:{0}; value:{1}]", splitFlag.Key, splitFlag.Value);
             });
             Console.WriteLine(string.Format("Long Flags: {0}", longFlags));
+
+            Configuration.Properties.ForEach(delegate (Property property)
+            {
+                Console.WriteLine(property.Name);
+                Console.WriteLine();
+                Console.WriteLine(property.Description);
+                Console.WriteLine("--------------------------------------------------------------------------------");
+                Console.WriteLine();
+            });
         }
 
         static void TextFileDemo()
