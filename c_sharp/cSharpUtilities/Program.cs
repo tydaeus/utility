@@ -10,7 +10,18 @@ namespace cSharpUtilities
     {
         static void Main(string[] args)
         {
-            TextFileDemo();
+            CliArguments cliArguments = new CliArguments(args);
+
+            StringBuilder arguments = new StringBuilder();
+            cliArguments.Arguments.ForEach(str => arguments.AppendFormat("{0} ", str));
+            Console.WriteLine(string.Format("Arguments: {0}", arguments));
+
+            Console.WriteLine(string.Format("Short Flags: {0}", cliArguments.ShortFlags));
+
+            StringBuilder longFlags = new StringBuilder();
+            cliArguments.LongFlags.ForEach(str => longFlags.AppendFormat("{0} ", str));
+            Console.WriteLine(string.Format("Long Flags: {0}", longFlags));
+            //TextFileDemo();
             Pause();
         }
 
