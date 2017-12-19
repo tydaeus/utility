@@ -10,17 +10,7 @@ namespace cSharpUtilities
     {
         static void Main(string[] args)
         {
-            CliArguments cliArguments = new CliArguments(args);
-
-            StringBuilder arguments = new StringBuilder();
-            cliArguments.Arguments.ForEach(str => arguments.AppendFormat("{0} ", str));
-            Console.WriteLine(string.Format("Arguments: {0}", arguments));
-
-            Console.WriteLine(string.Format("Short Flags: {0}", cliArguments.ShortFlags));
-
-            StringBuilder longFlags = new StringBuilder();
-            cliArguments.LongFlags.ForEach(str => longFlags.AppendFormat("{0} ", str));
-            Console.WriteLine(string.Format("Long Flags: {0}", longFlags));
+            FlagParseDemo(args);
             //TextFileDemo();
             Pause();
         }
@@ -30,6 +20,25 @@ namespace cSharpUtilities
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
             Console.WriteLine();
+        }
+
+        static void FlagParseDemo(string[] args)
+        {
+            CliArguments cliArguments = new CliArguments(args);
+
+            StringBuilder arguments = new StringBuilder();
+            cliArguments.Arguments.ForEach(str => arguments.AppendFormat("{0} ", str));
+            Console.WriteLine(string.Format("Arguments: {0}", arguments));
+
+            Console.WriteLine(string.Format("Short Flags: {0}", cliArguments.ShortFlags));
+
+            StringBuilder longFlags = new StringBuilder();
+            cliArguments.LongFlags.ForEach(delegate (string str)
+            {
+                KeyValuePair<string, string> splitFlag = CliArguments.SplitLongFlag(str);
+                longFlags.AppendFormat("[key:{0}; value:{1}]", splitFlag.Key, splitFlag.Value);
+            });
+            Console.WriteLine(string.Format("Long Flags: {0}", longFlags));
         }
 
         static void TextFileDemo()
