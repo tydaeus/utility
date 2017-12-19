@@ -145,19 +145,19 @@ namespace cSharpUtilities
             longFlags.ForEach(longFlag => SetPropertyByLongFlag(longFlag));
         }
 
-        public static StringProperty Zebes = new StringProperty()
+        public static readonly StringProperty Zebes = new StringProperty()
             .SetName("Zebes")
             .SetDescription("Configurates the Zebes-type frob-modulator.")
             .AddLongFlag("zebes")
             .SetDefaultValue("A");
 
-        public static StringProperty Environment = new StringProperty()
+        public static readonly StringProperty Environment = new StringProperty()
             .SetName("Environment")
             .SetDescription("What environment this application is currently running in.")
             .AddLongFlag("environment")
             .SetDefaultValue("DEV");
 
-        public static StringProperty ErrorContacts = new StringProperty()
+        public static readonly StringProperty ErrorContacts = new StringProperty()
             .SetName("Error Contacts")
             .SetDescription("Comma-separated list of email addresses for people who should be contacted in the event of trouble.")
             .AddLongFlag("error-contacts")

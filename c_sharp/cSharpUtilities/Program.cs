@@ -54,6 +54,8 @@ namespace cSharpUtilities
 
             Configuration.ReadLongFlags(cliArguments.LongFlags);
 
+            Configuration.ErrorContacts.Value = "someoneElse&badDomain.com";
+
             Configuration.Properties.ForEach(property => Console.WriteLine(property));
         }
 
