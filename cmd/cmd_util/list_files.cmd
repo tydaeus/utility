@@ -10,8 +10,12 @@ exit /b
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: list_files
 ::
+:: Usage:
+::      list_files DIR_NAME
+::
 :: Converts the output from `dir` into a more concise format for purposes of
-:: exportability.
+:: exportability. Outputs the result of trimming down `dir DIR_NAME` to file
+:: DIR_NAME.dir.txt.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :INIT
