@@ -19,7 +19,7 @@ function createWindow() {
 
     console.log("__dirname:", __dirname);
 
-    var filePath = "file://" + __dirname + "/index.html";
+    let filePath = "file://" + __dirname + "/public/index.html";
     // load index.html
     win.loadURL(filePath);
 
