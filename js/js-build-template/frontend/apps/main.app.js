@@ -5,12 +5,12 @@
 const $ = require('jquery');
 
 // require angular and all angular libraries before requiring/declaring custom angular
-//      NOTE: angular dependencies decorate the angular object, so further var assignments are unnecessary
+//      NOTE: angular dependencies are registered with the angular object, so further var assignments are unnecessary
 const angular = require('angular');
 require('angular-route');
 require('angular-ui-bootstrap');
 
-// require modules that will be used by app before declaring app
+// require angular modules that will be used by app before declaring app
 require('../modules/test/test.module');
 require('./main/main.templates'); // created as part of build
 
