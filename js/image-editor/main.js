@@ -15,7 +15,13 @@ function createWindow() {
     console.log("createWindow()");
 
     // create the browser window
-    win = new BrowserWindow({width: 800, height:600});
+    win = new BrowserWindow({show: false});
+
+    win.maximize();
+
+    // wait until the window is ready to be displayed before making it visible.
+    // note that if app is more complex, may wish to show the window before it's fully ready
+    win.once('ready-to-show', () => { win.show()});
 
     console.log("__dirname:", __dirname);
 
