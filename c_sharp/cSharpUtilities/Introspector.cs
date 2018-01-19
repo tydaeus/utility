@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace cSharpUtilities
 
@@ -16,57 +14,67 @@ namespace cSharpUtilities
         // this is a static utitility class
         private Introspector() { }
 
-        public static string StringifyPropertyValue(object obj, string propertyName)
+        // convert an object to a nested dictionary of its properties and member objects, suitable for conversion to JSON
+        // known issues: circular references will cause infinite recursion, dates won't get handled properly, property-less objects will show as blank
+        public static IDictionary<string, object> DictifyObject(object source)
         {
-            object propertyValue = obj.GetType().GetProperty(propertyName).GetValue(obj, null);
-            return StringifyValue(propertyValue);
+            Dictionary<string, object> result = new Dictionary<string, object>();
+
+            foreach(PropertyDescriptor property in TypeDescriptor.GetProperties(source))
+            {
+                string propertyName = property.Name;
+                object propertyValue = property.GetValue(source);
+                object stringifiedValue = DictifyValue(propertyValue);
+                result.Add(propertyName, stringifiedValue);
+            }
+
+            return result;
         }
 
-        public static string StringifyValue(object propertyValue)
+        public static object DictifyValue(object value)
         {
-            if (propertyValue == null)
+            if (value == null)
             {
-                return "null";
+                return null;
             }
 
-            JSONConvert
-
-            // check for string before checking if enumerable
-            if (propertyValue is string)
+            // check for string before checking if enumerable, so we don't enumerate the string
+            // strings and numbers are supported in JSON; preserve as-is
+            else if (value is string
+                    || value is sbyte
+                    || value is byte
+                    || value is short
+                    || value is ushort
+                    || value is int
+                    || value is uint
+                    || value is long
+                    || value is ulong
+                    || value is float
+                    || value is double
+                    || value is decimal
+                    || value is Boolean)
             {
-                return "\"" + (string)propertyValue + "\"";
+                return value;
             }
 
-            if (propertyValue is IEnumerable)
+            else if (value is IEnumerable)
             {
-                IEnumerable enumerableValue = (IEnumerable)propertyValue;
+                List<object> result = new List<object>();
 
-                StringBuilder result = new StringBuilder();
-                result.Append("[");
-
-                foreach (object member in enumerableValue)
+                foreach (object member in (IEnumerable)value)
                 {
-                    result.Append(Stringify(member)).Append(", ");
+                    result.Add(DictifyObject(member));
                 }
 
-                result.Append("]");
-                return result.ToString();
+                return result;
             }
 
-            return propertyValue.ToString();
-
-        }
-
-        public static string Stringify(object obj)
-        {
-            if (obj == null)
-            {
-                return "null";
-            }
             else
             {
-                return obj.ToString();
+                return DictifyObject(value);
             }
+
         }
+
     }
 }
