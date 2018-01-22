@@ -10,8 +10,18 @@ namespace cSharpUtilities
     {
         static void Main(string[] args)
         {
-            FlagParseDemo(args);
-            //TextFileDemo();
+            try
+            {
+                UsbBrowser.PrintUsbDevices();
+                //FlagParseDemo(args);
+                //TextFileDemo();
+            }
+            catch(Exception e)
+            {
+                Console.Error.WriteLine("ERROR: ");
+                Console.Error.WriteLine(e.Message);
+            }
+
             Pause();
         }
 
