@@ -14,9 +14,11 @@ namespace cSharpUtilities
     public abstract class CliCommand
     {
         protected string name;
-
         public string Name { get; }
 
-        public abstract string Action(List<string> arguments);
+        protected string description;
+        public string Description { get; }
+
+        public abstract string Invoke(IList<string> arguments, IDictionary<string, string> environment);
     }
 }

@@ -60,6 +60,11 @@ require('angular')
             // note that this has the unfortunate side effect of opening multiple save dialogs at once if user's
             // settings specify to ask where to save each file
             $scope.saveAllFiles = function () {
+                electron.remote.dialog.showOpenDialog({properties: ['openDirectory']}, filename => {
+                    console.info('filename', filename);
+                });
+                return;
+
                 _($scope.files).each(function(file, i) {
                     file.saveName = $scope.saveName + '-' + i;
                     $scope.saveFile(file);

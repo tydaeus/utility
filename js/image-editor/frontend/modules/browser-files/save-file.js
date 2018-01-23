@@ -22,7 +22,7 @@ function saveFile(fileInfo) {
     document.body.removeChild(element);
 }
 
-// to convert text into saveable data, must set data to:
+// to convert text string into saveable data, must set data to:
 // 'data:text/plain;charset=utf-8,' + encodeURIComponent(fileInfo.data)
 
 
