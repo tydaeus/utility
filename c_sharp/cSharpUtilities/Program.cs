@@ -12,7 +12,7 @@ namespace cSharpUtilities
         {
             try
             {
-                UsbBrowser.PrintUsbDevices();
+                //UsbBrowser.PrintUsbDevices();
                 //FlagParseDemo(args);
                 //TextFileDemo();
             }
