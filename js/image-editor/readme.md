@@ -7,4 +7,4 @@ The goals for this project:
 * provide some image editing utilities for me
 
 ## Startup
-Run `electron ./main.js` from the root dir.
+Run `electron ./main.js` from the root dir, or use the provided init script.
