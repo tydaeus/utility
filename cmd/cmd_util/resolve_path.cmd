@@ -109,7 +109,7 @@ goto :END
 if not defined OUTPUT_VAR (
     endLocal & set ERRLEV=%ERRLEV%
 ) else (
-    endLocal & set "%OUTPUT_VAR%=%BASE_PATH%" & set ERRLEV=%ERRLEV%
+    endLocal & set ERRLEV=%ERRLEV% & set "%OUTPUT_VAR%=%BASE_PATH%"
 )
 exit /b %ERRLEV%
 
