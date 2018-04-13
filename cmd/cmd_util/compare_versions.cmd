@@ -10,6 +10,7 @@ goto :INIT
 ::
 :: Output is a negative number if the first version is earlier, 0 if the 
 :: versions are equivalent, or a positive number if the first version is later.
+:: Missing positions will be treated as zeros; e.g. 1.2 is equivalent to 1.2.0.
 ::
 :: Output will be printed to stdout unless the "output" option is used.
 :: 
