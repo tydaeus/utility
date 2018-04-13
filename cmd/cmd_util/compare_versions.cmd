@@ -53,8 +53,8 @@ set "VERSION_B=!VERSION_B:.= !"
 
 :: Loop through the numbers in the version strings
 :DO_WHILE_NUMBERS
-call :SHIFTV VERSION_A
-call :SHIFTV VERSION_B
+call vshift VERSION_A
+call vshift VERSION_B
 
 set "A=!VERSION_A.CURRENT!"
 set "B=!VERSION_B.CURRENT!"
@@ -99,60 +99,6 @@ if not defined OUTPUT_VAR (
 ) else (
     endLocal & set "ERRLEV=%ERRLEV%" & set "%OUTPUT_VAR%=%COMPARATOR%"
 )
-exit /b %ERRLEV%
-
-:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:: SHIFTV
-::
-:: Usage:
-::      call :SHIFTV VAR_NAME
-:: Shifts a param list held in VAR_NAME. The removed value gets placed in 
-:: VAR_NAME.CURRENT.
-:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:SHIFTV
-set "VAR_NAME=%~1"
-
-if not defined VAR_NAME (
-    echo:ERROR: SHIFTV called without VAR_NAME specified 1>&2
-    goto :SHIFTV_ERR
-)
-
-call :SHIFTV_CURRENT !%VAR_NAME%!
-call :SHIFTV_REST !%VAR_NAME%!
-
-goto :SHIFTV_END
-
-:: populate !VAR_NAME!.CURRENT with the contents of the first param
-:SHIFTV_CURRENT
-set "!VAR_NAME!.CURRENT=%1"
-exit /b
-
-:: populate !VAR_NAME! with the contents of every param after the first
-:SHIFTV_REST
-setLocal
-set REST=
-
-shift
-:WHILE_REST
-set "CURRENT_PARAM=%1"
-shift
-if not defined CURRENT_PARAM goto :END_WHILE_REST
-
-if defined REST set "REST=!REST! "
-set "REST=!REST!!CURRENT_PARAM!"
-
-goto :WHILE_REST
-
-:END_WHILE_REST
-endLocal & set "!VAR_NAME!=%REST%"
-exit /b
-
-:SHIFTV_ERR
-set ERRLEV=1
-echo:ERROR: failed in SHIFTV 1>&2
-goto :END
-
-:SHIFTV_END
 exit /b %ERRLEV%
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
