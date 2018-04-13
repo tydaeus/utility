@@ -7,6 +7,11 @@ goto :INIT
 :: Compares two version number strings to determine if the first is earlier,
 :: the same, or later. Note that these strings are assumed to be numeric, with
 :: dot or space separation. Other characters may cause unexpected results.
+::
+:: Output is a negative number if the first version is earlier, 0 if the 
+:: versions are equivalent, or a positive number if the first version is later.
+::
+:: Output will be printed to stdout unless the "output" option is used.
 :: 
 :: Options:
 ::  --output:VAR_NAME
