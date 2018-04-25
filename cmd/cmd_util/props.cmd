@@ -16,6 +16,8 @@ echo: across invocations if in-memory persistence is desired.
 echo:
 echo: Available commands:
 echo:   help    displays this message.
+echo:   list    lists properties
+echo:   set     sets a property
 echo:
 exit /b
 :USAGE
@@ -63,10 +65,24 @@ set "SUBCOMMAND=%*"
 
 call vshift SUBCOMMAND
 
-call :SUBCMD_%SUBCOMMAND.CURRENT% %SUBCOMMAND% 2>nul && goto :END_PROCESS_SUBCOMMAND
-echo:ERROR: unknown subcommand '%SUBCOMMAND%. Use `props help` for help. 1>&2
-set "ERRLEV=3"
-goto :END_PROCESS_SUBCOMMAND
+:: Keep the command table here only
+setLocal enableDelayedExpansion
+set "PROPS.COMMAND[HELP]=call :SUBCMD_HELP"
+set "PROPS.COMMAND[LIST]=call :SUBCMD_LIST"
+set "PROPS.COMMAND[SET]=call :SUBCMD_SET"
+
+set PROPS.DO=!PROPS.COMMAND[%SUBCOMMAND.CURRENT%]!
+
+endLocal & set PROPS.DO=%PROPS.DO%
+
+if not defined PROPS.DO (
+    echo:ERROR: unknown subcommand '%SUBCOMMAND%'. Use `props help` for help. 1>&2
+    set "ERRLEV=3"
+    goto :END_PROCESS_SUBCOMMAND
+)
+
+:: invoke the subcommand, with its arguments
+%PROPS.DO% %SUBCOMMAND%
 
 
 :END_PROCESS_SUBCOMMAND
@@ -111,7 +127,7 @@ echo:%PROPS.LENGTH% Properties:
 if not %PROPS.I% LSS %PROPS.LENGTH% goto :END_LIST_EACH_PROPERTY
 
 setLocal enableDelayedExpansion
-echo:  %PROPS.I%: !PROPS[%PROPS.I%]!
+echo:  %PROPS.I%: !PROPS[%PROPS.I%].NAME!=!PROPS[%PROPS.I%]!
 endLocal
 
 set /a "PROPS.I+=1"
