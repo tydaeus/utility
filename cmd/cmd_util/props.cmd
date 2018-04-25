@@ -101,21 +101,23 @@ exit /b
 :: Lists the contents of the property set.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :SUBCMD_LIST
-set I=0
+set PROPS.I=0
 
 echo:
 echo:%PROPS.LENGTH% Properties:
 
 ::For each property
-:FOREACH_PROPERTY
-if not %I% LSS %PROPS.LENGTH% goto :END_FOREACH_PROPERTY
+:LIST_EACH_PROPERTY
+if not %PROPS.I% LSS %PROPS.LENGTH% goto :END_LIST_EACH_PROPERTY
 
 setLocal enableDelayedExpansion
-echo:  %I%: !PROPS.LINES[%I%]!
+echo:  %PROPS.I%: !PROPS[%PROPS.I%]!
 endLocal
 
-:END_FOREACH_PROPERTY
-echo:
+set /a "PROPS.I+=1"
+goto :LIST_EACH_PROPERTY
+
+:END_LIST_EACH_PROPERTY
 
 exit /b
 
@@ -132,7 +134,8 @@ set "PROPERTY_NAME=%~1"
 set "PROPERTY_VALUE=%~2"
 
 :: detect whether we're creating a new property or updating an existing one
-if not defined PROPS.MAP[!PROPERTY_NAME!] goto :SET_CREATE else goto :SET_UPDATE
+if not defined PROPS.MAP[%PROPERTY_NAME%] goto :SET_CREATE
+goto :SET_UPDATE
 
 :: create a new property
 :SET_CREATE
@@ -146,10 +149,15 @@ goto :END_SUBCMD_SET
 :SET_UPDATE
 echo:updating property !PROPERTY_NAME!
 :: lookup existing line value
-set "LINE_NUM=PROPS.MAP[!PROPERTY_NAME!].LINE"
+set "LINE_NUM=!PROPS.MAP[%PROPERTY_NAME%]!"
 goto :END_SUBCMD_SET
 
 :END_SUBCMD_SET
-endLocal & set "PROPS.LINES[%LINE_NUM%]=%PROPERTY_NAME%=%PROPERTY_VALUE%" & ^
-set "PROPS.MAP[%PROPERTY_NAME%].VALUE=%PROPERTY_VALUE%" & set "PROPS.LENGTH=%PROPS.LENGTH%"
+
+endLocal & ^
+set "PROPS[%LINE_NUM%]=%PROPERTY_VALUE%" & ^
+set "PROPS[%LINE_NUM%].NAME=%PROPERTY_NAME%" & ^
+set "PROPS.MAP[%PROPERTY_NAME%]=%LINE_NUM%" & ^
+set "PROPS.LENGTH=%PROPS.LENGTH%"
+
 exit /b
