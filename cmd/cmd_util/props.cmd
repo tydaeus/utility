@@ -70,6 +70,7 @@ setLocal enableDelayedExpansion
 set "PROPS.COMMAND[HELP]=call :SUBCMD_HELP"
 set "PROPS.COMMAND[LIST]=call :SUBCMD_LIST"
 set "PROPS.COMMAND[SET]=call :SUBCMD_SET"
+set "PROPS.COMMAND[GET]=call :SUBCMD_GET"
 
 set PROPS.DO=!PROPS.COMMAND[%SUBCOMMAND.CURRENT%]!
 
@@ -175,5 +176,32 @@ set "PROPS[%LINE_NUM%]=%PROPERTY_VALUE%" & ^
 set "PROPS[%LINE_NUM%].NAME=%PROPERTY_NAME%" & ^
 set "PROPS.MAP[%PROPERTY_NAME%]=%LINE_NUM%" & ^
 set "PROPS.LENGTH=%PROPS.LENGTH%"
+
+exit /b
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: SUBCMD_GET
+::
+:: props get X OUTPUT
+:: Gets the value of the named property, into var named OUTPUT, to stdout if
+:: OUTPUT not provided
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:SUBCMD_GET
+
+setLocal enableDelayedExpansion
+
+set "PROPERTY_NAME=%~1"
+set "OUTPUT_VAR=%~2"
+
+:: TODO: error handling
+set "PROPS.I=!PROPS.MAP[%PROPERTY_NAME%]!"
+set "RESULT=!PROPS[%PROPS.I%]!"
+
+if defined OUTPUT_VAR (
+    endLocal & set "%OUTPUT_VAR%=%RESULT%"
+) else (
+    echo !RESULT!
+    endLocal
+)
 
 exit /b
