@@ -26,6 +26,7 @@ if "!ERRLEV!"=="0" (
     set "ERRLEV=1"
     1>&2 echo:ERROR: !SCRIPT_NAME! failed
 )
+pause
 goto :END
 
 :: Finish the script and tidy up
