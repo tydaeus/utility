@@ -55201,10 +55201,12 @@ require('angular')
             // note that this has the unfortunate side effect of opening multiple save dialogs at once if user's
             // settings specify to ask where to save each file
             $scope.saveAllFiles = function () {
-                electron.remote.dialog.showOpenDialog({properties: ['openDirectory']}, filename => {
-                    console.info('filename', filename);
-                });
-                return;
+
+                // TODO: implement prompt for directory to save files into; save files to this dir
+                // electron.remote.dialog.showOpenDialog({properties: ['openDirectory']}, filename => {
+                //     console.info('filename', filename);
+                // });
+                // return;
 
                 _($scope.files).each(function(file, i) {
                     file.saveName = $scope.saveName + '-' + i;
@@ -55318,7 +55320,7 @@ function saveFile(fileInfo) {
     document.body.removeChild(element);
 }
 
-// to convert text into saveable data, must set data to:
+// to convert text string into saveable data, must set data to:
 // 'data:text/plain;charset=utf-8,' + encodeURIComponent(fileInfo.data)
 
 
