@@ -4,7 +4,7 @@ setLocal enableDelayedExpansion
 :: updates the modified timestamp of the specified file
 
 set ERRLEV=0
-set TARGET_FILE=%~1
+set TARGET_FILE=%~nx1
 set TARGET_DIR=%~dp1
 
 if not exist "%TARGET_DIR%%TARGET_FILE%" (
