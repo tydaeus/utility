@@ -4,34 +4,15 @@ setLocal enableDelayedExpansion
 :: updates the modified timestamp of all files in the specified directory
 
 set ERRLEV=0
-set TARGET_DIR=%~1
+set TARGET_DIR=%~f1
 
-if defined ProgramFiles(x86) (
-    goto :64bit
-) else (
-    goto :32bit
-)
-
-:64bit
-:: no XP support
-for /R "%TARGET_DIR%" %%A in (*) do (
-    copy /b "%%A"+,, "%TARGET_DIR%" > nul
-    set ERRLEV=%ERRORLEVEL%
-    if not "%ERRLEV%"=="0" goto :ERR
-)
-goto :END
-
-:32bit
-:: XP supported
 pushd "%TARGET_DIR%"
-for /R "%TARGET_DIR%" %%A in (*) do (
-    copy /b "%%A"+,, > nul
+for /F "usebackq tokens=*" %%A in (`dir /b /a:-d "%TARGET_DIR%"`) do (
+    copy /b "%%A"+,, 1>nul
     set ERRLEV=%ERRORLEVEL%
     if not "%ERRLEV%"=="0" goto :ERR
 )
 popd
-goto :END
-
 goto :END
 
 :ERR
