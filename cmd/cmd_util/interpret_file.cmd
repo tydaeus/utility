@@ -13,13 +13,13 @@ exit /b
 ::
 :: Usage:
 ::      interpret_file FILE
-:: 
+::
 :: Acts as a simplified script interpreter, thereby allowing the performance
 :: of common sequences of steps from a config file instead of needing to write
 :: custom cmd scripts.
 ::
 :: On success, exits with ERRLEV and ERRORLEVEL set to 0.
-:: On failure, exits after the first failed command with ERRLEV set to that 
+:: On failure, exits after the first failed command with ERRLEV set to that
 :: command's exit code.
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -148,7 +148,8 @@ set SCRIPT_STARTED=0
 if "%START_TOKEN%"=="" set SCRIPT_STARTED=1
 
 for /F "eol=# tokens=* usebackq" %%A in (`type "%FILENAME%"`) do (
-    call :INTERPRET_LINE %%A || goto :INTERPRET_FILE_ERR
+    set "LINE=%%A"
+    call :INTERPRET_LINE || goto :INTERPRET_FILE_ERR
 )
 goto :INTERPRET_FILE_END
 
@@ -167,17 +168,15 @@ exit /b %ERRLEV%
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :INTERPRET_LINE
 
-set "LINE=%*"
-
 if not "%SCRIPT_STARTED%"=="1" goto :CHECK_FOR_START
 
 :RUN_LINE
-call interpret_cmd %LINE%
+call interpret_cmd !LINE!
 exit /b %ERRORLEVEL%
 
 :CHECK_FOR_START
-:: '"' confuses the compare op
+:: '"' confuses the compare op, so remove it
 set "LINE=!LINE:"=!"
 ::"
-if ["%LINE%"]==["%START_TOKEN%"] set SCRIPT_STARTED=1
+if "!LINE!"=="!START_TOKEN!" set SCRIPT_STARTED=1
 exit /b
