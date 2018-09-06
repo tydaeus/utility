@@ -8,7 +8,7 @@ setLocal enableDelayedExpansion
 ::      build_manifest DIRPATH [MANIFEST]
 ::
 :: Builds a manifest describing the contents of a specified directory,
-:: outputting to the file named MANIFEST. 
+:: outputting to the file named MANIFEST.
 ::
 :: MD5 functionality relies on a command named "md5" being present in PATH.
 :: A script named "md5" in PATH may be used to provide a redirect if needed.
@@ -24,7 +24,7 @@ set "MANIFEST=%~2"
 if not defined DIRPATH (
     1>&2 echo:ERROR: invalid usage
     echo:Usage:
-    echo:  !SCRIPT_NAME! DIRPATH
+    echo:  !SCRIPT_NAME! DIRPATH [MANIFEST]
     set ERRLEV=2
     goto :ERR
 )
