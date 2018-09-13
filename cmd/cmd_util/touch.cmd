@@ -12,29 +12,14 @@ if not exist "%TARGET_DIR%%TARGET_FILE%" (
     goto :ERR
 )
 
-if defined ProgramFiles(x86) (
-    goto :64bit
-) else (
-    goto :32bit
-)
 
-:64bit
-:: no XP support
-copy /b "%TARGET_FILE%"+,, "%TARGET_DIR%" > nul
-set ERRLEV=%ERRORLEVEL%
-if not "%ERRLEV%"=="0" goto :ERR
-
-goto :END
-
-:32bit
-:: XP supported
 pushd "%TARGET_DIR%"
 
 copy /b "%TARGET_FILE%"+,, > nul
 set ERRLEV=%ERRORLEVEL%
+popd
 if not "%ERRLEV%"=="0" goto :ERR
 
-popd
 goto :END
 
 goto :END
