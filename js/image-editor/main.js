@@ -41,6 +41,7 @@ function createWindow() {
 
 app.on("ready", createWindow);
 
+// quit the application on last window closed, unless we're on a Mac
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {
         console.log("quitting application");
