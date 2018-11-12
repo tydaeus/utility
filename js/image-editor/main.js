@@ -10,6 +10,8 @@ const {BrowserWindow} = electron;
 // persistent var for window so it doesn't get gc'd
 let win;
 
+// provide testMode boolean to allow checking if `-t` was provided as a startup parameter
+global.testMode = process.argv.length >= 3 && '-t' === process.argv[2];
 
 function createWindow() {
     console.log("createWindow()");
