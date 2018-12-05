@@ -1,11 +1,14 @@
 "use strict";
 
+/**
+ * Converts a data uri into a Buffer object, so that it's easier to manipulate within node.
+ * @param dataUri
+ * @returns {Buffer}
+ */
 function dataUriToBuffer(dataUri) {
     // separate out the pieces of the uri
     const commaIndex = dataUri.indexOf(',');
     const dataString = dataUri.substring(commaIndex + 1);
-    const prefixString = dataUri.substring(0, commaIndex);
-    const mimeString = prefixString.split(':')[1].split(';')[0];
 
     const byteString = atob(dataString);
     const arrayBuffer = new ArrayBuffer(byteString.length);
