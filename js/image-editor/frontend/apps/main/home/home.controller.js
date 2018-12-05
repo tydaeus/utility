@@ -4,6 +4,7 @@ const pickFiles = require('../../../modules/browser-files/pick-files');
 const readFiles = require('../../../modules/browser-files/read-files');
 const resizeImage = require('../../../modules/image-editing/resize-image');
 const saveFile = require('../../../modules/browser-files/save-file');
+const uriToBuffer = require('../../../modules/node-files/uri-to-buffer');
 const _ = require('underscore');
 const electron = window.require('electron');
 const testMode = electron.remote.getGlobal('testMode');
@@ -75,9 +76,9 @@ require('angular')
                         console.info('dirName', dirName);
 
                         _($scope.files).each((file, i) => {
+                            const ext = path.extname(file.path);
                             file.saveName = $scope.saveName + '-' + i;
-                            // TODO: convert data string into
-                            fs.writeFileSync(path.join(dirName, file.saveName), file.imageData);
+                            fs.writeFileSync(path.join(dirName, file.saveName + ext), uriToBuffer(file.imageData));
                         });
 
                     });
