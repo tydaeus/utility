@@ -32,7 +32,9 @@ function createWindow() {
     win.loadURL(filePath);
 
     // open dev tools
-    // win.webContents.openDevTools();
+    if (global.testMode) {
+        win.webContents.openDevTools();
+    }
 
     // dereference window object; if multiple windows, make sure to delete the closed one
     win.on("closed", () => {
