@@ -67,30 +67,21 @@ require('angular')
             // settings specify to ask where to save each file
             $scope.saveAllFiles = function () {
 
-                if (testMode) {
-                    electron.remote.dialog.showOpenDialog({
-                        properties: ['openDirectory'],
-                        multiSelections: false}, dirnameArr =>
-                    {
-                        const dirName = dirnameArr[0];
-                        console.info('dirName', dirName);
+                electron.remote.dialog.showOpenDialog({
+                    properties: ['openDirectory'],
+                    multiSelections: false}, dirnameArr =>
+                {
+                    const dirName = dirnameArr[0];
+                    console.info('dirName', dirName);
 
-                        _($scope.files).each((file, i) => {
-                            const ext = path.extname(file.path);
-                            file.saveName = $scope.saveName + '-' + i;
-                            fs.writeFileSync(path.join(dirName, file.saveName + ext), uriToBuffer(file.imageData));
-                        });
-
+                    _($scope.files).each((file, i) => {
+                        const ext = path.extname(file.path);
+                        file.saveName = $scope.saveName + '-' + i;
+                        fs.writeFileSync(path.join(dirName, file.saveName + ext), uriToBuffer(file.imageData));
                     });
 
-
-                    return;
-                }
-
-                _($scope.files).each(function(file, i) {
-                    file.saveName = $scope.saveName + '-' + i;
-                    $scope.saveFile(file);
                 });
+
             };
         }
     ]);
