@@ -79,8 +79,6 @@ Class Logger {
         $minConsoleLogLevel = $this::LogLevelToNumberMap[$this.ConsoleLogLevel]
         $attemptedLogLevel = $this::LogLevelToNumberMap[$LogLevel]
 
-        Write-Host "minFileLogLevel $minFileLogLevel minConsoleLogLevel $minConsoleLogLevel attemptedLogLevel $attemptedLogLevel"
-
         if (-not $this.disableConsoleOutput -and ($minConsoleLogLevel -le $attemptedLogLevel)) {
             Write-Information -InformationAction Continue $Message
         }
