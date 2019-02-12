@@ -25,7 +25,9 @@ param(
     [string]$FileLogLevel,
 
     [ValidateSet("Trace", "Debug", "Information", "Warning", "Error", "Critical", "None")]
-    [string]$ConsoleLogLevel
+    [string]$ConsoleLogLevel,
+
+    [ScriptBlock]$MessageTransform
 
 )
 
@@ -36,6 +38,12 @@ Class Logger {
     [string] $ConsoleLogLevel
     [bool]$DisableFileOutput
     [bool]$DisableConsoleOutput
+    # default transformation
+    [ScriptBlock]$MessageTransform = {
+        param($Message, $LogLevel)
+
+        return $Message
+    }
 
     Trace([string]$Message) {
         $this.Log($Message, "Trace")
@@ -78,6 +86,8 @@ Class Logger {
         $minFileLogLevel = $this::LogLevelToNumberMap[$this.FileLogLevel]
         $minConsoleLogLevel = $this::LogLevelToNumberMap[$this.ConsoleLogLevel]
         $attemptedLogLevel = $this::LogLevelToNumberMap[$LogLevel]
+
+        $Message = &$this.MessageTransform $Message $LogLevel
 
         if (-not $this.disableConsoleOutput -and ($minConsoleLogLevel -le $attemptedLogLevel)) {
             Write-Information -InformationAction Continue $Message
@@ -131,7 +141,9 @@ function Define-CustomLogger {
         [string]$FileLogLevel,
 
         [ValidateSet("Trace", "Debug", "Information", "Warning", "Error", "Critical", "None")]
-        [string]$ConsoleLogLevel
+        [string]$ConsoleLogLevel,
+
+        [ScriptBlock]$MessageTransform
     )
 
     $result = [Logger]::new()
@@ -141,6 +153,10 @@ function Define-CustomLogger {
     $result.LogName = $LogName
     $result.disableFileOutput = $disableFileOutput
     $result.disableConsoleOutput = $disableConsoleOutput
+
+    if ($MessageTransform) {
+        $result.MessageTransform = $MessageTransform
+    }
 
     return $result
 }
