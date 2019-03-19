@@ -132,7 +132,7 @@ Class Logger {
 }
 
 # Perform initialization within function, so that class and function can be extracted to inline logging functionality.
-function Define-CustomLogger {
+function Define-Logger {
     param(
         [string]$LogDir = "C:\temp",
         [string]$LogName = "log.log",
@@ -163,4 +163,4 @@ function Define-CustomLogger {
     return $result
 }
 
-Define-CustomLogger @PSBoundParameters
+Define-Logger @PSBoundParameters
