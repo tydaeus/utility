@@ -2,9 +2,9 @@
 
 :: replace OUTPUT_LOG value with desired logging location
 set "OUTPUT_LOG=C:\temp\output.log"
-set "#ERROR=call :ERROR_OUT"
-set "#WARN=call :WARN_OUT"
-set "#LOG=call :LOG_OUT"
+set "#ERROR=call :ERROR_OUT "
+set "#WARN=call :WARN_OUT "
+set "#LOG=call :LOG_OUT "
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: ERROR_OUT
