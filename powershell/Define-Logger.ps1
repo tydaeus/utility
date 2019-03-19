@@ -101,6 +101,9 @@ Class Logger {
 
             $originalEncoding = $Global:PSDefaultParameterValues['Out-File:Encoding']
             $Global:PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
+            
+            # ensure output dir exists
+            md $this.LogDir -Force | Out-Null
 
             Add-Content -Path $logPath -Value "$([DateTime]::Now.ToString("yyyyMMdd-HH:mm:ss")) ${prefix}: $Message"
 
