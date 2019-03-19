@@ -36,8 +36,9 @@ Class Logger {
     [string] $LogName
     [string] $FileLogLevel
     [string] $ConsoleLogLevel
-    [bool]$DisableFileOutput
-    [bool]$DisableConsoleOutput
+    [bool]$DisableFileOutput = $false
+    [bool]$DisableConsoleOutput = $false
+
     # default transformation
     [ScriptBlock]$MessageTransform = {
         param($Message, $LogLevel)
@@ -88,19 +89,20 @@ Class Logger {
         $attemptedLogLevel = $this::LogLevelToNumberMap[$LogLevel]
 
         $Message = &$this.MessageTransform $Message $LogLevel
+        $prefix = $this::LogLevelToPrefixMap[$LogLevel]
 
         if (-not $this.disableConsoleOutput -and ($minConsoleLogLevel -le $attemptedLogLevel)) {
-            Write-Information -InformationAction Continue $Message
+
+            Write-Information -InformationAction Continue "${prefix}: $Message"
         }
 
         if (-not $this.disableFileOutput -and ($minFileLogLevel -le $attemptedLogLevel)) {
-            $Prefix = $this::LogLevelToPrefixMap[$LogLevel]
-            $LogPath = [System.IO.Path]::Combine($this.LogDir, "$([DateTime]::Now.ToString("yyyyMMdd"))_$($this.LogName)")
+            $logPath = [System.IO.Path]::Combine($this.LogDir, "$([DateTime]::Now.ToString("yyyyMMdd"))_$($this.LogName)")
 
             $originalEncoding = $Global:PSDefaultParameterValues['Out-File:Encoding']
             $Global:PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
 
-            "$([DateTime]::Now.ToString("yyyyMMdd-HH:mm:ss")) ${Prefix}: $Message" >> $LogPath
+            Add-Content -Path $logPath -Value "$([DateTime]::Now.ToString("yyyyMMdd-HH:mm:ss")) ${prefix}: $Message"
 
             $Global:PSDefaultParameterValues['Out-File:Encoding'] = $originalEncoding
         }
