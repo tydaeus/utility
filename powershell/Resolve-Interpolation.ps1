@@ -7,6 +7,10 @@
     HashTable of substitutions to perform. Any key appearing in $FormatString within ${} will be substituted with the corresponding value.
 .PARAMETER FailedSubstitution
     What to replace substitutions with if they don't appear in $Substitutions
+.PARAMETER BeginInterpolationSequence
+    Character sequence indicating the beginning of interpolation block
+.PARAMETER EndInterpolationSequence
+    Character sequence indicating the end of interpolation block
 #>
 [CmdletBinding()]
 param(
@@ -37,14 +41,15 @@ function Get-Substitution {
 function Match-InterpolationBegin {
     param([Parameter(Mandatory=$True)][int]$index)
 
-    return ($FormatString.Length -gt $index + (2 - 1)) -and
-     ($FormatString.Substring($index, 2) -eq '${')
+    return ($FormatString.Length -gt $index + ($BeginInterpolationSequence.Length -1)) -and
+     ($FormatString.Substring($index, $BeginInterpolationSequence.Length) -eq $BeginInterpolationSequence)
 }
 
 function Match-InterpolationEnd {
     param([Parameter(Mandatory=$True)][int]$index)
 
-    return ($FormatString[$index] -eq '}')
+    return ($FormatString.Length -gt $index + ($EndInterpolationSequence.Length -1)) -and
+     ($FormatString.Substring($index, $EndInterpolationSequence.Length) -eq $EndInterpolationSequence)
 }
 
 for ($i = 0; $i -lt $FormatString.Length; $i++) {
@@ -55,6 +60,7 @@ for ($i = 0; $i -lt $FormatString.Length; $i++) {
             $insideInterpolation = $False
             $result += Get-Substitution($interpolationKey)
             $interpolationKey = ""
+            $i += ($EndInterpolationSequence.Length - 1)
         }
         # continue reading interpolation section
         else {
@@ -67,7 +73,7 @@ for ($i = 0; $i -lt $FormatString.Length; $i++) {
         # detect interpolation
         if (Match-InterpolationBegin $i) {
             $insideInterpolation = $True
-            $i += 1
+            $i += ($BeginInterpolationSequence.Length - 1)
         }
         # continue reading regular text
         else {
