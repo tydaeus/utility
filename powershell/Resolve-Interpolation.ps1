@@ -14,13 +14,13 @@ param(
     [Parameter(Mandatory=$True)][HashTable]$Substitutions,
     [string]$FailedSubstitution = ""
 )
+# Future: allow parameterized interpolation tokens
+# Future: support function block values in Substitutions
+
 
 $result = ""
-$formatCharArr = $FormatString.ToCharArray()
 $insideInterpolation = $False
 $interpolationKey = ""
-[char]$curChar = $Null
-[char]$nextChar = $Null
 
 function Get-Substitution {
     param([Parameter(Mandatory=$True)][string]$Key)
@@ -32,34 +32,31 @@ function Get-Substitution {
     }
 }
 
-for ($i = 0; $i -lt $formatCharArr.Length; $i++) {
-    $curChar = $formatCharArr[$i]
-    # this will be $Null when we read past the end of the array
-    $nextChar = $formatCharArr[$i + 1]
-
+for ($i = 0; $i -lt $FormatString.Length; $i++) {
     # we're inside the interpolation section
     if ($insideInterpolation) {
-        # finish interpolation section
-        if ($curChar -eq '}') {
+        # end of interpolation section
+        if ($FormatString[$i] -eq '}') {
             $insideInterpolation = $False
             $result += Get-Substitution($interpolationKey)
             $interpolationKey = ""
         }
         # continue reading interpolation section
         else {
-            $interpolationKey += $curChar
+            $interpolationKey += $FormatString[$i]
         }
+
     }
     # we're reading regular text
     else {
         # detect interpolation
-        if (($curChar -eq '$') -and ($nextChar -eq '{')) {
+        if (($FormatString.Length -gt $i + (2 - 1)) -and ($FormatString.Substring($i, 2) -eq '${')) {
             $insideInterpolation = $True
-            $i++
+            $i += 1
         }
         # continue reading regular text
         else {
-            $result += $curChar
+            $result += $FormatString[$i]
         }
     }
 }
