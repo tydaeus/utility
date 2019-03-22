@@ -12,7 +12,9 @@
 param(
     [Parameter(Mandatory=$True)][string]$FormatString,
     [Parameter(Mandatory=$True)][HashTable]$Substitutions,
-    [string]$FailedSubstitution = ""
+    [string]$FailedSubstitution = "",
+    [string]$BeginInterpolationSequence = '${',
+    [string]$EndInterpolationSequence = '}'
 )
 # Future: allow parameterized interpolation tokens
 # Future: support function block values in Substitutions
@@ -35,21 +37,21 @@ function Get-Substitution {
 function Match-InterpolationBegin {
     param([Parameter(Mandatory=$True)][int]$index)
 
-    return ($FormatString[$index] -eq '}')
+    return ($FormatString.Length -gt $index + (2 - 1)) -and
+     ($FormatString.Substring($index, 2) -eq '${')
 }
 
 function Match-InterpolationEnd {
     param([Parameter(Mandatory=$True)][int]$index)
 
-    return ($FormatString.Length -gt $index + (2 - 1)) -and
-     ($FormatString.Substring($index, 2) -eq '${')
+    return ($FormatString[$index] -eq '}')
 }
 
 for ($i = 0; $i -lt $FormatString.Length; $i++) {
     # we're inside the interpolation section
     if ($insideInterpolation) {
         # end of interpolation section
-        if (Match-InterpolationBegin $i) {
+        if (Match-InterpolationEnd $i) {
             $insideInterpolation = $False
             $result += Get-Substitution($interpolationKey)
             $interpolationKey = ""
@@ -63,7 +65,7 @@ for ($i = 0; $i -lt $FormatString.Length; $i++) {
     # we're reading regular text
     else {
         # detect interpolation
-        if (Match-InterpolationEnd $i) {
+        if (Match-InterpolationBegin $i) {
             $insideInterpolation = $True
             $i += 1
         }
