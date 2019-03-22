@@ -20,7 +20,6 @@ param(
     [string]$BeginInterpolationSequence = '${',
     [string]$EndInterpolationSequence = '}'
 )
-# Future: allow parameterized interpolation tokens
 # Future: support function block values in Substitutions
 
 
