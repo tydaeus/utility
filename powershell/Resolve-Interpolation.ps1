@@ -42,7 +42,6 @@ for ($i = 0; $i -lt $formatCharArr.Length; $i++) {
         # finish interpolation section
         if ($curChar -eq '}') {
             $insideInterpolation = $False
-            Write-Host "interpolationKey: $interpolationKey"
             $result += Get-Substitution($interpolationKey)
             $interpolationKey = ""
         }
