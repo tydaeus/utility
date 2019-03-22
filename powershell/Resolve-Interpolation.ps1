@@ -32,11 +32,24 @@ function Get-Substitution {
     }
 }
 
+function Match-InterpolationBegin {
+    param([Parameter(Mandatory=$True)][int]$index)
+
+    return ($FormatString[$index] -eq '}')
+}
+
+function Match-InterpolationEnd {
+    param([Parameter(Mandatory=$True)][int]$index)
+
+    return ($FormatString.Length -gt $index + (2 - 1)) -and
+     ($FormatString.Substring($index, 2) -eq '${')
+}
+
 for ($i = 0; $i -lt $FormatString.Length; $i++) {
     # we're inside the interpolation section
     if ($insideInterpolation) {
         # end of interpolation section
-        if ($FormatString[$i] -eq '}') {
+        if (Match-InterpolationBegin $i) {
             $insideInterpolation = $False
             $result += Get-Substitution($interpolationKey)
             $interpolationKey = ""
@@ -50,7 +63,7 @@ for ($i = 0; $i -lt $FormatString.Length; $i++) {
     # we're reading regular text
     else {
         # detect interpolation
-        if (($FormatString.Length -gt $i + (2 - 1)) -and ($FormatString.Substring($i, 2) -eq '${')) {
+        if (Match-InterpolationEnd $i) {
             $insideInterpolation = $True
             $i += 1
         }
