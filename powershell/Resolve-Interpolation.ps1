@@ -38,25 +38,21 @@ function Get-Substitution {
     }
 }
 
-function Match-InterpolationBegin {
-    param([Parameter(Mandatory=$True)][int]$index)
+function Match-Sequence {
+    param(
+        [Parameter(Mandatory=$True)][int]$index,
+        [Parameter(Mandatory=$True)][string]$Sequence
+    )
 
-    return ($FormatString.Length -gt $index + ($BeginInterpolationSequence.Length -1)) -and
-     ($FormatString.Substring($index, $BeginInterpolationSequence.Length) -eq $BeginInterpolationSequence)
-}
-
-function Match-InterpolationEnd {
-    param([Parameter(Mandatory=$True)][int]$index)
-
-    return ($FormatString.Length -gt $index + ($EndInterpolationSequence.Length -1)) -and
-     ($FormatString.Substring($index, $EndInterpolationSequence.Length) -eq $EndInterpolationSequence)
+    return ($FormatString.Length -gt $index + ($Sequence.Length -1)) -and
+     ($FormatString.Substring($index, $Sequence.Length) -eq $Sequence)
 }
 
 for ($i = 0; $i -lt $FormatString.Length; $i++) {
     # we're inside the interpolation section
     if ($insideInterpolation) {
         # end of interpolation section
-        if (Match-InterpolationEnd $i) {
+        if (Match-Sequence $i $EndInterpolationSequence) {
             $insideInterpolation = $False
             $result += Get-Substitution($interpolationKey)
             $interpolationKey = ""
@@ -71,7 +67,7 @@ for ($i = 0; $i -lt $FormatString.Length; $i++) {
     # we're reading regular text
     else {
         # detect interpolation
-        if (Match-InterpolationBegin $i) {
+        if (Match-Sequence $i $BeginInterpolationSequence) {
             $insideInterpolation = $True
             $i += ($BeginInterpolationSequence.Length - 1)
         }
