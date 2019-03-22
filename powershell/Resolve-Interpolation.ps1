@@ -12,7 +12,7 @@
 param(
     [Parameter(Mandatory=$True)][string]$FormatString,
     [Parameter(Mandatory=$True)][HashTable]$Substitutions,
-    $FailedSubstitution = ""
+    [string]$FailedSubstitution = ""
 )
 
 $result = ""
