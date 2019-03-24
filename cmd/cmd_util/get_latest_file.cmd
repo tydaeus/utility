@@ -10,7 +10,7 @@ setLocal enableDelayedExpansion
 :: Example:
 ::      get_latest_file "C:\logs\" "foo.*\.log"
 ::
-:: Returns the most recently modified file in PATH whose name matches 
+:: Returns the most recently modified file in PATH whose name matches
 :: FILE_PATTERN as RET. Note that FILE_PATTERN is processed using findstr /R,
 :: so some basic regex can be used.
 ::
@@ -25,7 +25,7 @@ set ERRLEV=0
 
 for /f "tokens=*" %%A in ('dir /b /od "%DIR_PATH%" ^| findstr /R "%FILE_PATTERN%"') do set NEWEST=%DIR_PATH%\%%~A
 
-if not ["%NEWEST%"]==[""] goto :SUCCESS
+if defined NEWEST goto :SUCCESS
 
 :ERR
 set ERRLEV=1

@@ -4,7 +4,12 @@ const pickFiles = require('../../../modules/browser-files/pick-files');
 const readFiles = require('../../../modules/browser-files/read-files');
 const resizeImage = require('../../../modules/image-editing/resize-image');
 const saveFile = require('../../../modules/browser-files/save-file');
+const uriToBuffer = require('../../../modules/node-files/uri-to-buffer');
 const _ = require('underscore');
+const electron = window.require('electron');
+const testMode = electron.remote.getGlobal('testMode');
+const fs = window.require('fs');
+const path = require('path');
 
 require('angular')
     .module('main')
@@ -13,6 +18,7 @@ require('angular')
         function(
             $scope
         ) {
+
             $scope.imageWidth = 1200;
             $scope.saveName = 'reduced';
 
@@ -61,16 +67,21 @@ require('angular')
             // settings specify to ask where to save each file
             $scope.saveAllFiles = function () {
 
-                // TODO: implement prompt for directory to save files into; save files to this dir
-                // electron.remote.dialog.showOpenDialog({properties: ['openDirectory']}, filename => {
-                //     console.info('filename', filename);
-                // });
-                // return;
+                electron.remote.dialog.showOpenDialog({
+                    properties: ['openDirectory'],
+                    multiSelections: false}, dirnameArr =>
+                {
+                    const dirName = dirnameArr[0];
+                    console.info('dirName', dirName);
 
-                _($scope.files).each(function(file, i) {
-                    file.saveName = $scope.saveName + '-' + i;
-                    $scope.saveFile(file);
+                    _($scope.files).each((file, i) => {
+                        const ext = path.extname(file.path);
+                        file.saveName = $scope.saveName + '-' + i;
+                        fs.writeFileSync(path.join(dirName, file.saveName + ext), uriToBuffer(file.imageData));
+                    });
+
                 });
+
             };
         }
     ]);

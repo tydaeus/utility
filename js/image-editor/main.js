@@ -10,6 +10,8 @@ const {BrowserWindow} = electron;
 // persistent var for window so it doesn't get gc'd
 let win;
 
+// provide testMode boolean to allow checking if `-t` was provided as a startup parameter
+global.testMode = process.argv.length >= 3 && '-t' === process.argv[2];
 
 function createWindow() {
     console.log("createWindow()");
@@ -30,7 +32,9 @@ function createWindow() {
     win.loadURL(filePath);
 
     // open dev tools
-    // win.webContents.openDevTools();
+    if (global.testMode) {
+        win.webContents.openDevTools();
+    }
 
     // dereference window object; if multiple windows, make sure to delete the closed one
     win.on("closed", () => {
@@ -41,6 +45,7 @@ function createWindow() {
 
 app.on("ready", createWindow);
 
+// quit the application on last window closed, unless we're on a Mac
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {
         console.log("quitting application");

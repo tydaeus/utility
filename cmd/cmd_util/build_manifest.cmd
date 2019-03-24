@@ -8,7 +8,7 @@ setLocal enableDelayedExpansion
 ::      build_manifest DIRPATH [MANIFEST]
 ::
 :: Builds a manifest describing the contents of a specified directory,
-:: outputting to the file named MANIFEST. 
+:: outputting to the file named MANIFEST.
 ::
 :: MD5 functionality relies on a command named "md5" being present in PATH.
 :: A script named "md5" in PATH may be used to provide a redirect if needed.
@@ -24,7 +24,7 @@ set "MANIFEST=%~2"
 if not defined DIRPATH (
     1>&2 echo:ERROR: invalid usage
     echo:Usage:
-    echo:  !SCRIPT_NAME! DIRPATH
+    echo:  !SCRIPT_NAME! DIRPATH [MANIFEST]
     set ERRLEV=2
     goto :ERR
 )
@@ -142,10 +142,10 @@ set "DIRNAME=%~1"
 set "DIRPATH=!DIRPATH!\%~1"
 set "MF_INDENT=%~2"
 
-!#MF! "name": "!DIRNAME!",
+!#MF! "name": "!DIRNAME!"
 
-call extend_param --output:FTIME "!DIRPATH!" t
-!#MF! "modified": "!FTIME!",
+:: call extend_param --output:FTIME "!DIRPATH!" t
+:: !#MF! "modified": "!FTIME!",
 
 endLocal
 
@@ -186,20 +186,35 @@ set "MF_INDENT=%~2"
 
 set "HASH=ERR: Hash Failed" :: default to an error message until hash succeeded
 
-for /F "tokens=1 usebackq" %%A in (`md5 "!FILEPATH!"`) do (
-    set "HASH=%%A"
+for /F "tokens=1 usebackq delims=, " %%A in (`md5 "!FILEPATH!"`) do (
+    call :READ_HASH "%%A"
 )
 
 !#MF! "md5": "!HASH!",
 
-call extend_param --output:FTIME "!FILEPATH!" t
-!#MF! "modified": "!FTIME!",
+:: call extend_param --output:FTIME "!FILEPATH!" t
+:: !#MF! "modified": "!FTIME!",
 
 call extend_param --output:FSIZE "!FILEPATH!" z
 !#MF! "size": "!FSIZE!"
 
 endLocal
 
+exit /b
+
+:: convenience subroutine to process md5 output and retrieve the hash
+:READ_HASH
+set "INPUT=%~1"
+if not defined INPUT exit /b
+:: one md5 tool outputs 'rc=' on a line other than the hash; disregard this line
+if "!INPUT:~0,3!"=="rc=" exit /b
+:: one md5 tool prefixes the hash with `md=`; strip this
+if "!INPUT:~0,3!"=="md=" (
+    set "HASH=!INPUT:~3!"
+    exit /b
+)
+:: most md5 tools output the hash as the first token on the first line; use this
+set "HASH=!INPUT!"
 exit /b
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

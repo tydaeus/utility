@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
+using System.Text;
 
 namespace cSharpUtilities
 
@@ -74,6 +76,60 @@ namespace cSharpUtilities
                 return DictifyObject(value);
             }
 
+        }
+
+        /// <summary>
+        /// Generates a string describing the object's type and its properties. Adaptable for use as a generic ToString
+        /// implementation.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static string ConvertToPropertiesString(object obj)
+        {
+            if (obj == null)
+            {
+                return "null";
+            }
+
+            Type type = obj.GetType();
+
+            StringBuilder result = new StringBuilder();
+            result.Append("[")
+                .Append(type.FullName)
+                .Append("]: {");
+
+            bool firstProp = true;
+
+            foreach (PropertyInfo prop in obj.GetType().GetProperties())
+            {
+                // provide comma and space before all properties except first
+                if (firstProp)
+                {
+                    firstProp = false;
+                } else
+                {
+                    result.Append(", ");
+                }
+
+                result.Append(prop.Name)
+                    .Append(":\"");
+
+                object value = prop.GetValue(obj);
+
+                if (value == null)
+                {
+                    result.Append("null");
+                }
+                else
+                {
+                    result.Append(value);
+                }
+
+                result.Append("\"");
+            }
+
+            result.Append("}");
+            return result.ToString();
         }
 
     }
