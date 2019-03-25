@@ -22,13 +22,40 @@ require('angular')
             $scope.imageWidth = 1200;
             $scope.saveName = 'reduced';
 
-            $scope.loadFiles = function() {
-                pickFiles()
-                    .then(function(files) {
-                        return readFiles(files, 'dataURL');
-                    })
-                    .then(filesRead);
-            };
+            // TODO: remove from testMode (complete)
+            if (testMode) {
+                $scope.loadFiles = () => {
+                    electron.remote.dialog.showOpenDialog({
+                        properties: ['openFile', 'multiSelections']}, filePathsArr =>
+                    {
+                        console.info('filePathsArr', filePathsArr);
+
+                        const files = [];
+
+                        _(filePathsArr).each((filePath) => {
+                            let file = {};
+
+                            file.path = filePath;
+                            file.name = path.basename(filePath.replace(/\\/g, '/'));
+                            file.data = 'file://' + filePath;
+                            files.push(file);
+                        });
+
+                        console.info('files', files);
+
+                        filesRead(files);
+                    });
+                };
+            } else {
+                $scope.loadFiles = function() {
+                    pickFiles()
+                        .then(function(files) {
+                            return readFiles(files, 'dataURL');
+                        })
+                        .then(filesRead);
+                };
+            }
+
 
             function filesRead(files) {
 
