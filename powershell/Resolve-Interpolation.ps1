@@ -5,6 +5,8 @@
     The string to perform substitution on. Substitution will be attempted on substrings matching ${SubstitutionName}
 .PARAMETER Substitutions
     HashTable of substitutions to perform. Any key appearing in $FormatString within ${} will be substituted with the corresponding value.
+.PARAMETER SubstitutionFunction
+    ScriptBlock defining how to perform substitution. Return value will be used as the substitution.
 .PARAMETER FailedSubstitution
     What to replace substitutions with if they don't appear in $Substitutions
 .PARAMETER BeginInterpolationSequence
@@ -14,14 +16,30 @@
 #>
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory=$True)][string]$FormatString,
-    [Parameter(Mandatory=$True)][HashTable]$Substitutions,
+    [Parameter(Mandatory=$True, ParameterSetName="SubstitutionTable")]
+    [Parameter(Mandatory=$True, ParameterSetName="SubstitutionFunction")]
+    [string]
+    $FormatString,
+
+    [Parameter(Mandatory=$True, ParameterSetName="SubstitutionTable")]
+    [HashTable]
+    $Substitutions,
+
+    [Parameter(Mandatory=$True, ParameterSetName="SubstitutionFunction")]
+    [ScriptBlock]
+    $SubstitutionFunction,
+
+    [Parameter(Mandatory=$False, ParameterSetName="SubstitutionTable")]
     [string]$FailedSubstitution = "",
+
+    [Parameter(Mandatory=$False, ParameterSetName="SubstitutionTable")]
+    [Parameter(Mandatory=$False, ParameterSetName="SubstitutionFunction")]
     [string]$BeginInterpolationSequence = '${',
+
+    [Parameter(Mandatory=$False, ParameterSetName="SubstitutionTable")]
+    [Parameter(Mandatory=$False, ParameterSetName="SubstitutionFunction")]
     [string]$EndInterpolationSequence = '}'
 )
-# Future: support function block values in Substitutions
-
 
 $result = ""
 $insideInterpolation = $False
@@ -30,10 +48,19 @@ $interpolationKey = ""
 function Get-Substitution {
     param([Parameter(Mandatory=$True)][string]$Key)
 
-    if ($Substitutions.ContainsKey($Key)) {
-        return $Substitutions[$Key]
-    } else {
-        return $FailedSubstitution
+    if ($Substitutions) {
+        if ($Substitutions.ContainsKey($Key)) {
+            return $Substitutions[$Key]
+        } else {
+            return $FailedSubstitution
+        }
+    }
+    elseif ($SubstitutionFunction) {
+        return &$SubstitutionFunction $Key
+    }
+    else {
+        Write-Host "ERR: Mandatory parameter omitted. This should never happen."
+        exit 1
     }
 }
 
