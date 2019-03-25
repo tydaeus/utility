@@ -63,10 +63,9 @@ require('angular')
                 });
             };
 
-            // note that this has the unfortunate side effect of opening multiple save dialogs at once if user's
-            // settings specify to ask where to save each file
+            // select a direcctory and save all files there
             $scope.saveAllFiles = function () {
-
+                // electron: open a dialog to pick a directory to save to
                 electron.remote.dialog.showOpenDialog({
                     properties: ['openDirectory'],
                     multiSelections: false}, dirnameArr =>
