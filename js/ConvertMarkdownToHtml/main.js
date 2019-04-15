@@ -28,8 +28,8 @@ let outputBody = writer.render(parsed);
 
 // read css file
 // FUTURE: allow specifying alternative css file
-// FUTURE: allow linking css file instead of embedding
-let css = fs.readFileSync(path.join(__dirname, 'node_modules/github-markdown-css/github-markdown.css'));
+// FUTURE: allow linking css file instead of embedding?
+let css = fs.readFileSync(path.join(__dirname, 'assets/github-markdown.css'));
 
 // create header
 let outputHeader =
