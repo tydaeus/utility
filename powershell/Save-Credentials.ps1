@@ -17,7 +17,7 @@ if (-not (Test-Path -Path $CredentialPath -IsValid)) {
     exit 1
 }
 
-$CredentialDir = [System.IO.Path]::GetDirectoryName($CredentialPath)
+$CredentialDir = Split-Path $CredentialPath -Parent
 
 md $CredentialDir -Force | Out-Null
 
