@@ -15,9 +15,7 @@ param(
     [string]$IconSource,
 
     [ValidateSet("None", "Warning", "Error", "Info")]
-    [string]$ToolTipIcon,
-
-    [uint32]$Duration = 10000
+    [string]$ToolTipIcon
 )
 
 # The ToastNotification type appears to be a little more dedicated to this purpose, but isn't available, at least not within PowerShell 5.1
@@ -56,4 +54,5 @@ if ($ToolTipIcon) {
 }
 
 $toastMessage.Visible = $True
-$toastMessage.ShowBalloonTip($Duration)
+# parameter is how long to show the notification for, but this has been deprecated since Vista
+$toastMessage.ShowBalloonTip(10000)
