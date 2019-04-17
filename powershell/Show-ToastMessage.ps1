@@ -12,10 +12,12 @@
 param(
     [Parameter(Mandatory=$True)][string]$Text,
     [string]$Title,
-    [string]$IconSource,
 
     [ValidateSet("None", "Warning", "Error", "Info")]
-    [string]$ToolTipIcon
+    [string]$ToolTipIcon,
+    
+    [string]$IconSource
+
 )
 
 # The ToastNotification type appears to be a little more dedicated to this purpose, but isn't available, at least not within PowerShell 5.1
