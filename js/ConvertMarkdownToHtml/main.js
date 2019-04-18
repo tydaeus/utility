@@ -35,6 +35,19 @@ let css = fs.readFileSync(path.join(__dirname, 'assets/github-markdown.css'));
 let outputHeader =
     '<style>\n' +
     css +
+    '.markdown-body { \n' +
+    '    box-sizing: border-box; \n' +
+    '    min-width: 200px; \n' +
+    '    max-width: 980px; \n' +
+    '    margin: 0 auto; \n' +
+    '    padding: 45px; \n' +
+    '} \n' +
+    '\n' +
+    '@media (max-width: 767px) { \n' +
+    '.markdown-body { \n' +
+    '        padding: 15px; \n' +
+    '    } \n' +
+    '} \n' +
     '</style>\n' +
     '<div class="markdown-body">\n';
 
