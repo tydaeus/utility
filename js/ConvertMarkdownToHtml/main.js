@@ -2,6 +2,7 @@ const commonmark = require('commonmark');
 const path = require('path');
 const fs = require('fs');
 const config = require('./config');
+const markdown = require('./markdown');
 
 config.processArgs();
 
@@ -14,11 +15,7 @@ function convertMarkdownFile(inputFile, outputFile) {
 
     let inputContent = fs.readFileSync(inputFile, {encoding: 'utf8'});
 
-    // convert markdown to html
-    let reader = new commonmark.Parser();
-    let writer = new commonmark.HtmlRenderer();
-    let parsed = reader.parse(inputContent);
-    let outputBody = writer.render(parsed);
+    let outputBody = markdown.convert(inputContent);
 
     // read css file
     // FUTURE: allow specifying alternative css file
