@@ -1,15 +1,17 @@
+/*
+ * Controls configuration used throughout the app.
+ */
+module.exports = {};
 
-const files = [];
+// files to be converted
+module.exports.files = [];
 
-const processArgs = function() {
+// processes command-line arguments.
+// FUTURE: move this somewhere else?
+module.exports.processArgs = function() {
 
     for (let i = 2; i < process.argv.length; i++) {
         files.push(process.argv[i]);
     }
 
-};
-
-module.exports = {
-    files : files,
-    processArgs: processArgs
 };
