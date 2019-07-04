@@ -1,14 +1,13 @@
 const commonmark = require('commonmark');
 const path = require('path');
 const fs = require('fs');
+const config = require('./config');
 
-let inputFile, outputFile;
+config.processArgs();
 
-for (let i = 2; i < process.argv.length; i++) {
-    inputFile = process.argv[i];
-    outputFile = inputFile + '.html';
-    convertMarkdownFile(inputFile, outputFile);
-}
+config.files.forEach((file) => {
+    convertMarkdownFile(file, file + '.html');
+});
 
 function convertMarkdownFile(inputFile, outputFile) {
     console.info('Reading markdown from "' + inputFile + '"');
