@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const config = require('./config');
 const markdown = require('./markdown');
+const css = require('./css');
 
 config.processArgs();
 
@@ -20,12 +21,12 @@ function convertMarkdownFile(inputFile, outputFile) {
     // read css file
     // FUTURE: allow specifying alternative css file
     // FUTURE: allow linking css file instead of embedding?
-    let css = fs.readFileSync(path.join(__dirname, 'assets/github-markdown.css'));
+    let cssEmbeddedTag = css.getCssStyleSheetAsEmbeddedTag();
 
     // create header
     let outputHeader =
+        cssEmbeddedTag +
         '<style>\n' +
-        css +
         '.markdown-body { \n' +
         '    box-sizing: border-box; \n' +
         '    min-width: 200px; \n' +
