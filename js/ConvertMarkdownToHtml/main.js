@@ -19,7 +19,7 @@ function processArgument(file) {
     let stats = fs.statSync(file);
 
     if (stats.isDirectory()) {
-        console.log('File "' + file + '" is directory. Directories are not yet supported. Skipping.');
+        processDir(file);
         return;
     }
 
@@ -29,6 +29,14 @@ function processArgument(file) {
     }
 
     convertMarkdownFile(file, file + '.html');
+}
+
+function processDir(dir) {
+    let files = fs.readdirSync(dir);
+
+    files.forEach((file) => {
+        processArgument(path.join(dir, file));
+    });
 }
 
 function convertMarkdownFile(inputFile, outputFile) {
