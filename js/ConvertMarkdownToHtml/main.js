@@ -18,9 +18,6 @@ function convertMarkdownFile(inputFile, outputFile) {
 
     let outputBody = markdown.convert(inputContent);
 
-    // read css file
-    // FUTURE: allow specifying alternative css file
-    // FUTURE: allow linking css file instead of embedding?
     let cssEmbeddedTag = css.getCssStyleSheetAsEmbeddedTag();
 
     // create header
