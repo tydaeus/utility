@@ -1,4 +1,3 @@
-const commonmark = require('commonmark');
 const path = require('path');
 const fs = require('fs');
 const config = require('./config');
@@ -20,24 +19,12 @@ function convertMarkdownFile(inputFile, outputFile) {
 
     let cssEmbeddedTag = css.getCssStyleSheetAsEmbeddedTag();
 
+    let cssCustomizationTag = css.getCssCustomizationTag();
+
     // create header
     let outputHeader =
         cssEmbeddedTag +
-        '<style>\n' +
-        '.markdown-body { \n' +
-        '    box-sizing: border-box; \n' +
-        '    min-width: 200px; \n' +
-        '    max-width: 980px; \n' +
-        '    margin: 0 auto; \n' +
-        '    padding: 45px; \n' +
-        '} \n' +
-        '\n' +
-        '@media (max-width: 767px) { \n' +
-        '.markdown-body { \n' +
-        '        padding: 15px; \n' +
-        '    } \n' +
-        '} \n' +
-        '</style>\n' +
+        cssCustomizationTag +
         '<div class="markdown-body">\n';
 
     // create footer
