@@ -55,18 +55,28 @@ function convertMarkdownFile(inputFile, outputFile) {
 
     let outputBody = markdown.convert(inputContent);
 
-    let cssEmbeddedTag = css.getCssStyleSheetAsEmbeddedTag();
+    let stylesheetTag = null;
+
+    if (config.options.localCss) {
+        stylesheetTag = css.getLinkLocalCssTag();
+        css.createLocalCssIfNeeded(path.dirname(inputFile));
+    } else {
+        stylesheetTag = css.getCssStyleSheetAsEmbeddedTag();
+    }
 
     let cssCustomizationTag = css.getCssCustomizationTag();
 
     // create header
     let outputHeader =
-        cssEmbeddedTag +
+        '<head>\n' +
+        stylesheetTag +
         cssCustomizationTag +
+        '</head>\n' +
+        '<body>\n' +
         '<div class="markdown-body">\n';
 
     // create footer
-    let outputFooter = '</div>\n';
+    let outputFooter = '</div>\n' + '</body>\n';
 
 
     let outputContent = outputHeader + outputBody + outputFooter;

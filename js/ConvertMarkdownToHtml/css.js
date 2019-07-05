@@ -6,6 +6,8 @@ const fs = require('fs');
 
 module.exports = {};
 
+const DEFAULT_STYLESHEET_NAME = 'github-markdown.css';
+
 let defaultStyleSheetCache = null;
 
 // read css file
@@ -13,18 +15,34 @@ let defaultStyleSheetCache = null;
 // FUTURE: allow linking css file instead of embedding?
 const readDefaultStyleSheet = function() {
     if (!defaultStyleSheetCache) {
-        defaultStyleSheetCache = fs.readFileSync(path.join(__dirname, 'assets/github-markdown.css'));
+        defaultStyleSheetCache = fs.readFileSync(path.join(__dirname, 'assets/' + DEFAULT_STYLESHEET_NAME));
     }
 
     return defaultStyleSheetCache;
 };
 
 module.exports.getCssStyleSheetAsEmbeddedTag = function() {
-    let stylesheet = readDefaultStyleSheet();
+    const stylesheet = readDefaultStyleSheet();
 
     return '<style>\n' +
             stylesheet +
            '\n</style>\n';
+};
+
+module.exports.getLinkLocalCssTag = function() {
+    return '<link rel="stylesheet" type="text/css" href="./' + DEFAULT_STYLESHEET_NAME + '">\n';
+};
+
+module.exports.createLocalCssIfNeeded = function(dir) {
+    const stylesheetPath = path.resolve(dir, DEFAULT_STYLESHEET_NAME);
+
+    if (fs.existsSync(stylesheetPath)) {
+        return;
+    }
+
+    const stylesheetContent = readDefaultStyleSheet();
+    fs.writeFileSync(stylesheetPath, stylesheetContent);
+    console.info(DEFAULT_STYLESHEET_NAME + ' written to "' + dir + '"');
 };
 
 /**

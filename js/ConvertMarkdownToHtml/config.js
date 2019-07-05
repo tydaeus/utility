@@ -8,7 +8,8 @@ module.exports = {};
 module.exports.files = [];
 
 options = {
-    recurse: false
+    recurse: false,
+    localCss: false
 };
 module.exports.options = options;
 
@@ -17,8 +18,13 @@ function processFlag(flag) {
         options.recurse = true;
         console.info('Recursive mode enabled.');
     }
+    else if (/^--local-?css$/i.test(flag)) {
+        options.localCss = true;
+        console.info('Linking css locally.');
+    }
+    // FUTURE: if many other options added, need a more expansive processing pattern and should probably extract
+    // elsewhere
     // no other options supported currently
-    // FUTURE: if other options added, need a more expansive processing pattern and should probably extract elsewhere
     else {
         console.error('ERR: Unrecognized flag "' + flag + '"');
         process.exit(1);
