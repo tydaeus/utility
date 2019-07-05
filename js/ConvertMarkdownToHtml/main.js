@@ -6,6 +6,10 @@ const css = require('./css');
 
 config.processArgs();
 
+if (config.files.length < 1) {
+    console.error('ERR: no files specified for conversion');
+}
+
 config.files.forEach((file) => {
     processArgument(file);
 });
@@ -35,7 +39,12 @@ function processDir(dir) {
     let files = fs.readdirSync(dir);
 
     files.forEach((file) => {
-        processArgument(path.join(dir, file));
+        let filePath = path.join(dir, file);
+
+        // skip subdirs unless recurse is on
+        if (config.options.recurse || fs.statSync(filePath).isFile()) {
+            processArgument(filePath);
+        }
     });
 }
 
