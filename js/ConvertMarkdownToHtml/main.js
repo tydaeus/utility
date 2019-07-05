@@ -1,13 +1,51 @@
-const commonmark = require('commonmark');
 const path = require('path');
 const fs = require('fs');
+const config = require('./config');
+const markdown = require('./markdown');
+const css = require('./css');
 
-let inputFile, outputFile;
+config.processArgs();
 
-for (let i = 2; i < process.argv.length; i++) {
-    inputFile = process.argv[i];
-    outputFile = inputFile + '.html';
-    convertMarkdownFile(inputFile, outputFile);
+if (config.files.length < 1) {
+    console.error('ERR: no files specified for conversion');
+}
+
+config.files.forEach((file) => {
+    processArgument(file);
+});
+
+function processArgument(file) {
+    if (!fs.existsSync(file)) {
+        console.error('ERR: file "' + file + '" not found. Skipping.');
+        return;
+    }
+
+    let stats = fs.statSync(file);
+
+    if (stats.isDirectory()) {
+        processDir(file);
+        return;
+    }
+
+    if (path.extname(file) !== '.md') {
+        console.info('File "' + file + '" is not a .md file. Skipping.');
+        return;
+    }
+
+    convertMarkdownFile(file, file + '.html');
+}
+
+function processDir(dir) {
+    let files = fs.readdirSync(dir);
+
+    files.forEach((file) => {
+        let filePath = path.join(dir, file);
+
+        // skip subdirs unless recurse is on
+        if (config.options.recurse || fs.statSync(filePath).isFile()) {
+            processArgument(filePath);
+        }
+    });
 }
 
 function convertMarkdownFile(inputFile, outputFile) {
@@ -15,39 +53,30 @@ function convertMarkdownFile(inputFile, outputFile) {
 
     let inputContent = fs.readFileSync(inputFile, {encoding: 'utf8'});
 
-    // convert markdown to html
-    let reader = new commonmark.Parser();
-    let writer = new commonmark.HtmlRenderer();
-    let parsed = reader.parse(inputContent);
-    let outputBody = writer.render(parsed);
+    let outputBody = markdown.convert(inputContent);
 
-    // read css file
-    // FUTURE: allow specifying alternative css file
-    // FUTURE: allow linking css file instead of embedding?
-    let css = fs.readFileSync(path.join(__dirname, 'assets/github-markdown.css'));
+    let stylesheetTag = null;
+
+    if (config.options.localCss) {
+        stylesheetTag = css.getLinkLocalCssTag();
+        css.createLocalCssIfNeeded(path.dirname(inputFile));
+    } else {
+        stylesheetTag = css.getCssStyleSheetAsEmbeddedTag();
+    }
+
+    let cssCustomizationTag = css.getCssCustomizationTag();
 
     // create header
     let outputHeader =
-        '<style>\n' +
-        css +
-        '.markdown-body { \n' +
-        '    box-sizing: border-box; \n' +
-        '    min-width: 200px; \n' +
-        '    max-width: 980px; \n' +
-        '    margin: 0 auto; \n' +
-        '    padding: 45px; \n' +
-        '} \n' +
-        '\n' +
-        '@media (max-width: 767px) { \n' +
-        '.markdown-body { \n' +
-        '        padding: 15px; \n' +
-        '    } \n' +
-        '} \n' +
-        '</style>\n' +
+        '<head>\n' +
+        stylesheetTag +
+        cssCustomizationTag +
+        '</head>\n' +
+        '<body>\n' +
         '<div class="markdown-body">\n';
 
     // create footer
-    let outputFooter = '</div>\n';
+    let outputFooter = '</div>\n' + '</body>\n';
 
 
     let outputContent = outputHeader + outputBody + outputFooter;
