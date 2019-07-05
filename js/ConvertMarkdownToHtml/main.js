@@ -7,8 +7,29 @@ const css = require('./css');
 config.processArgs();
 
 config.files.forEach((file) => {
-    convertMarkdownFile(file, file + '.html');
+    processArgument(file);
 });
+
+function processArgument(file) {
+    if (!fs.existsSync(file)) {
+        console.error('ERR: file "' + file + '" not found. Skipping.');
+        return;
+    }
+
+    let stats = fs.statSync(file);
+
+    if (stats.isDirectory()) {
+        console.log('File "' + file + '" is directory. Directories are not yet supported. Skipping.');
+        return;
+    }
+
+    if (path.extname(file) !== '.md') {
+        console.info('File "' + file + '" is not a .md file. Skipping.');
+        return;
+    }
+
+    convertMarkdownFile(file, file + '.html');
+}
 
 function convertMarkdownFile(inputFile, outputFile) {
     console.info('Reading markdown from "' + inputFile + '"');
