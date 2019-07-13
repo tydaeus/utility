@@ -14,6 +14,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "commonmark": "^0.29.0"
+    "remarkable": "^1.7.1"
   }
 }

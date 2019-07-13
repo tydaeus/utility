@@ -2,7 +2,7 @@
  * Wraps the markdown processing section of the utility.
  */
 
-const commonmark = require('commonmark');
+const Remarkable = require('remarkable');
 
 
 module.exports = {};
@@ -13,8 +13,7 @@ module.exports = {};
  * @returns {string} doc converted to html
  */
 module.exports.convert = function(doc) {
-    let reader = new commonmark.Parser();
-    let writer = new commonmark.HtmlRenderer();
-    let parsed = reader.parse(doc);
-    return writer.render(parsed);
+    let converter = new Remarkable();
+
+    return converter.render(doc);
 };
