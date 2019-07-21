@@ -9,7 +9,8 @@ module.exports.files = [];
 
 options = {
     recurse: false,
-    localCss: false
+    localCss: false,
+    testMode: false
 };
 module.exports.options = options;
 
@@ -21,6 +22,10 @@ function processFlag(flag) {
     else if (/^--local-?css$/i.test(flag)) {
         options.localCss = true;
         console.info('Linking css locally.');
+    }
+    else if (/^--test(-?mode)?$/i.test(flag)) {
+        options.testMode = true;
+        console.info('Test mode enabled.');
     }
     // FUTURE: if many other options added, need a more expansive processing pattern and should probably extract
     // elsewhere
