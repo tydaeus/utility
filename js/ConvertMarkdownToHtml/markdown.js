@@ -13,13 +13,19 @@ module.exports = {};
 // TODO: build Table of Contents
 function buildToc(parsed) {
     let walker = parsed.walker();
-    let event, node, headingText, headingLevel, newNode, id;
+    let event, node, headingLevel, newNode, id;
+    let headingText = '';
     let inHeading = false;
 
+    let writer = new commonmark.HtmlRenderer();
+
+    let generatingToc = false;
+    let tocNode = null;
     let inHtmlBlock = false;
 
     // track generated TOC ids to prevent duplication
     const idMap = {};
+    const headings = [];
 
     // generate a unique id based on text content
     function textToId(text) {
@@ -47,7 +53,6 @@ function buildToc(parsed) {
     }
 
     // TODO: remove debug messages
-    // TODO: check for TOC directive before adding heading anchors
     // TODO: generate TOC
     // TODO: allow configuration
     while ((event = walker.next())) {
@@ -65,27 +70,81 @@ function buildToc(parsed) {
                 console.info('rendered heading: ' + writer.render(node));
                 console.info('heading text: ' + headingText);
 
-                newNode = new commonmark.Node('html_inline');
+                // insert linking symbol before heading if table of contents has been requested
+                if (generatingToc) {
+                    newNode = new commonmark.Node('html_inline');
+                    id = textToId(headingText);
+                    newNode.literal = '<a id="' + id +'" href="#' + id  + '" class="anchor">&sect;</a>';
 
-                id = textToId(headingText);
-                newNode.literal = '<a id="' + id +'" href="#' + id  + '" class="anchor">&sect;</a>';
+                    node.firstChild.insertBefore(newNode, null);
 
-                node.firstChild.insertBefore(newNode);
+                    headings.push({ node: node, id: id });
+                }
+
 
             }
-        } else if (inHeading && node.type === 'text') {
+        }
+        // strip text content of heading for purposes of id generation
+        else if (inHeading && node.type === 'text' && generatingToc) {
             console.info('in heading text: ' + node.literal);
             headingText += node.literal;
-        } else if (node.type === 'html_block') {
+        }
+        // inspect html_blocks for directives (currently TOC is only supported directive)
+        else if (node.type === 'html_block') {
             if (event.entering) {
                 inHtmlBlock = true;
                 console.info('entering html_block: ' + node.literal);
-            } else {
-                inHtmlBlock = false;
-                console.info('leaving html_block');
+
+                // capture this node if it's the TOC directive
+                if (/<!--\s*TOC\s*-->/.test(node.literal)) {
+                    console.info('TOC directive detected.');
+                    generatingToc = true;
+
+                    if (tocNode) {
+                        console.error('ERR: multiple TOC directives detected');
+                    } else {
+                        tocNode = node;
+                    }
+                }
+
             }
         }
 
+    }
+
+    // generate and insert the table of contents if applicable
+    if (generatingToc && tocNode) {
+        console.info("generating TOC")
+        let tocContent = new commonmark.Node('list');
+        tocContent.listType = 'bullet';
+        tocContent.listStart = null;
+
+        let headingWalker, headingSubNode;
+
+        for (let i = 0; i < headings.length; i++) {
+            headingWalker = headings[i].node.walker();
+
+            let headingItem = new commonmark.Node('item');
+            let itemText;
+            while(event = headingWalker.next()) {
+                headingSubNode = event.node
+                // TODO: clone all nodes contained within the heading, not just the text. How to determine child vs. sibling relationships?
+                if (event.entering && headingSubNode.type === 'text') {
+                    itemText = new commonmark.Node('text');
+                    itemText.literal = headingSubNode.literal;
+                    headingItem.appendChild(itemText);
+                }
+            }
+
+            tocContent.appendChild(headingItem);
+        }
+
+        // let textChild = new commonmark.Node('text');
+        // textChild.literal = 'Table of Contents';
+        // tocContent.appendChild(textChild);
+
+        tocNode.insertAfter(tocContent);
+        tocNode.unlink();
     }
 
     // process.exit(0);
