@@ -125,18 +125,29 @@ function buildToc(parsed) {
             headingWalker = headings[i].node.walker();
 
             let headingItem = new commonmark.Node('item');
+            // TODO: nest sublists to represent relationship between heading levels
+            headingItem.appendChild(buildLinkFromHeadingObj(headings[i]));
+
+            tocContent.appendChild(headingItem);
+        }
+
+        function buildLinkFromHeadingObj(headingObj) {
+            headingWalker = headingObj.node.walker();
+            let link = new commonmark.Node('link');
+            link.destination = '#' + headingObj.id;
+
             let itemText;
             while(event = headingWalker.next()) {
-                headingSubNode = event.node
+                headingSubNode = event.node;
                 // TODO: clone all nodes contained within the heading, not just the text. How to determine child vs. sibling relationships?
                 if (event.entering && headingSubNode.type === 'text') {
                     itemText = new commonmark.Node('text');
                     itemText.literal = headingSubNode.literal;
-                    headingItem.appendChild(itemText);
+                    link.appendChild(itemText);
                 }
             }
 
-            tocContent.appendChild(headingItem);
+            return link;
         }
 
         // let textChild = new commonmark.Node('text');
