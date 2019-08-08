@@ -9,6 +9,9 @@ Files not ending in the `.md` extension will be ignored.
 
 Directories specified will have all their `.md` contents converted; subdirectories of specified directories will only be converted if the `--recurse` option is specified.
 
+## Usage - Windows Explorer
+Drag one or more `.md` source files or folders onto `convertmarkdowntohtml.cmd` or `convertmarkdowntohtml.exe`. Corresponding `.md.html` files will be generated in the same dir as the source files. Non-`.md` files will be ignored.
+
 ### Options
 Commandline options are still under development. Supported options:
 
