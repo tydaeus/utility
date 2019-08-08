@@ -3,7 +3,7 @@
 This project aims to provide a relatively simply and easy-to-use utility for converting markdown documents to html.
 
 ## Usage - Commandline
-Use `node main FILE1...` or `convertmarkdowntohtml.cmd FILE1...` to invoke the script on one or more files. An html file will be generated for each specified file, within the same directory.
+Use `node main FILE1...`, `convertmarkdowntohtml.cmd FILE1...`, or `convertmarkdowntohtml.exe FILE1...` (if packaged as an executable) to invoke the script on one or more files. An html file will be generated for each specified file, within the same directory as the source file.
 
 Files not ending in the `.md` extension will be ignored.
 
@@ -64,3 +64,6 @@ Would result in something like:
 </ul>
 ...
 ```
+
+## Packaging as an .exe
+This script can be packaged as an executable by using the node `pkg` utility. Install globally via `npm install pkg -g`, then use `pkg` via the `pkg_me.cmd` script or a customized variant.
