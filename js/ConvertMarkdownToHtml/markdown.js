@@ -53,7 +53,6 @@ function buildToc(parsed) {
     }
 
     // TODO: remove debug messages
-    // TODO: generate TOC
     // TODO: allow configuration
     while ((event = walker.next())) {
         node = event.node;
@@ -119,16 +118,36 @@ function buildToc(parsed) {
         tocContent.listType = 'bullet';
         tocContent.listStart = null;
 
+        let contentsList = [tocContent];
+
         let headingWalker, headingSubNode;
 
         for (let i = 0; i < headings.length; i++) {
-            headingWalker = headings[i].node.walker();
 
-            let headingItem = new commonmark.Node('item');
-            // TODO: nest sublists to represent relationship between heading levels
-            headingItem.appendChild(buildLinkFromHeadingObj(headings[i]));
+            // only operate on headings - non-headings could mess us up
+            if (headings[i].node.type === 'heading' && headings[i].node.level > 0) {
+                let headingItem = new commonmark.Node('item');
+                headingItem.appendChild(buildLinkFromHeadingObj(headings[i]));
 
-            tocContent.appendChild(headingItem);
+                // indent new insertion by creating sublists based on heading level
+                while (contentsList.length < headings[i].node.level) {
+                    let sublist = new commonmark.Node('list');
+                    sublist.listType = 'bullet';
+                    sublist.listStart = null;
+                    contentsList[0].appendChild(sublist);
+                    contentsList.unshift(sublist);
+                }
+                // or outdent new insertion by removing sublists until at heading level
+                while (contentsList.length > headings[i].node.level) {
+                    contentsList.shift();
+                }
+
+                contentsList[0].appendChild(headingItem);
+            }
+            // report malformed doc, but continue
+            else {
+                console.error('ERR: non-heading or invalid heading node included in heading list', headings[i].node)
+            }
         }
 
         function buildLinkFromHeadingObj(headingObj) {
@@ -137,28 +156,30 @@ function buildToc(parsed) {
             link.destination = '#' + headingObj.id;
 
             let itemText;
+            let prevNode = null;
             while(event = headingWalker.next()) {
                 headingSubNode = event.node;
-                // TODO: clone all nodes contained within the heading, not just the text. How to determine child vs. sibling relationships?
+
+                // TODO: clone all nodes contained within the heading, not just the text.
+                //  Can determine child vs. sibling relationships by comparing prevNode with headingSubNode.next
+                //  property (?), but need to track traversal in more detail.
                 if (event.entering && headingSubNode.type === 'text') {
                     itemText = new commonmark.Node('text');
                     itemText.literal = headingSubNode.literal;
+
                     link.appendChild(itemText);
                 }
+
+                prevNode = headingSubNode;
             }
 
             return link;
         }
 
-        // let textChild = new commonmark.Node('text');
-        // textChild.literal = 'Table of Contents';
-        // tocContent.appendChild(textChild);
-
         tocNode.insertAfter(tocContent);
         tocNode.unlink();
     }
 
-    // process.exit(0);
 }
 
 
