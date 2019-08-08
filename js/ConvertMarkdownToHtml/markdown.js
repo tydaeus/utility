@@ -8,9 +8,7 @@ const config = require('./config');
 
 module.exports = {};
 
-// in-progress
 // adds id links to headings
-// TODO: build Table of Contents
 function buildToc(parsed) {
     let walker = parsed.walker();
     let event, node, headingLevel, newNode, id;
@@ -52,8 +50,6 @@ function buildToc(parsed) {
         return workingText;
     }
 
-    // TODO: remove debug messages
-    // TODO: allow configuration
     while ((event = walker.next())) {
         node = event.node;
         if (node.type === 'heading') {
@@ -61,13 +57,8 @@ function buildToc(parsed) {
                 inHeading = true;
                 headingText = '';
                 headingLevel = node.level;
-                console.info('entering heading L' + node.level);
             } else {
                 inHeading = false;
-                console.info('leaving heading L' + node.level);
-
-                console.info('rendered heading: ' + writer.render(node));
-                console.info('heading text: ' + headingText);
 
                 // insert linking symbol before heading if table of contents has been requested
                 if (generatingToc) {
@@ -85,18 +76,15 @@ function buildToc(parsed) {
         }
         // strip text content of heading for purposes of id generation
         else if (inHeading && node.type === 'text' && generatingToc) {
-            console.info('in heading text: ' + node.literal);
             headingText += node.literal;
         }
         // inspect html_blocks for directives (currently TOC is only supported directive)
         else if (node.type === 'html_block') {
             if (event.entering) {
                 inHtmlBlock = true;
-                console.info('entering html_block: ' + node.literal);
 
                 // capture this node if it's the TOC directive
                 if (/<!--\s*TOC\s*-->/.test(node.literal)) {
-                    console.info('TOC directive detected.');
                     generatingToc = true;
 
                     if (tocNode) {
@@ -113,7 +101,6 @@ function buildToc(parsed) {
 
     // generate and insert the table of contents if applicable
     if (generatingToc && tocNode) {
-        console.info("generating TOC")
         let tocContent = new commonmark.Node('list');
         tocContent.listType = 'bullet';
         tocContent.listStart = null;
@@ -158,11 +145,10 @@ function buildToc(parsed) {
             link.destination = '#' + headingObj.id;
 
             let itemText;
-            let prevNode = null;
             while(event = headingWalker.next()) {
                 headingSubNode = event.node;
 
-                // TODO: clone all nodes contained within the heading, not just the text.
+                // FUTURE: clone all nodes contained within the heading, not just the text.
                 //  Can determine child vs. sibling relationships by comparing prevNode with headingSubNode.next
                 //  property (?), but need to track traversal in more detail.
                 if (event.entering && headingSubNode.type === 'text') {
@@ -172,7 +158,6 @@ function buildToc(parsed) {
                     link.appendChild(itemText);
                 }
 
-                prevNode = headingSubNode;
             }
 
             return link;
@@ -195,7 +180,7 @@ module.exports.convert = function(doc) {
     let writer = new commonmark.HtmlRenderer();
     let parsed = reader.parse(doc);
 
-    if (config.options.testMode) {
+    if (!config.options.canonical) {
         buildToc(parsed);
     }
 

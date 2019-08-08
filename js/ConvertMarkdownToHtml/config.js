@@ -10,7 +10,8 @@ module.exports.files = [];
 options = {
     recurse: false,
     localCss: false,
-    testMode: false
+    testMode: false,
+    canonical: false
 };
 module.exports.options = options;
 
@@ -26,6 +27,10 @@ function processFlag(flag) {
     else if (/^--test(-?mode)?$/i.test(flag)) {
         options.testMode = true;
         console.info('Test mode enabled.');
+    }
+    else if (/^--canonical$/i.test(flag)) {
+        options.canonical = true;
+        console.info('Canonical mode enabled.');
     }
     // FUTURE: if many other options added, need a more expansive processing pattern and should probably extract
     // elsewhere
