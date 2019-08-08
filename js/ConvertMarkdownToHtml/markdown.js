@@ -122,6 +122,8 @@ function buildToc(parsed) {
 
         let headingWalker, headingSubNode;
 
+        // FUTURE: scan headings to determine outermost indent level (e.g. if no h1's present in TOC, don't indent h2)
+
         for (let i = 0; i < headings.length; i++) {
 
             // only operate on headings - non-headings could mess us up
