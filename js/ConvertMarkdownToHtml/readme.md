@@ -3,7 +3,7 @@
 This project aims to provide a relatively simply and easy-to-use utility for converting markdown documents to html.
 
 ## Usage - Commandline
-Use `node main FILE1...` to invoke the script on one or more files. An html file will be generated for each specified file, within the same directory.
+Use `node main FILE1...` or `convertmarkdowntohtml.cmd FILE1...` to invoke the script on one or more files. An html file will be generated for each specified file, within the same directory.
 
 Files not ending in the `.md` extension will be ignored.
 
