@@ -15,3 +15,5 @@ Commandline options are still under development. Supported options:
 * `--recurse` - all subdirectories of specified directories will also be converted.
 * `--test` - runs any in-progress experimental code
 * `--local-css` - copies the css stylesheet into each directory where html files are being generated, and links the generated files to that copy(s). If this is not specified, the stylesheet is embedded in each generated file, which can be space-intensive.
+* `--canonical` - restrict markdown to html conversion to only the elements defined in  [commonmark](https://commonmark.org/)
+
