@@ -47,7 +47,7 @@ const config = require('./config');
 
 module.exports = {};
 
-// adds id links to headings
+// does something
 function doSomething(param) {
     let foo = param.operation();
     return foo.propertyName;
