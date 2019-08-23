@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "commonmark": "^0.29.0"
+    "commonmark": "^0.29.0",
+    "highlight.js": "^9.15.10"
   }
 }
