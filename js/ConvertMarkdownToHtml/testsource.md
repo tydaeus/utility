@@ -53,3 +53,28 @@ function doSomething(param) {
     return foo.propertyName;
 }
 ```
+
+Html:
+```html
+<table>
+    <tr>
+        <th>Heading 1</th>
+        <th>Heading 2</th>
+    </tr>
+    <tr>
+        <td>Data 1</td>
+        <!-- Comment -->
+        <td>Data <em>2</em></td>
+    </tr>
+</table>
+```
+
+Untyped:
+```
+if (x < 100) { 
+    int y = 8;
+    y *= x;
+}
+
+return x;
+```
