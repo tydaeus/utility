@@ -93,8 +93,14 @@ function processMarkdownParseTree(parsed) {
             headingText += node.literal;
         }
         // code blocks cannot contain sub-blocks, so there should be no cases where event.entering is false...
-        if (node.type === 'code_block' && event.entering) {
+        else if (node.type === 'code_block' && event.entering) {
             replaceCodeBlockNodeWithHighlightedHtmlBlock(node);
+        }
+        // redirect link to '.md' file with corresponding '.md.html' link
+        else if (node.type === 'link' && event.entering) {
+            if (/\.md$/.test(node.destination)) {
+                node.destination += '.html';
+            }
         }
         // inspect html_blocks for directives (currently TOC is only supported directive)
         else if (node.type === 'html_block') {
