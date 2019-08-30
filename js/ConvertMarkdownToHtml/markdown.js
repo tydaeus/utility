@@ -48,9 +48,7 @@ function buildToc(parsed) {
     let event, node, headingLevel, newNode, id;
     let headingText = '';
     let inHeading = false;
-
-    let writer = new commonmark.HtmlRenderer();
-
+    
     let generatingToc = false;
     let tocNode = null;
     let inHtmlBlock = false;
