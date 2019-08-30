@@ -30,6 +30,9 @@ Markdown elements defined in the [commonmark spec](https://commonmark.org/) are 
 ### The Stylesheets are Attached
 Stylesheets are either embedded in the generated html document (default) or copied to the html document's directory and referenced by link (`--local-css`).  
 
+### Links to .md Source Files are Redirected
+Links to `.md` files are redirected to corresponding `.md.html` files unless `--canonical`.
+
 ### Code Blocks are Highlighted
 Unless the `--canonical` flag is specified, code blocks denoted by code fences are highlighted via highlightjs, per the language specified at the fence start. If no language is specified, highlightjs will be used to guess appropriate language.
 
