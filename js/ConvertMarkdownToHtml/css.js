@@ -3,26 +3,34 @@
  */
 const path = require('path');
 const fs = require('fs');
+const config = require('./config.js');
 
 module.exports = {};
 
 const DEFAULT_STYLESHEET_NAME = 'github-markdown.css';
+const HIGHLIGHT_STYLESHEET_NAME = 'github-highlight.css';
 
 let defaultStyleSheetCache = null;
 
-// read css file
-// FUTURE: allow specifying alternative css file
-// FUTURE: allow linking css file instead of embedding?
-const readDefaultStyleSheet = function() {
-    if (!defaultStyleSheetCache) {
-        defaultStyleSheetCache = fs.readFileSync(path.join(__dirname, 'assets/' + DEFAULT_STYLESHEET_NAME));
+// FUTURE: allow configuring alternative css file(s)
+// FUTURE: allow configuring other linking options
+
+const stylesheetCache = {};
+
+const readStyleSheet = function(stylesheetName) {
+    if (!stylesheetCache[stylesheetName]) {
+        stylesheetCache[stylesheetName] = fs.readFileSync(path.join(__dirname, 'assets/' + stylesheetName));
     }
 
-    return defaultStyleSheetCache;
+    return stylesheetCache[stylesheetName];
 };
 
 module.exports.getCssStyleSheetAsEmbeddedTag = function() {
-    const stylesheet = readDefaultStyleSheet();
+    let stylesheet = readStyleSheet(DEFAULT_STYLESHEET_NAME);
+
+    if (config.options.testMode) {
+        stylesheet += readStyleSheet(HIGHLIGHT_STYLESHEET_NAME);
+    }
 
     return '<style>\n' +
             stylesheet +
@@ -30,20 +38,34 @@ module.exports.getCssStyleSheetAsEmbeddedTag = function() {
 };
 
 module.exports.getLinkLocalCssTag = function() {
-    return '<link rel="stylesheet" type="text/css" href="./' + DEFAULT_STYLESHEET_NAME + '">\n';
+    let linkTags = '<link rel="stylesheet" type="text/css" href="./' + DEFAULT_STYLESHEET_NAME + '">\n';
+
+    if (config.options.testMode) {
+        linkTags += '<link rel="stylesheet" type="text/css" href="./' + HIGHLIGHT_STYLESHEET_NAME + '">\n';
+    }
+
+    return linkTags;
 };
 
 module.exports.createLocalCssIfNeeded = function(dir) {
-    const stylesheetPath = path.resolve(dir, DEFAULT_STYLESHEET_NAME);
+    ensureLocalCssIsCreated(dir, DEFAULT_STYLESHEET_NAME);
+
+    if (config.options.testMode) {
+        ensureLocalCssIsCreated(dir, HIGHLIGHT_STYLESHEET_NAME);
+    }
+};
+
+function ensureLocalCssIsCreated(dir, styleSheetName) {
+    const stylesheetPath = path.resolve(dir, styleSheetName);
 
     if (fs.existsSync(stylesheetPath)) {
         return;
     }
 
-    const stylesheetContent = readDefaultStyleSheet();
+    const stylesheetContent = readStyleSheet(styleSheetName);
     fs.writeFileSync(stylesheetPath, stylesheetContent);
-    console.info(DEFAULT_STYLESHEET_NAME + ' written to "' + dir + '"');
-};
+    console.info(styleSheetName + ' written to "' + dir + '"');
+}
 
 /**
  * @returns {string} style tag for this util's standard customization of the default style

@@ -8,6 +8,40 @@ const config = require('./config');
 
 module.exports = {};
 
+function highlightCode(parsed) {
+    let highlight = require('highlight.js');
+    let walker = parsed.walker();
+    let event, node, highlightOutput, codeNode;
+
+    while ((event = walker.next())) {
+        node = event.node;
+
+        if (node.type === 'code_block') {
+            // code blocks cannot contain sub-blocks and contain their own literal text
+            if (event.entering) {
+                console.info('entering code_block, before:');
+                console.info(node.literal);
+
+                if (node.info) {
+                    highlightOutput = highlight.highlight(node.info, node.literal, true);
+                } else {
+                    highlightOutput = highlight.highlightAuto(node.literal);
+                }
+                // TODO: replace highlightjs css classes with github markdown css classes
+
+                console.info('after:');
+                console.info(highlightOutput.value);
+            }
+
+            codeNode = new commonmark.Node('html_block');
+            codeNode.literal = '<pre>\n' + highlightOutput.value + '\n</pre>';
+            node.insertAfter(codeNode);
+            node.unlink();
+        }
+
+    }
+}
+
 // adds id links to headings
 function buildToc(parsed) {
     let walker = parsed.walker();
@@ -182,6 +216,10 @@ module.exports.convert = function(doc) {
 
     if (!config.options.canonical) {
         buildToc(parsed);
+    }
+
+    if (config.options.testMode && !config.options.canonical) {
+        highlightCode(parsed);
     }
 
     return writer.render(parsed);
