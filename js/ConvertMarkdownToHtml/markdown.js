@@ -5,24 +5,7 @@
 const commonmark = require('commonmark');
 const config = require('./config');
 
-
 module.exports = {};
-
-function highlightCode(parsed) {
-    let highlight = require('highlight.js');
-    let walker = parsed.walker();
-    let event, node, highlightOutput, codeNode;
-
-    while ((event = walker.next())) {
-        node = event.node;
-
-        // code blocks cannot contain sub-blocks, so there should be no cases where event.entering is false...
-        if (node.type === 'code_block' && event.entering) {
-            replaceCodeBlockNodeWithHighlightedHtmlBlock(node);
-        }
-
-    }
-}
 
 function replaceCodeBlockNodeWithHighlightedHtmlBlock(codeBlockNode) {
     const highlight = require('highlight.js');
@@ -42,7 +25,7 @@ function replaceCodeBlockNodeWithHighlightedHtmlBlock(codeBlockNode) {
 }
 
 // adds id links to headings
-function buildToc(parsed) {
+function processMarkdownParseTree(parsed) {
     let walker = parsed.walker();
     let event, node, headingLevel, newNode, id;
     let headingText = '';
@@ -108,6 +91,10 @@ function buildToc(parsed) {
         // strip text content of heading for purposes of id generation
         else if (inHeading && node.type === 'text' && generatingToc) {
             headingText += node.literal;
+        }
+        // code blocks cannot contain sub-blocks, so there should be no cases where event.entering is false...
+        if (node.type === 'code_block' && event.entering) {
+            replaceCodeBlockNodeWithHighlightedHtmlBlock(node);
         }
         // inspect html_blocks for directives (currently TOC is only supported directive)
         else if (node.type === 'html_block') {
@@ -213,8 +200,7 @@ module.exports.convert = function(doc) {
 
     if (!config.options.canonical) {
         // FUTURE: combine extension methods into a single scan
-        buildToc(parsed);
-        highlightCode(parsed);
+        processMarkdownParseTree(parsed);
     }
 
     return writer.render(parsed);
