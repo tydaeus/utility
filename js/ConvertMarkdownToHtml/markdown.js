@@ -19,18 +19,12 @@ function highlightCode(parsed) {
         if (node.type === 'code_block') {
             // code blocks cannot contain sub-blocks and contain their own literal text
             if (event.entering) {
-                console.info('entering code_block, before:');
-                console.info(node.literal);
 
                 if (node.info) {
                     highlightOutput = highlight.highlight(node.info, node.literal, true);
                 } else {
                     highlightOutput = highlight.highlightAuto(node.literal);
                 }
-                // TODO: replace highlightjs css classes with github markdown css classes
-
-                console.info('after:');
-                console.info(highlightOutput.value);
             }
 
             codeNode = new commonmark.Node('html_block');
@@ -48,7 +42,7 @@ function buildToc(parsed) {
     let event, node, headingLevel, newNode, id;
     let headingText = '';
     let inHeading = false;
-    
+
     let generatingToc = false;
     let tocNode = null;
     let inHtmlBlock = false;
@@ -213,10 +207,8 @@ module.exports.convert = function(doc) {
     let parsed = reader.parse(doc);
 
     if (!config.options.canonical) {
+        // FUTURE: combine extension methods into a single scan
         buildToc(parsed);
-    }
-
-    if (config.options.testMode && !config.options.canonical) {
         highlightCode(parsed);
     }
 

@@ -25,12 +25,10 @@ const readStyleSheet = function(stylesheetName) {
     return stylesheetCache[stylesheetName];
 };
 
+// future: embed only needed css?
 module.exports.getCssStyleSheetAsEmbeddedTag = function() {
     let stylesheet = readStyleSheet(DEFAULT_STYLESHEET_NAME);
-
-    if (config.options.testMode) {
-        stylesheet += readStyleSheet(HIGHLIGHT_STYLESHEET_NAME);
-    }
+    stylesheet += readStyleSheet(HIGHLIGHT_STYLESHEET_NAME);
 
     return '<style>\n' +
             stylesheet +
@@ -39,20 +37,14 @@ module.exports.getCssStyleSheetAsEmbeddedTag = function() {
 
 module.exports.getLinkLocalCssTag = function() {
     let linkTags = '<link rel="stylesheet" type="text/css" href="./' + DEFAULT_STYLESHEET_NAME + '">\n';
-
-    if (config.options.testMode) {
-        linkTags += '<link rel="stylesheet" type="text/css" href="./' + HIGHLIGHT_STYLESHEET_NAME + '">\n';
-    }
+    linkTags += '<link rel="stylesheet" type="text/css" href="./' + HIGHLIGHT_STYLESHEET_NAME + '">\n';
 
     return linkTags;
 };
 
 module.exports.createLocalCssIfNeeded = function(dir) {
     ensureLocalCssIsCreated(dir, DEFAULT_STYLESHEET_NAME);
-
-    if (config.options.testMode) {
-        ensureLocalCssIsCreated(dir, HIGHLIGHT_STYLESHEET_NAME);
-    }
+    ensureLocalCssIsCreated(dir, HIGHLIGHT_STYLESHEET_NAME);
 };
 
 function ensureLocalCssIsCreated(dir, styleSheetName) {
