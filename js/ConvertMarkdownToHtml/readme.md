@@ -27,8 +27,11 @@ Commandline options are still under development. Supported options:
 ### Markdown is Converted to Html
 Markdown elements defined in the [commonmark spec](https://commonmark.org/) are converted from markdown to html. Html is left untouched, unless it is a custom directive.
 
-### The Stylesheet is Attached
-The stylesheet is either embedded in the generated html document (default) or copied to the html document's directory and referenced by link (`--local-css`).  
+### The Stylesheets are Attached
+Stylesheets are either embedded in the generated html document (default) or copied to the html document's directory and referenced by link (`--local-css`).  
+
+### Code Blocks are Highlighted
+Unless the `--canonical` flag is specified, code blocks denoted by code fences are highlighted via highlightjs, per the language specified at the fence start. If no language is specified, highlightjs will be used to guess appropriate language.
 
 ### Custom Directives are Processed
 The custom markdown directives listed below will be processed to generate html or modify converted html, unless the `--canonical` flag has been specified.
