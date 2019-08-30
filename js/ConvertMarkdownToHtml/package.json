@@ -16,5 +16,9 @@
   "dependencies": {
     "commonmark": "^0.29.0",
     "highlight.js": "^9.15.10"
+  },
+  "pkg": {
+    "assets": "assets/**/*"
   }
 }
+
