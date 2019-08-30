@@ -16,24 +16,29 @@ function highlightCode(parsed) {
     while ((event = walker.next())) {
         node = event.node;
 
-        if (node.type === 'code_block') {
-            // code blocks cannot contain sub-blocks and contain their own literal text
-            if (event.entering) {
-
-                if (node.info) {
-                    highlightOutput = highlight.highlight(node.info, node.literal, true);
-                } else {
-                    highlightOutput = highlight.highlightAuto(node.literal);
-                }
-            }
-
-            codeNode = new commonmark.Node('html_block');
-            codeNode.literal = '<pre>\n' + highlightOutput.value + '\n</pre>';
-            node.insertAfter(codeNode);
-            node.unlink();
+        // code blocks cannot contain sub-blocks, so there should be no cases where event.entering is false...
+        if (node.type === 'code_block' && event.entering) {
+            replaceCodeBlockNodeWithHighlightedHtmlBlock(node);
         }
 
     }
+}
+
+function replaceCodeBlockNodeWithHighlightedHtmlBlock(codeBlockNode) {
+    const highlight = require('highlight.js');
+
+    let highlightOutput, codeNode;
+
+    if (codeBlockNode.info) {
+        highlightOutput = highlight.highlight(codeBlockNode.info, codeBlockNode.literal, true);
+    } else {
+        highlightOutput = highlight.highlightAuto(codeBlockNode.literal);
+    }
+
+    codeNode = new commonmark.Node('html_block');
+    codeNode.literal = '<pre>\n' + highlightOutput.value + '\n</pre>';
+    codeBlockNode.insertAfter(codeNode);
+    codeBlockNode.unlink();
 }
 
 // adds id links to headings
