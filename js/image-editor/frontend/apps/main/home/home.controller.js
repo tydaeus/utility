@@ -22,26 +22,27 @@ require('angular')
 
             $scope.loadFiles = () => {
                 electron.remote.dialog.showOpenDialog({
-                    properties: ['openFile', 'multiSelections']}, filePathsArr =>
-                {
-                    console.info('filePathsArr', filePathsArr);
-
-                    const files = [];
-
-                    _(filePathsArr).each((filePath) => {
-                        let file = {};
-
-                        file.path = filePath;
-                        file.name = path.basename(filePath.replace(/\\/g, '/'));
-                        file.data = 'file://' + filePath;
-                        files.push(file);
-                    });
-
-                    console.info('files', files);
-
-                    filesRead(files);
-                });
+                    properties: ['openFile', 'multiSelections']}, filesPicked);
             };
+
+            function filesPicked(filePathsArr) {
+                console.info('filePathsArr', filePathsArr);
+
+                const files = [];
+
+                _(filePathsArr).each((filePath) => {
+                    let file = {};
+
+                    file.path = filePath;
+                    file.name = path.basename(filePath.replace(/\\/g, '/'));
+                    file.data = 'file://' + filePath;
+                    files.push(file);
+                });
+
+                console.info('files', files);
+
+                filesRead(files);
+            }
 
             function filesRead(files) {
 
