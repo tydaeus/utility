@@ -1,3 +1,1 @@
-@Echo Off
-
-"%~dp0\node_modules\.bin\electron" "%~dp0/main.js"
+@"%~dp0\node_modules\.bin\electron" "%~dp0/main.js" %*
