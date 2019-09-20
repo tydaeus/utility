@@ -6,6 +6,7 @@ const uriToBuffer = require('../../../modules/node-files/uri-to-buffer');
 const _ = require('underscore');
 const electron = window.require('electron');
 const testMode = electron.remote.getGlobal('testMode');
+const cmdLineParams = electron.remote.getGlobal('cmdLineParams');
 const fs = window.require('fs');
 const path = require('path');
 
@@ -24,6 +25,11 @@ require('angular')
                 electron.remote.dialog.showOpenDialog({
                     properties: ['openFile', 'multiSelections']}, filesPicked);
             };
+
+            if (cmdLineParams.length > 0) {
+                console.info('Loading files specified on command-line.');
+                filesPicked(cmdLineParams);
+            }
 
             function filesPicked(filePathsArr) {
                 console.info('filePathsArr', filePathsArr);

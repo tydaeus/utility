@@ -10,8 +10,27 @@ const {BrowserWindow} = electron;
 // persistent var for window so it doesn't get gc'd
 let win;
 
-// provide testMode boolean to allow checking if `-t` was provided as a startup parameter
-global.testMode = process.argv.length >= 3 && '-t' === process.argv[2];
+// global vars to allow global config based on commandline invocation
+// testmode (-t) - enable experimental features
+global.testMode = false;
+global.cmdLineParams = [];
+
+// process command-line arguments
+for (let i = 2; i < process.argv.length; i++) {
+    if ('-t' === process.argv[i]) {
+        global.testMode = true;
+        console.info('testMode enabled');
+    }
+    // no other flags supported currently; indicate failure if so
+    else if (/^-/.test(process.argv[i])) {
+        console.error('ERR: unrecognized switch: "' + process.argv[i] + '"');
+        process.exit(1);
+    }
+    // capture non-flag arguments as params
+    else {
+        global.cmdLineParams.push(process.argv[i]);
+    }
+}
 
 function createWindow() {
     console.log("createWindow()");
