@@ -1,7 +1,5 @@
 'use strict';
 
-const pickFiles = require('../../../modules/browser-files/pick-files');
-const readFiles = require('../../../modules/browser-files/read-files');
 const resizeImage = require('../../../modules/image-editing/resize-image');
 const saveFile = require('../../../modules/browser-files/save-file');
 const uriToBuffer = require('../../../modules/node-files/uri-to-buffer');
@@ -22,40 +20,28 @@ require('angular')
             $scope.imageWidth = 1200;
             $scope.saveName = 'reduced';
 
-            // TODO: remove from testMode (complete)
-            if (testMode) {
-                $scope.loadFiles = () => {
-                    electron.remote.dialog.showOpenDialog({
-                        properties: ['openFile', 'multiSelections']}, filePathsArr =>
-                    {
-                        console.info('filePathsArr', filePathsArr);
+            $scope.loadFiles = () => {
+                electron.remote.dialog.showOpenDialog({
+                    properties: ['openFile', 'multiSelections']}, filePathsArr =>
+                {
+                    console.info('filePathsArr', filePathsArr);
 
-                        const files = [];
+                    const files = [];
 
-                        _(filePathsArr).each((filePath) => {
-                            let file = {};
+                    _(filePathsArr).each((filePath) => {
+                        let file = {};
 
-                            file.path = filePath;
-                            file.name = path.basename(filePath.replace(/\\/g, '/'));
-                            file.data = 'file://' + filePath;
-                            files.push(file);
-                        });
-
-                        console.info('files', files);
-
-                        filesRead(files);
+                        file.path = filePath;
+                        file.name = path.basename(filePath.replace(/\\/g, '/'));
+                        file.data = 'file://' + filePath;
+                        files.push(file);
                     });
-                };
-            } else {
-                $scope.loadFiles = function() {
-                    pickFiles()
-                        .then(function(files) {
-                            return readFiles(files, 'dataURL');
-                        })
-                        .then(filesRead);
-                };
-            }
 
+                    console.info('files', files);
+
+                    filesRead(files);
+                });
+            };
 
             function filesRead(files) {
 
@@ -90,7 +76,7 @@ require('angular')
                 });
             };
 
-            // select a direcctory and save all files there
+            // select a directory and save all files there
             $scope.saveAllFiles = function () {
                 // electron: open a dialog to pick a directory to save to
                 electron.remote.dialog.showOpenDialog({
