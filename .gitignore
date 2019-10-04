@@ -19,3 +19,4 @@ Debug/
 node_modules/
 *.md.html
 js/ConvertMarkdownToHtml/test/*.css
+js/ConvertMarkdownToHtml/convertmarkdowntohtml.exe
