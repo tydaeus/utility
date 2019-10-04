@@ -11,10 +11,11 @@
                 <label>
                     Save as Name
                 </label>
-                <input class="form-control" title="Save As Name" type="text" ng-model="saveName" />
+                <input class="form-control" title="Save Extension" type="text" ng-model="saveExtension" />
             </div>
             <button type="button" class="btn btn-default" ng-click="loadFiles()">Load Files</button>
             <button type="button" class="btn btn-default" ng-click="saveAllFiles()">Save Files</button>
+            <button type="button" class="btn btn-default" ng-click="saveAllFilesSameDir()">Save Files in Origin Dir</button>
         </div>
     </div>
     <div class="row" style="margin-top:10px">
