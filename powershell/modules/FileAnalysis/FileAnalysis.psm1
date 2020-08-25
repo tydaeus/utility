@@ -184,6 +184,10 @@ function Read-ManifestMap {
     Path to the manifest to be evaluated as the reference
 .PARAMETER CompareFilePaths
     Path(s) to the manifest(s) to be evaluated for comparison
+.PARAMETER CompareFileNameReplace
+    Script block to run on the filepath to generate an alternative name for the compared file. By default, file name will be used (without path)
+.PARAMETER IncludeMatches
+    Set to include files that matched in output.
 #>
 function Compare-Md5Manifests {
     param(
@@ -192,6 +196,12 @@ function Compare-Md5Manifests {
 
         [Parameter(Mandatory=$True,ValueFromPipeline=$True)]
         [string[]]$CompareFilePaths,
+
+        [ScriptBlock]$CompareFileNameReplace = {
+            param([string]$filePath)
+
+            return Split-Path -Leaf $filePath
+        },
 
         [switch]$IncludeMatches
     )
@@ -205,6 +215,7 @@ function Compare-Md5Manifests {
         foreach($compareFilePath in $CompareFilePaths) {
             $compareMap = Read-ManifestMap -ManifestFilePath $CompareFilePath
 
+            $compareFileAlias = Invoke-Command -ScriptBlock $CompareFileNameReplace -ArgumentList $compareFilePath
 
             foreach ($curKey in $referenceMap.Keys) {
                 Write-Verbose "Examining $curKey"
@@ -219,7 +230,7 @@ function Compare-Md5Manifests {
                             [PSCustomObject]@{
                                 File = $curKey
                                 CompareResult = 'match'
-                                CompareFile = $CompareFilePath
+                                CompareFile = $compareFileAlias
                             }    
                         } else {
                             Write-Verbose "$curKey md5 matched"
@@ -228,7 +239,7 @@ function Compare-Md5Manifests {
                         [PSCustomObject]@{
                             File = $curKey
                             CompareResult = 'md5 mismatch'
-                            CompareFile = $CompareFilePath
+                            CompareFile = $compareFileAlias
                         }
                     }
                     # remove key to indicate key was found
@@ -237,7 +248,7 @@ function Compare-Md5Manifests {
                     [PSCustomObject]@{
                         File = $curKey
                         CompareResult = 'not found in compare file'
-                        CompareFile = $CompareFilePath
+                        CompareFile = $compareFileAlias
                     }
                 }
             }
@@ -247,7 +258,7 @@ function Compare-Md5Manifests {
                 [PSCustomObject]@{
                     File = $curKey
                     CompareResult = 'not found in reference file'
-                    CompareFile = $CompareFilePath
+                    CompareFile = $compareFileAlias
                 }
             }
         }
