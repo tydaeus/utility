@@ -64,15 +64,7 @@ function New-FileManifest {
             }
             $manifest.directories.Add($dirEntry) | Out-Null
         } else {
-            $newEntry = $Null
-            try {
-                $newEntry = New-FileManifestEntry $_.FullName
-            } catch {
-            }
-
-            if ($newEntry) {
-                $manifest.files.Add(($newEntry)) | Out-Null
-            }
+            $manifest.files.Add((New-FileManifestEntry $_.FullName)) | Out-Null
         }
     }
 
