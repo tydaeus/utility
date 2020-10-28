@@ -5,6 +5,12 @@ Class ManifestFile {
     [string]$size
 }
 
+Class ManifestFileError {
+    [string]$name
+    [string]$errorInfo
+    [string]$size
+}
+
 function New-FileManifestEntry {
     param(
         [Parameter(Mandatory=$True)][string]$FilePath
@@ -13,11 +19,22 @@ function New-FileManifestEntry {
     Write-Verbose "New-FileManifestEntry '$FilePath'"
     $item = Get-Item -LiteralPath $FilePath
 
-    $manifestFile = [ManifestFile]::new()
+    try {
+        $hash = (Get-FileHash -LiteralPath $item.FullName -Algorithm MD5).Hash
+
+        $manifestFile = [ManifestFile]::new()
+        $manifestFile.md5 = $hash
+    } catch {
+        # roll past errors on individual items, so that manifest can still get generated
+        Write-Warning "Failed to get hash for $($_.Fullname)"
+        Write-Warning $_
+
+        $manifestFile = [ManifestFileError]::new()
+        $manifestFile.errorInfo = $_
+    }
 
     $manifestFile.name = $item.Name
     $manifestFile.size = $item.Length
-    $manifestFile.md5 = (Get-FileHash -LiteralPath $item.FullName -Algorithm MD5).Hash
 
     return $manifestFile
 }
@@ -47,7 +64,15 @@ function New-FileManifest {
             }
             $manifest.directories.Add($dirEntry) | Out-Null
         } else {
-            $manifest.files.Add((New-FileManifestEntry $_.FullName)) | Out-Null
+            $newEntry = $Null
+            try {
+                $newEntry = New-FileManifestEntry $_.FullName
+            } catch {
+            }
+
+            if ($newEntry) {
+                $manifest.files.Add(($newEntry)) | Out-Null
+            }
         }
     }
 
