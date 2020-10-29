@@ -18,20 +18,24 @@ function New-FileManifestEntry {
 
     Write-Verbose "New-FileManifestEntry '$FilePath'"
     $item = Get-Item -LiteralPath $FilePath
+    $tempFile = New-TemporaryFile
+    $hashObj = Get-FileHash -LiteralPath $item.FullName -Algorithm MD5 2>$tempFile
 
-    try {
-        $hash = (Get-FileHash -LiteralPath $item.FullName -Algorithm MD5).Hash
-
+    if ($hashObj) {
         $manifestFile = [ManifestFile]::new()
-        $manifestFile.md5 = $hash
-    } catch {
-        # roll past errors on individual items, so that manifest can still get generated
-        Write-Warning "Failed to get hash for $($_.Fullname)"
-        Write-Warning $_
+        $manifestFile.md5 = $hashObj.Hash
+    } 
+    else {
+        # log errors on individual items as warnings, so that manifest can still get generated
+        $errorMessage = (Get-Content $tempFile) -join "`n"
+        Write-Warning "Failed to get hash for $($FilePath)"
+        Write-Warning $errorMessage
 
         $manifestFile = [ManifestFileError]::new()
-        $manifestFile.errorInfo = $_
+        $manifestFile.errorInfo = $errorMessage
     }
+
+    Remove-Item $tempFile
 
     $manifestFile.name = $item.Name
     $manifestFile.size = $item.Length
