@@ -224,6 +224,22 @@ function Get-PackagedFunction {
 
 <#
 .SYNOPSIS
+    Creates each of the functions within PackagedFunctions within Session.
+#>
+function Export-PackagedFunction {
+    param(
+        [Parameter(Mandatory=$True)][string[]]$PackagedFunctions,
+        [Parameter(Mandatory=$True)]$Session
+    )
+
+    Invoke-Command -Session $Session -ScriptBlock { 
+        param($PackagedFunctions)
+        . ([ScriptBlock]::Create($PackagedFunctions))
+    } -ArgumentList $PackagedFunctions, $Null
+}
+
+<#
+.SYNOPSIS
     Converts PsCustomObjects into HashTables so that they can be splatted or otherwise processed. Note that this is a shallow conversion, and some properties may not convert properly, so be sure to test.
 #>
 function Convert-PsCustomObjectToHashTable {
