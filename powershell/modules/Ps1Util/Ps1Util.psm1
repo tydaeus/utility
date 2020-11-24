@@ -178,7 +178,7 @@ function Invoke-RemoteCommand {
 .PARAMETER FunctionNames
     Array of names functions to package
 .EXAMPLE
-    # package function 'Run-MyFunction', load it into a (already-created) remote session, then use it
+    # package function 'Run-MyFunction'
     $packagedFcn = Get-PackagedFunction 'Run-MyFunction'
 
     # create the function on a (already-created) remote session
@@ -188,7 +188,24 @@ function Invoke-RemoteCommand {
 
     # use the packaged function in the loaded session, passing arg1Value into the session as arg1
     Invoke-Command -Session $session -ScriptBlock { 
-        param($arg1); Run-MyFunction $arg1 
+        param($arg1)
+        Run-MyFunction $arg1 
+    } -ArgumentList $arg1Value
+.EXAMPLE
+    # package multiple functions
+    $packagedFcns = Get-PackagedFunction 'Run-MyFunction','Get-MyData'
+
+    # create the functions on a (already-created) remote session
+    Invoke-Command -Session $session -ScriptBlock { 
+        param($fcn)
+        . ([ScriptBlock]::Create($fcn))
+    } -ArgumentList $packagedFcns, $Null
+    # Note the null argument; this forces PS1 to treat $packagedFcns as a single arg
+
+    # Use the packaged functions in the loaded session
+    Invoke-Command -Session $session -ScriptBlock { 
+        param($arg1)
+        Run-MyFunction $arg1 | Get-MyData
     } -ArgumentList $arg1Value
 #>
 function Get-PackagedFunction {
