@@ -175,6 +175,21 @@ function Invoke-RemoteCommand {
 <#
 .SYNOPSIS
     Returns a string containing declaration and definition for a named function(s).
+.PARAMETER FunctionName
+    The name of the function to package
+.EXAMPLE
+    # package function 'Run-MyFunction', load it into a (already-created) remote session, then use it
+    $packagedFcn = Get-PackagedFunction 'Run-MyFunction'
+
+    # create the function on a (already-created) remote session
+    Invoke-Command -Session $session -ScriptBlock { 
+        param($fcn); . ([ScriptBlock]::Create($fcn))
+    } -ArgumentList $packagedFcn
+
+    # use the packaged function in the loaded session, passing arg1Value into the session as arg1
+    Invoke-Command -Session $session -ScriptBlock { 
+        param($arg1); Run-MyFunction $arg1 
+    } -ArgumentList $arg1Value
 #>
 function Get-PackagedFunction {
     param([Parameter(Mandatory=$True, ValueFromPipeline=$True)][string]$FunctionName)
