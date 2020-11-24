@@ -175,8 +175,8 @@ function Invoke-RemoteCommand {
 <#
 .SYNOPSIS
     Returns a string containing declaration and definition for a named function(s).
-.PARAMETER FunctionName
-    The name of the function to package
+.PARAMETER FunctionNames
+    Array of names functions to package
 .EXAMPLE
     # package function 'Run-MyFunction', load it into a (already-created) remote session, then use it
     $packagedFcn = Get-PackagedFunction 'Run-MyFunction'
@@ -192,14 +192,16 @@ function Invoke-RemoteCommand {
     } -ArgumentList $arg1Value
 #>
 function Get-PackagedFunction {
-    param([Parameter(Mandatory=$True, ValueFromPipeline=$True)][string]$FunctionName)
+    param([Parameter(Mandatory=$True, ValueFromPipeline=$True)][string[]]$FunctionNames)
 
     process {
-        if (Test-Path "function:$FunctionName") {
-            return "function $FunctionName { $(Get-Content "function:$FunctionName") }"
-        } else {
-            throw { "No function named '$FunctionName' within scope."}
-        }    
+        foreach($functionName in $FunctionNames) {
+            if (Test-Path "function:$FunctionName") {
+                <#pipe output#> "function $FunctionName { $(Get-Content "function:$FunctionName") }"
+            } else {
+                throw { "No function named '$FunctionName' within scope."}
+            }
+        }
     }
 }
 
