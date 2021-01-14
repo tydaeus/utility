@@ -259,4 +259,75 @@ function Convert-PsCustomObjectToHashTable {
     }
 }
 
+<#
+.SYNOPSIS
+    Displays a dialog box with custom button options. Returns the index of the clicked button.
+.PARAMETER Buttons
+    The list of button names. Names will be used from left to right. The return value will be the index of the clicked button.
+.PARAMETER Message
+    Message to display in the dialog box.
+.PARAMETER Title
+    Title to display on the dialog box.
+#>
+function Show-CustomDialog {
+    param (
+        [Parameter(Mandatory=$True)][string[]]$Buttons,
+        [string]$Message = "Please choose one of the following:",
+        [string]$Title = ""
+    )
+
+    # there are only 7 DialogResult options that result in the dialog being closed
+    if ($Buttons.Count -gt 7) {
+        throw "Too many buttons specified; at most 7 can be specified."
+    }
+
+    Add-Type -AssemblyName System.Windows.Forms
+    Add-Type -AssemblyName System.Drawing
+    $BUTTON_PADDING = 7
+    $buttonSize = [System.Drawing.Size]::new(75, 23)
+    $windowSize = [System.Drawing.Size]::new(
+        [math]::Max(300, (($Buttons.Count * ($buttonSize.Width + $BUTTON_PADDING)) + ($BUTTON_PADDING * 2))),
+        100
+    )
+
+    $BUTTON_Y = $windowSize.Height - $BUTTON_PADDING - $buttonSize.Height
+
+    $form = New-Object System.Windows.Forms.Form
+
+    $form.ClientSize = $windowSize
+    $form.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedDialog
+    $form.TopMost = $True
+    $form.Text = $Title
+    $form.ControlBox = $False
+    $form.StartPosition = [System.Windows.Forms.FormStartPosition]::CenterScreen
+
+    $label = New-Object System.Windows.Forms.Label
+    $label.Location = [System.Drawing.Point]::new(10,10)
+    $label.Size = [System.Drawing.Size]::new(
+        ($windowSize.Width - 20),
+        ($windowSize.Height - (10 + ($BUTTON_PADDING * 2) + $buttonSize.Height))
+    )
+    $label.Text = $Message
+    $form.Controls.Add($label)
+    
+    $buttonStartX = $windowSize.Width - ((($buttonSize.Width + $BUTTON_PADDING) * $Buttons.Count) + $BUTTON_PADDING)
+
+    for ($i = 0; $i -lt $Buttons.Count; $i++) {
+        $button = [System.Windows.Forms.Button]::new()
+        $button.Size = $buttonSize
+        $button.UseVisualStyleBackColor = $True
+        $button.Text = $Buttons[$i]
+        $button.DialogResult = 1 + $i
+        $button.Location = [System.Drawing.Point]::new($buttonStartX + 
+            $BUTTON_PADDING + (($button.Size.Width + $BUTTON_PADDING)* $i), $BUTTON_Y
+        )
+
+        $form.Controls.Add($button)
+    }
+
+    # Using show dialog sets the form so it automatically closes when a button is pressed with a DialogResult other than "None".
+    $response = $form.ShowDialog()
+
+    return ($response.value__ - 1)
+}
 
