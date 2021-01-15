@@ -331,3 +331,31 @@ function Show-CustomDialog {
     return ($response.value__ - 1)
 }
 
+<#
+.SYNOPSIS
+    Displays a yes/no GUI prompt dialog box, and returns 'Yes' or 'No' based on user response.
+.PARAMETER Text
+    The text prompt to be displayed.
+.PARAMETER Title
+    The title of the displayed dialog.
+#>
+function Show-YesNoDialog {
+    param(
+        [Parameter(Mandatory=$True)][string]$Text,
+        [string]$Title
+    )
+
+    $wshell = New-Object -ComObject Wscript.Shell
+    $buttonClicked = $wshell.Popup($Text, 0, $Title, 0x4)
+
+    $response = $Null
+
+    switch($buttonClicked) {
+        6 { $response = 'Yes' }
+        7 { $response = 'No' }
+        # I don't think this can happen, but let's make it obvious and friendly
+        default { throw "Invalid YesNo dialog response constant: $_" }
+    }
+
+    return $response
+}
