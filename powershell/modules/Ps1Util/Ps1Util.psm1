@@ -240,6 +240,40 @@ function Export-PackagedFunction {
 
 <#
 .SYNOPSIS
+    Returns whether the specified process is 32bit (as detected by use of wow64.dll). Note: no process will be detected as 32bit if run on a 32bit system.
+#>
+function Test-IfProcess32Bit {
+    param(
+        [Parameter(Mandatory=$True, ParameterSetName='ProcessSpecified')]
+        [System.Diagnostics.Process]
+        $Process,
+
+        [Parameter(Mandatory=$True, ParameterSetName='ProcessNameSpecified')]
+        [string]
+        $ProcessName
+    )
+
+    if ($ProcessName) {
+        $Process = Get-Process -Name $ProcessName
+    }
+
+    if (-not $Process) {
+        throw 'Process not found'
+    }
+
+    $processModules = $process.modules
+
+    foreach ($module in $processModules) {
+        if ($module.ModuleName -eq 'wow64.dll') {
+            return $True
+        }
+    }
+
+    return $False
+}
+
+<#
+.SYNOPSIS
     Converts PsCustomObjects into HashTables so that they can be splatted or otherwise processed. Note that this is a shallow conversion, and some properties may not convert properly, so be sure to test.
 #>
 function Convert-PsCustomObjectToHashTable {
