@@ -2,6 +2,30 @@
     Provides utility functions that can make it a bit easier to perform common tasks in PowerShell
 #>
 
+<#
+    Reads the current environment variable values from the registry and updates them accordingly. Useful for ensuring that the PowerShell session reflects changes made by child processes (e.g. installers).
+#>
+function Update-Environment {
+    $registryKeyNames = @(
+        'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment',
+        'HKCU:\Environment'
+    )
+
+    foreach ($registryKeyName in $registryKeyNames) {
+        $registryKey = Get-Item $registryKeyName
+        $valueNames = $registryKey.GetValueNames()
+        foreach ($valueName in $valueNames) {
+            $value = $registryKey.GetValue($valueName)
+            Set-Item -Path "Env:$valueName" -Value $value
+        }
+    }
+
+    # Update PATH environment variable
+	$machinePath = [System.Environment]::GetEnvironmentVariable("Path","Machine")
+	$userPath = [System.Environment]::GetEnvironmentVariable("Path","User")
+    $env:Path = "$machinePath;$userPath"
+}
+
 
 <#
 .SYNOPSIS
