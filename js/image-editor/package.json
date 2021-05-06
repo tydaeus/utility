@@ -27,7 +27,7 @@
     "bootstrap": "3.4.1",
     "electron": "^3.0.8",
     "jquery": "^3.2.1",
-    "underscore": "^1.8.3"
+    "underscore": "^1.12.1"
   },
   "resolutions": {
     "**/constantinople": "^3.1.1",
