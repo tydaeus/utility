@@ -319,6 +319,83 @@ function Convert-PsCustomObjectToHashTable {
 
 <#
 .SYNOPSIS
+    Converts a hashTable of query parameters into a URI query string to include in an API request.
+.PARAMETER QueryParams
+    HashTable providing key value pairs to convert into URI query string
+#>
+function New-QueryString {
+    param(
+        [Parameter(Mandatory)]
+        [HashTable]
+        $QueryParams
+    )
+
+    $kvArrList = [System.Collections.ArrayList]::new()
+
+    # convert hashtable to array
+    foreach($key in $QueryParams.Keys) {
+        $kvArrList.Add("$([uri]::EscapeDataString($Key))=$([uri]::EscapeDataString($QueryParams[$key]))") | Out-Null
+    }
+
+    $result = "?"
+
+    for ($i = 0; $i -lt $kvArrList.Count; $i++) {
+        $result += $kvArrList[$i]
+
+        if ($i -lt ($kvArrList.Count - 1)) {
+            $result += "&"
+        }
+    }
+
+    return $result
+}
+
+<#
+.SYNOPSIS
+    Invokes a RESTful get request.
+.PARAMETER BaseUri
+    Base portion of the URI to send the request to (e.g. 'https://www.somewhere.com/)
+.PARAMETER ApiUri
+    API-specific portion of the URI to send the request to (e.g. 'api/interesting_objects/')
+.PARAMETER QueryParams
+    Key-value query parameters to add at the end of the URI
+.PARAMETER WebSession
+    An open WebSession to run the request in
+
+#>
+function Invoke-GetRequest {
+    param(
+        [Parameter(Mandatory)][string]$BaseUri,
+        [string]$ApiUri,
+        [HashTable]$QueryParams,
+        [Microsoft.PowerShell.Commands.WebRequestSession]$WebSession
+    )
+    $ErrorActionPreference = 'Stop'
+
+    $queryUri = $BaseUri
+
+    if ($ApiUri) {
+        $queryUri += $ApiUri
+    }
+
+    if ($QueryParams) {
+        $queryString = New-QueryString $QueryParams
+        $queryUri += $queryString
+    }
+
+    $requestParams = @{
+        'Uri' = $queryUri
+    }
+
+    if ($WebSession) {
+        $requestParams['WebSession'] = $WebSession
+    }
+
+    Invoke-WebRequest @requestParams | Write-Output
+}
+
+<#
+.SYNOPSIS
     Displays a dialog box with custom button options. Returns the index of the clicked button.
 .PARAMETER Buttons
     The list of button names. Names will be used from left to right. The return value will be the index of the clicked button.
