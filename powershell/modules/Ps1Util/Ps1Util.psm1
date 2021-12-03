@@ -368,7 +368,9 @@ function Invoke-GetRequest {
         [Parameter(Mandatory)][string]$BaseUri,
         [string]$ApiUri,
         [HashTable]$QueryParams,
-        [Microsoft.PowerShell.Commands.WebRequestSession]$WebSession
+        [Microsoft.PowerShell.Commands.WebRequestSession]$WebSession,
+        [pscredential]$Credential,
+        [string]$Outfile
     )
     $ErrorActionPreference = 'Stop'
 
@@ -387,8 +389,13 @@ function Invoke-GetRequest {
         'Uri' = $queryUri
     }
 
-    if ($WebSession) {
-        $requestParams['WebSession'] = $WebSession
+    # populate parameters that get passed directly to Invoke-WebRequest
+    @('WebSession', 'Credential', 'Outfile') | ForEach-Object {
+        $value = (Get-Variable $_ -ErrorAction 'SilentlyContinue').Value
+
+        if ($value) {
+            $requestParams[$_] = $value
+        }
     }
 
     Invoke-WebRequest @requestParams | Write-Output
