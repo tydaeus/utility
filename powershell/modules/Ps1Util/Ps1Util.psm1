@@ -361,6 +361,10 @@ function New-QueryString {
     Key-value query parameters to add at the end of the URI
 .PARAMETER WebSession
     An open WebSession to run the request in
+.PARAMETER Credential
+    Credentials to use to start connection
+.PARAMETER Outfile
+    Filepath to write output to
 
 #>
 function Invoke-GetRequest {
