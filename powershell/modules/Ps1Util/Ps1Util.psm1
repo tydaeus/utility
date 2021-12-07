@@ -95,7 +95,7 @@ function Resolve-Interpolation {
         }
     }
 
-    function Match-Sequence {
+    function Test-Sequence {
         param(
             [Parameter(Mandatory=$True)][int]$index,
             [Parameter(Mandatory=$True)][string]$Sequence
@@ -110,7 +110,7 @@ function Resolve-Interpolation {
         # we're inside the interpolation section
         if ($insideInterpolation) {
             # end of interpolation section
-            if (Match-Sequence $i $EndInterpolationSequence) {
+            if (Test-Sequence $i $EndInterpolationSequence) {
                 $insideInterpolation = $False
                 $result += Get-Substitution($interpolationKey)
                 $interpolationKey = ""
@@ -125,7 +125,7 @@ function Resolve-Interpolation {
         # we're reading regular text
         else {
             # detect interpolation
-            if (Match-Sequence $i $BeginInterpolationSequence) {
+            if (Test-Sequence $i $BeginInterpolationSequence) {
                 $insideInterpolation = $True
                 $i += ($BeginInterpolationSequence.Length - 1)
             }
