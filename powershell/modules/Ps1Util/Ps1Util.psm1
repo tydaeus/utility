@@ -391,6 +391,7 @@ function Invoke-GetRequest {
 
     $requestParams = @{
         'Uri' = $queryUri
+        'UseBasicParsing' = $True
     }
 
     # populate parameters that get passed directly to Invoke-WebRequest
