@@ -322,6 +322,9 @@ function Convert-PsCustomObjectToHashTable {
     Converts a hashTable of query parameters into a URI query string to include in an API request.
 .PARAMETER QueryParams
     HashTable providing key value pairs to convert into URI query string
+.EXAMPLE
+    New-QueryString @{'foo' = 'x'; 'n&<?' = '<&foo>?'}
+    ?foo=x&n%26%3C%3F=%3C%26foo%3E%3F
 #>
 function New-QueryString {
     param(
