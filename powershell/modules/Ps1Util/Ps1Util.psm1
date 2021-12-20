@@ -363,9 +363,6 @@ function New-QueryString {
     An open WebSession to run the request in
 .PARAMETER Credential
     Credentials to use to start connection
-.PARAMETER Outfile
-    Filepath to write output to
-
 #>
 function Invoke-GetRequest {
     param(
@@ -373,8 +370,7 @@ function Invoke-GetRequest {
         [string]$ApiUri,
         [HashTable]$QueryParams,
         [Microsoft.PowerShell.Commands.WebRequestSession]$WebSession,
-        [pscredential]$Credential,
-        [string]$Outfile
+        [pscredential]$Credential
     )
     $ErrorActionPreference = 'Stop'
 
