@@ -411,6 +411,59 @@ function Invoke-GetRequest {
 
 <#
 .SYNOPSIS
+    Invokes a RESTful PUT request.
+.PARAMETER BaseUri
+    Base portion of the URI to send the request to (e.g. 'https://www.somewhere.com/)
+.PARAMETER ApiUri
+    API-specific portion of the URI to send the request to (e.g. 'api/interesting_objects/')
+.PARAMETER WebSession
+    An open WebSession to run the request in
+.PARAMETER Credential
+    Credentials to use to start connection
+.PARAMETER InFile
+    Filepath to retrieve request body from
+.PARAMETER OutFile
+    Filepath to write output to
+
+#>
+function Invoke-PutRequest {
+    param(
+        [Parameter(Mandatory)][string]$BaseUri,
+        [string]$ApiUri,
+        [Microsoft.PowerShell.Commands.WebRequestSession]$WebSession,
+        [pscredential]$Credential,
+        [string]$InFile,
+        [string]$OutFile
+    )
+
+    $ErrorActionPreference = 'Stop'
+
+    $uri = $BaseUri
+
+    if ($ApiUri) {
+        $uri += $ApiUri
+    }
+
+    $requestParams = @{
+        'Method' = 'Put'
+        'Uri' = $uri
+        'UseBasicParsing' = $True
+    }
+
+    # populate parameters that get passed directly to Invoke-WebRequest
+    @('WebSession', 'Credential', 'InFile', 'OutFile') | ForEach-Object {
+        $value = (Get-Variable $_ -ErrorAction 'SilentlyContinue').Value
+
+        if ($value) {
+            $requestParams[$_] = $value
+        }
+    }
+
+    Invoke-RestMethod @requestParams | Write-Output
+}
+
+<#
+.SYNOPSIS
     Displays a dialog box with custom button options. Returns the index of the clicked button.
 .PARAMETER Buttons
     The list of button names. Names will be used from left to right. The return value will be the index of the clicked button.
