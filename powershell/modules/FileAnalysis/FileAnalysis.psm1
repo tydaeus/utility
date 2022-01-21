@@ -302,6 +302,25 @@ function Test-IfInSvn {
 
 <#
 .SYNOPSIS
+    Returns paths of SVN files within $DirPath, relative to $DirPath
+#>
+function Get-SvnFiles {
+    param(
+        [Parameter(Mandatory)][string]$DirPath,
+        [Switch] $Recurse
+    )
+
+    $command = "svn list `"$DirPath`""
+
+    if ($Recurse) {
+        $command += ' --recursive'
+    }
+
+    Invoke-Expression $command | Write-Output
+}
+
+<#
+.SYNOPSIS
     Tests if file at $FilePath is under git version control (assumes that git cmdline utility is on PATH)
 #>
 function Test-IfInGit {
@@ -313,6 +332,35 @@ function Test-IfInGit {
     return ($LASTEXITCODE -eq 0)
 }
 
+<#
+.SYNOPSIS
+    Returns paths of git files within $DirPath, relative to $DirPath
+#>
+function Get-GitFiles {
+    param(
+        [Parameter(Mandatory)][string]$DirPath,
+        [Switch] $Recurse
+    )
+
+    Push-Location $DirPath
+
+    try {
+        $command = "git ls-files --deduplicate"
+
+        $result = Invoke-Expression $command
+    
+        if (-not $Recurse) {
+            $result = $result | Where-Object { -not ($_ -match '/') }
+        }
+    
+        return $result
+    }
+    finally {
+        Pop-Location
+    }
+    
+}
+
 
 Export-ModuleMember `
     -Function `
@@ -320,4 +368,6 @@ Export-ModuleMember `
     Compare-Md5Manifests,
     Read-ManifestMap,
     Test-IfInSvn,
-    Test-IfInGit
+    Get-SvnFiles,
+    Test-IfInGit,
+    Get-GitFiles
