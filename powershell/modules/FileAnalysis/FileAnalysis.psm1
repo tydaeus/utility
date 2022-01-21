@@ -328,8 +328,15 @@ function Test-IfInGit {
         [Parameter(Mandatory)][string]$FilePath
     )
 
-    Invoke-Expression "git ls-files --error-unmatch $FilePath" -ErrorAction 'Ignore' *>&1 | Out-Null
-    return ($LASTEXITCODE -eq 0)
+    Push-Location $FilePath
+
+    try {
+        Invoke-Expression "git ls-files --error-unmatch $FilePath" -ErrorAction 'Ignore' *>&1 | Out-Null
+        return ($LASTEXITCODE -eq 0)    
+    }
+    finally {
+        Pop-Location
+    }
 }
 
 <#
