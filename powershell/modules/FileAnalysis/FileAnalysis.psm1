@@ -296,7 +296,7 @@ function Test-IfInSvn {
         [Parameter(Mandatory)][string]$FilePath
     )
 
-    Invoke-Expression "svn info $FilePath" -ErrorAction 'Ignore' *>&1 | Out-Null
+    Invoke-Expression "svn info `"$FilePath`"" -ErrorAction 'Ignore' *>&1 | Out-Null
     return ($LASTEXITCODE -eq 0)
 }
 
