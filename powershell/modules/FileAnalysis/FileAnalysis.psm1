@@ -285,8 +285,39 @@ function Compare-Md5Manifests {
         }
     }
 
-    
-
 }
 
-Export-ModuleMember -Function Get-Md5Manifest, Compare-Md5Manifests, Read-ManifestMap
+<#
+.SYNOPSIS
+`   Tests if file at $FilePath is under svn version control (assumes that SVN cmdline utility is on PATH)
+#>
+function Test-IfInSvn {
+    param(
+        [Parameter(Mandatory)][string]$FilePath
+    )
+
+    Invoke-Expression "svn info $FilePath" -ErrorAction 'Ignore' *>&1 | Out-Null
+    return ($LASTEXITCODE -eq 0)
+}
+
+<#
+.SYNOPSIS
+    Tests if file at $FilePath is under git version control (assumes that git cmdline utility is on PATH)
+#>
+function Test-IfInGit {
+    param(
+        [Parameter(Mandatory)][string]$FilePath
+    )
+
+    Invoke-Expression "git ls-files --error-unmatch $FilePath" -ErrorAction 'Ignore' *>&1 | Out-Null
+    return ($LASTEXITCODE -eq 0)
+}
+
+
+Export-ModuleMember `
+    -Function `
+    Get-Md5Manifest,
+    Compare-Md5Manifests,
+    Read-ManifestMap,
+    Test-IfInSvn,
+    Test-IfInGit
