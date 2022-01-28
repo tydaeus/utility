@@ -139,6 +139,22 @@ function Resolve-Interpolation {
     return $result
 }
 
+<#
+.SYNOPSIS
+    Convenience function that returns a string that will regex match against any of $Terms as a capture group.
+.EXAMPLE
+    New-MatchingPattern -Terms 'C:\foo','C:\Program Files (x86)\[SillyProgram]'
+
+    (C:\\foo|C:\\Program\ Files\ \(x86\)\\\[SillyProgram])
+#>
+function New-MatchingPattern {
+    param(
+        [Parameter(Mandatory)][string[]]$Terms
+    )
+
+    return '(' + (($Terms | ForEach-Object { [regex]::Escape($_) }) -join '|') + ')'
+}
+
 
 <#
 .SYNOPSIS
