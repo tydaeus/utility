@@ -578,3 +578,90 @@ function Show-YesNoDialog {
 
     return $response
 }
+
+<#
+.SYNOPSIS
+    Splits a string containing a path into an array containing the initial indirect part as element 0 and the rest of the path as element 1. Empty strings will be used to represent non-applicable path pieces.
+.EXAMPLE
+    Split-IndirectPath '..\..\foo\bar'
+    ..\..\
+    foo\bar
+
+.EXAMPLE
+    Split-IndirectPath 'foo\bar'
+
+    foo\bar
+
+.EXAMPLE
+    Split-IndirectPath '..\..\..\'
+    ..\..\..\
+
+#>
+function Split-IndirectPath {
+    param ([string]$indirectPath)
+
+    # null or empty path will be bad if we continue
+    if ([string]::IsNullOrWhiteSpace($indirectPath)) {
+        return @('', '')
+    }
+
+    # trim to first non-whitespace character
+    $indirectPath -match '[^\s]' | Out-Null
+    $indirectPath = $indirectPath.Substring($indirectPath.IndexOf($Matches[0]))
+
+    # convert forward-slashes to backslashes
+    $indirectPath = $indirectPath -replace '/','\'
+
+    # trim leading backslash(es), if present
+    while ($indirectPath.StartsWith('\')) {
+        $indirectPath = $indirectPath.Substring(1)
+    }
+
+    $indirection = ''
+    $direction = ''
+
+    # find where we go from indirection to direct paths
+    if ($indirectPath -match '[^\\.]') {
+        $splitIndex = $indirectPath.IndexOf($Matches[0])
+        $indirection = $indirectPath.Substring(0, $splitIndex)
+        $direction = $indirectPath.Substring($splitIndex)
+    }
+    # we have no non-indirection characters
+    else {
+        $indirection = $indirectPath
+    }
+
+    return @($indirection, $direction)
+}
+
+<#
+.SYNOPSIS
+    Attempts to resolve an indirect path in relation to a specified base path by separately resolving the indirect and direct portions of it, so that it can safely and successfully resolve paths to files that may not yet exist. This will fail if the indirection points to an invalid location, e.g. by dot-walking above BasePath's root level. (The standard Resolve-Path cmdlet throws an error if the target does not exist).
+
+    Throws an error describing what went wrong if it is unable to resolve.
+.PARAMETER BasePath
+    Any indirection will be resolved in relation to this path. Unreliable if this path doesn't exist.
+.PARAMETER IndirectPath
+    Path to be resolved in relation to BasePath. Assumes indirection is only present at the beginning of the path; result indeterminate otherwise.
+.EXAMPLE
+    Resolve-PathSafely -BasePath 'C:\Projects\MyProject\code\Subproject\src\foo\bar\baz' -IndirectPath '../../../bin/Release'
+
+    C:\Projects\MyProject\code\Subproject\src\bin\Release#>
+function Resolve-PathSafely {
+    param (
+        [Parameter(Mandatory)][string]$BasePath,
+        [Parameter(Mandatory)][string]$IndirectPath
+    )
+
+    $splitPath = Split-IndirectPath $IndirectPath
+    $indirectPathPortion = $splitPath[0]
+    $directPathPortion = $splitPath[1]
+
+    # attempt to join base path to the indirection, repackage error
+    $resolvedPathIndirection = Join-Path $BasePath $indirectPathPortion -Resolve -ErrorAction 'Ignore'
+    if (-not $resolvedPathIndirection) {
+        throw "'$IndirectPath' cannot be found within '$BasePath'"
+    }
+
+    return Join-Path $resolvedPathIndirection $directPathPortion
+}
