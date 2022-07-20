@@ -21,7 +21,7 @@
     "uglify-save-license": "^0.4.1"
   },
   "dependencies": {
-    "angular": "^1.6.8",
+    "angular": "^1.8.3",
     "angular-route": "^1.6.8",
     "angular-ui-bootstrap": "^2.5.6",
     "bootstrap": "3.4.1",
