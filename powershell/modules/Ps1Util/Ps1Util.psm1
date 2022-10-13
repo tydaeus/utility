@@ -665,3 +665,24 @@ function Resolve-PathSafely {
 
     return Join-Path $resolvedPathIndirection $directPathPortion
 }
+
+<#
+.SYNOPSIS
+    Get the byte size of the specified folder.
+.EXAMPLE
+    Get-FolderSize C:\MyDir
+
+    # returns the size of C:\MyDir
+.EXAMPLE
+    (Get-FolderSize C:\MyDir) / 1 Gb
+
+    # get the size of C:\MyDir and convert to Gb display
+#>
+function Get-FolderSize {
+    param([Parameter(Mandatory)][string]$LiteralPath)
+    $size = Get-ChildItem -LiteralPath $LiteralPath -Recurse | Measure-Object -Property Length -Sum
+    if (-not $size) { 
+        throw "Failed to get size of $LiteralPath"
+    }
+    return $size.Sum
+}
