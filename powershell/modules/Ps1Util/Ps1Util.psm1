@@ -686,3 +686,49 @@ function Get-FolderSize {
     }
     return $size.Sum
 }
+
+<#
+.SYNOPSIS
+    Gets a property nested within an Object programmatically by dot-walking. Returns $Null if the specified property doesn't exist.
+    
+    This allows retrieval of nested properties specified within a string.
+.PARAMETER Object
+    The object whose properties need to be traversed
+.PARAMETER Property
+    The path to the desired property, with each property separated by the Delimiter.
+.PARAMETER Delimiter
+    Specifies the regex to use to split the properties. Defaults to '\.' to support standard dot-walking.
+.EXAMPLE
+    >Get-Property -Object $myObject -Property 'foo.bar.baz'
+    
+    # Returns $myObject.foo.bar.baz
+.EXAMPLE
+    >Get-Property -Object $myObject -Property 'foo.bar/baz.boodle' -Delimiter '/'
+
+    # Returns the value of $myObject's 'foo.bar' property's 'baz.boodle' property
+#>
+function Get-NestedProperty {
+    param(
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [Object]
+        $Object,
+
+        [Parameter(Mandatory)]
+        [string]
+        $Property,
+
+        [string]
+        $Delimiter = '\.'
+    )
+
+    process {
+        $propertyFields = $property -split $Delimiter
+        $result = $Object
+        foreach ($propertyField in $propertyFields) {
+            $result = $result.$propertyField
+        }
+
+        return $result
+    }
+    
+}
