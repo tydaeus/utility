@@ -126,8 +126,15 @@ function Test-MsiProductCache {
     if ($Product.PackageName) {
         $Product | Get-MSISource | ForEach-Object {
             $path = Join-Path $_.Path $Product.PackageName
-            if ($path | Test-Path) {
+            try {
+                if ($path | Test-Path -ErrorAction Stop) {
                 Write-Verbose ($loc.Verbose_Found_Source_Args2 -f $Product.ProductCode, $path)
+                    return $true
+                }
+            }
+            # not clear what to do if we can't access the path; may still want to remove, though
+            catch {
+                Write-Warning "Failed to test path '$path' for product $($Product.PackageName) {$($Product.ProductCode)}: $($_.Exception.Message)"
                 return $true
             }
         }
