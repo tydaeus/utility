@@ -24,7 +24,6 @@ param (
 )
 
 $ErrorActionPreference = 'Stop'
-[int[]] $translation = 7,6,5,4,3,2,1,0,11,10,9,8,15,14,13,12,17,16,19,18,21,20,23,22,25,24,27,26,29,28,31,30
 
 $loc = data {
     ConvertFrom-StringData @'
@@ -78,6 +77,9 @@ function ConvertTo-MsiProductCode {
         [Parameter(Mandatory)]
         [string] $Guid
     )
+
+    [int[]] $translation = 7,6,5,4,3,2,1,0,11,10,9,8,15,14,13,12,17,16,19,18,21,20,23,22,25,24,27,26,29,28,31,30
+
 
     if (!$Guid) {
         return
